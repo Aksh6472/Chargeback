@@ -9,15 +9,16 @@ Split layout showing:
 
 import streamlit as st
 import pandas as pd
+from frontend.components import render_html
 
 
 def render_evidence_viewer_view(service):
-    st.markdown("""
+    render_html("""
     <div style="margin-bottom: 20px;">
         <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Evidence Document & Entity Viewer</h2>
         <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">Split layout inspection of original artifacts, PyMuPDF OCR layers, and normalized NER extractions.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     cases = service.list_cases()
     if not cases:

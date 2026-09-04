@@ -8,10 +8,11 @@ Includes suspicious pattern highlighting, velocity checks, and risk scoring.
 import streamlit as st
 import networkx as nx
 import plotly.graph_objects as go
+from frontend.components import render_html
 
 
 def render_fraud_intel_view(service):
-    st.markdown("""
+    render_html("""
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
         <div>
             <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Fraud Pattern Intelligence Graph</h2>
@@ -23,7 +24,7 @@ def render_fraud_intel_view(service):
             </span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     cases = service.list_cases()
     if not cases:

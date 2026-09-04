@@ -5,10 +5,11 @@ Displays: Similarity %, Previous Outcome (WIN/LOSE), Evidence Quality, Summary, 
 """
 
 import streamlit as st
+from frontend.components import render_html
 
 
 def render_similar_cases_view(service):
-    st.markdown("""
+    render_html("""
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
         <div>
             <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Historical Precedent Retrieval (RAG)</h2>
@@ -20,7 +21,7 @@ def render_similar_cases_view(service):
             </span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     cases = service.list_cases()
     if not cases:
@@ -34,11 +35,11 @@ def render_similar_cases_view(service):
     rag_data = service.get_similar_cases(active_case_id, top_k=5)
     similar_cases = rag_data.get("top_k_cases", [])
 
-    st.markdown(f"""
+    render_html(f"""
     <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 18px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 18px; font-size: 0.82rem; color: #94A3B8;">
         🔍 <b>Vector Search Query Embedding:</b> "{rag_data.get('query_summary', '')[:110]}..."
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     for idx, c in enumerate(similar_cases):
         outcome = c.get("outcome", "WIN")

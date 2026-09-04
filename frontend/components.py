@@ -13,8 +13,12 @@ from typing import Dict, Any, List, Optional
 def render_html(html_code: str):
     """
     Renders HTML cleanly without Markdown code-block indentation bugs.
+    Uses st.html for native HTML injection without CommonMark code-block escaping.
     """
-    st.markdown(textwrap.dedent(html_code).strip(), unsafe_allow_html=True)
+    if hasattr(st, "html"):
+        st.html(html_code)
+    else:
+        st.markdown(textwrap.dedent(html_code).strip(), unsafe_allow_html=True)
 
 
 def render_app_header(current_merchant: Dict[str, Any], active_order_id: str = "", active_portal: str = "Merchant"):

@@ -5,15 +5,16 @@ Includes timestamps, source document references, and audit descriptions.
 """
 
 import streamlit as st
+from frontend.components import render_html
 
 
 def render_timeline_view(service):
-    st.markdown("""
+    render_html("""
     <div style="margin-bottom: 20px;">
         <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Chronological Order Journey</h2>
         <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">NLP Timeline Builder reconstructed events from purchase to delivery to dispute filing.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     cases = service.list_cases()
     if not cases:

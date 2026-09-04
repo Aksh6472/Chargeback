@@ -4,14 +4,15 @@ Dispute metadata, ML dispute classification, customer linking, and automated nav
 """
 
 import streamlit as st
+from frontend.components import render_html
 
 def render_create_case_view(service):
-    st.markdown("""
+    render_html("""
     <div style="margin-bottom: 20px;">
         <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Create Chargeback Case</h2>
         <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">Upload disputed transaction dockets, invoice records, delivery receipts, and customer proof vault links.</p>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     customers = service.list_all_customers()
     cust_options = {f"{c['full_name']} ({c['phone_number']})": c['id'] for c in customers}
