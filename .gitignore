@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables & secrets
+.env
+.env.local
+
+# Local database / caches
+*.sqlite
+*.sqlite3
+*.db
+.pytest_cache/
+
+# Uploads and temporary reports
+data/uploads/*
+!data/uploads/.gitkeep
+reports/generated_packets/*
+!reports/generated_packets/.gitkeep

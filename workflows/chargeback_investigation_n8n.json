@@ -1,0 +1,326 @@
+{
+  "name": "Chargeback Evidence AI - 9-Node Multi-Agent Investigation Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chargeback-evidence-pipeline",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-1-webhook-trigger",
+      "name": "01 Merchant Upload Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8000/api/agents/ocr",
+        "method": "POST",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "document_id",
+              "value": "={{$json.document_id}}"
+            },
+            {
+              "name": "file_path",
+              "value": "={{$json.file_path}}"
+            }
+          ]
+        },
+        "options": {
+          "retryOnFail": true,
+          "maxTries": 3,
+          "waitBetweenTries": 1000
+        }
+      },
+      "id": "node-2-ocr-agent",
+      "name": "02 OCR Agent (Parallel Extraction)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [320, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8000/api/agents/nlp",
+        "method": "POST",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "ocr_result",
+              "value": "={{$json}}"
+            },
+            {
+              "name": "known_customer_name",
+              "value": "={{$('01 Merchant Upload Webhook').item.json.customer_name}}"
+            },
+            {
+              "name": "known_order_id",
+              "value": "={{$('01 Merchant Upload Webhook').item.json.order_id}}"
+            }
+          ]
+        },
+        "options": {
+          "retryOnFail": true,
+          "maxTries": 3
+        }
+      },
+      "id": "node-3-nlp-agent",
+      "name": "03 NLP Agent (Entity Normalization)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [540, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8000/api/agents/verify",
+        "method": "POST",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "case_data",
+              "value": "={{$('01 Merchant Upload Webhook').item.json.case_data}}"
+            },
+            {
+              "name": "documents",
+              "value": "={{$('01 Merchant Upload Webhook').item.json.documents}}"
+            },
+            {
+              "name": "entities",
+              "value": "={{$json.entities}}"
+            }
+          ]
+        }
+      },
+      "id": "node-4-verify-agent",
+      "name": "04 Verification Engine (Consistency)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [760, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8000/api/agents/ml-score",
+        "method": "POST",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "case_data",
+              "value": "={{$('01 Merchant Upload Webhook').item.json.case_data}}"
+            },
+            {
+              "name": "verification_report",
+              "value": "={{$json}}"
+            },
+            {
+              "name": "doc_count",
+              "value": "={{$('01 Merchant Upload Webhook').item.json.documents.length}}"
+            }
+          ]
+        }
+      },
+      "id": "node-5-ml-agent",
+      "name": "05 ML Scoring Agent (XGBoost)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [980, 300]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "table": "evidence_scores",
+        "columns": "case_id, score, win_probability, model_version, features, breakdown"
+      },
+      "id": "node-6-supabase-persist",
+      "name": "06 Supabase State Persistence",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8000/api/agents/rag",
+        "method": "POST",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "case_data",
+              "value": "={{$('01 Merchant Upload Webhook').item.json.case_data}}"
+            },
+            {
+              "name": "documents",
+              "value": "={{$('01 Merchant Upload Webhook').item.json.documents}}"
+            },
+            {
+              "name": "verification_report",
+              "value": "={{$('04 Verification Engine (Consistency)').item.json}}"
+            },
+            {
+              "name": "top_k",
+              "value": 5
+            }
+          ]
+        }
+      },
+      "id": "node-7-rag-agent",
+      "name": "07 RAG Precedent Retrieval (pgvector)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1420, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8000/api/agents/gemini-report",
+        "method": "POST",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "case_data",
+              "value": "={{$('01 Merchant Upload Webhook').item.json.case_data}}"
+            },
+            {
+              "name": "documents",
+              "value": "={{$('01 Merchant Upload Webhook').item.json.documents}}"
+            },
+            {
+              "name": "entities",
+              "value": "={{$('03 NLP Agent (Entity Normalization)').item.json.entities}}"
+            },
+            {
+              "name": "verification_report",
+              "value": "={{$('04 Verification Engine (Consistency)').item.json}}"
+            },
+            {
+              "name": "ml_score",
+              "value": "={{$('05 ML Scoring Agent (XGBoost)').item.json}}"
+            },
+            {
+              "name": "similar_cases",
+              "value": "={{$json.top_k_cases}}"
+            }
+          ]
+        }
+      },
+      "id": "node-8-gemini-agent",
+      "name": "08 Gemini Report Agent (Explainable AI)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1640, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}"
+      },
+      "id": "node-9-final-response",
+      "name": "09 Final Evidence Packet Delivery",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1860, 300]
+    }
+  ],
+  "connections": {
+    "01 Merchant Upload Webhook": {
+      "main": [
+        [
+          {
+            "node": "02 OCR Agent (Parallel Extraction)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02 OCR Agent (Parallel Extraction)": {
+      "main": [
+        [
+          {
+            "node": "03 NLP Agent (Entity Normalization)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03 NLP Agent (Entity Normalization)": {
+      "main": [
+        [
+          {
+            "node": "04 Verification Engine (Consistency)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04 Verification Engine (Consistency)": {
+      "main": [
+        [
+          {
+            "node": "05 ML Scoring Agent (XGBoost)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "05 ML Scoring Agent (XGBoost)": {
+      "main": [
+        [
+          {
+            "node": "06 Supabase State Persistence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "06 Supabase State Persistence": {
+      "main": [
+        [
+          {
+            "node": "07 RAG Precedent Retrieval (pgvector)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "07 RAG Precedent Retrieval (pgvector)": {
+      "main": [
+        [
+          {
+            "node": "08 Gemini Report Agent (Explainable AI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "08 Gemini Report Agent (Explainable AI)": {
+      "main": [
+        [
+          {
+            "node": "09 Final Evidence Packet Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

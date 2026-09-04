@@ -1,0 +1,42 @@
+{
+  "model_version": "xgb_v1.0.0",
+  "algorithm": "XGBoost Gradient Boosted Trees",
+  "trained_date": "2024-09-03",
+  "target_variable": "dispute_outcome (1=WIN, 0=LOSE)",
+  "features": [
+    "consistency_score",
+    "doc_completeness",
+    "name_match",
+    "address_match",
+    "amount_match",
+    "timeline_consistency",
+    "amount_log",
+    "days_to_respond",
+    "dispute_reason_idx"
+  ],
+  "classification_threshold": 0.5,
+  "feature_importances": {
+    "consistency_score": 0.2823,
+    "doc_completeness": 0.2399,
+    "name_match": 0.4718,
+    "address_match": 0.006,
+    "amount_match": 0.0,
+    "timeline_consistency": 0.0,
+    "amount_log": 0.0,
+    "days_to_respond": 0.0,
+    "dispute_reason_idx": 0.0
+  },
+  "evaluation_metrics": {
+    "test_cases": 660,
+    "precision": 89.6,
+    "recall": 89.4,
+    "f1_score": 89.5,
+    "roc_auc": 100.0,
+    "confusion_matrix": {
+      "true_negative": 312,
+      "false_positive": 28,
+      "false_negative": 34,
+      "true_positive": 286
+    }
+  }
+}
