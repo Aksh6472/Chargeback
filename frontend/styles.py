@@ -145,52 +145,375 @@ header {background: transparent !important;}
     margin-bottom: 0;
 }
 
-/* Dual Portal Cards */
-.portal-card {
-    background: linear-gradient(180deg, rgba(22, 30, 49, 0.75) 0%, rgba(13, 18, 30, 0.95) 100%);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 28px 24px;
-    text-align: left;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
-    height: 100%;
+/* Dual Portal & Landing Page Styling */
+.landing-brand-header {
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
 }
 
-.portal-card:hover {
-    border-color: #3B82F6;
-    transform: translateY(-3px);
-    box-shadow: 0 16px 40px -10px rgba(59, 130, 246, 0.25);
+.landing-brand-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.portal-icon {
-    width: 44px;
-    height: 44px;
+.landing-logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
     border-radius: 10px;
-    background: rgba(59, 130, 246, 0.12);
-    border: 1px solid rgba(59, 130, 246, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    color: white;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+}
+
+.landing-brand-name {
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: -0.025em;
+    color: #F8FAFC;
+}
+
+.landing-tagline {
+    font-size: 0.78rem;
+    color: #64748B;
+    font-weight: 500;
+}
+
+.landing-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #93C5FD;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.12);
+}
+
+.landing-headline {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+    color: #F8FAFC;
     margin-bottom: 16px;
 }
 
-.portal-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #F8FAFC;
-    margin-bottom: 8px;
+.landing-headline .gradient-text {
+    background: linear-gradient(90deg, #60A5FA 0%, #818CF8 50%, #A78BFA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.portal-desc {
-    font-size: 0.86rem;
+.landing-subtitle {
+    font-size: 1.02rem;
     color: #94A3B8;
-    line-height: 1.5;
-    margin-bottom: 20px;
+    line-height: 1.6;
+    max-width: 520px;
+    margin-bottom: 28px;
+}
+
+.trust-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    max-width: 500px;
+    margin-bottom: 36px;
+}
+
+.trust-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 12px 14px;
+    transition: all 0.2s ease;
+}
+
+.trust-item:hover {
+    border-color: rgba(59, 130, 246, 0.25);
+    background: rgba(30, 41, 59, 0.5);
+}
+
+.trust-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
+.trust-icon.investigation {
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #60A5FA;
+}
+
+.trust-icon.verification {
+    background: rgba(14, 165, 233, 0.15);
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    color: #38BDF8;
+}
+
+.trust-icon.traceability {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: #818CF8;
+}
+
+.trust-icon.vault {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34D399;
+}
+
+.trust-item-title {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #F1F5F9;
+    margin-bottom: 2px;
+}
+
+.trust-item-desc {
+    font-size: 0.74rem;
+    color: #64748B;
+}
+
+.partners-section {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 18px;
+    max-width: 500px;
+}
+
+.partners-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748B;
+    margin-bottom: 10px;
+}
+
+.partners-row {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.partner-logo {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #475569;
+    letter-spacing: -0.02em;
+    transition: color 0.2s ease;
+}
+
+.partner-logo:hover {
+    color: #94A3B8;
+}
+
+/* Glassmorphism Auth Card */
+.st-key-auth_card_container,
+.auth-card-outer {
+    background: rgba(15, 23, 42, 0.88) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 24px !important;
+    padding: 36px 30px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 35px rgba(37, 99, 235, 0.06) !important;
+    backdrop-filter: blur(24px) !important;
+    max-width: 500px !important;
+    margin: 0 auto !important;
+}
+
+.auth-card-heading {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #F8FAFC;
+    letter-spacing: -0.025em;
+    margin: 0 0 6px 0;
+}
+
+.auth-card-subheading {
+    font-size: 0.88rem;
+    color: #94A3B8;
+    margin: 0 0 24px 0;
+    line-height: 1.45;
+}
+
+/* Portal Card Box */
+.portal-card-box {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    margin-bottom: 14px;
+    position: relative;
+}
+
+.portal-card-box:hover {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(96, 165, 250, 0.45);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -5px rgba(37, 99, 235, 0.25);
+}
+
+.portal-card-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+}
+
+.portal-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.portal-card-icon.merchant {
+    background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%);
+    color: #FFFFFF;
+    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
+}
+
+.portal-card-icon.customer {
+    background: linear-gradient(135deg, #059669 0%, #10B981 50%, #06B6D4 100%);
+    color: #FFFFFF;
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+}
+
+.portal-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+}
+
+.portal-card-desc {
+    font-size: 0.8rem;
+    color: #94A3B8;
+    line-height: 1.45;
+}
+
+.portal-card-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94A3B8;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.portal-card-box:hover .portal-card-arrow {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: #60A5FA;
+    color: #FFFFFF;
+    transform: translateX(3px);
+}
+
+/* Card Footer */
+.auth-card-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 18px;
+    margin-top: 22px;
+    text-align: center;
+}
+
+.auth-card-footer-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: #64748B;
+    font-weight: 500;
+    margin-bottom: 3px;
+}
+
+.auth-card-footer-sub {
+    font-size: 0.72rem;
+    color: #475569;
+}
+
+/* Overlay buttons for Streamlit click binding */
+.st-key-btn_portal_merchant {
+    margin-top: -108px !important;
+    height: 94px !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+.st-key-btn_portal_merchant button {
+    height: 94px !important;
+    width: 100% !important;
+    opacity: 0 !important;
+    cursor: pointer !important;
+}
+
+.st-key-btn_portal_customer {
+    margin-top: -108px !important;
+    height: 94px !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+.st-key-btn_portal_customer button {
+    height: 94px !important;
+    width: 100% !important;
+    opacity: 0 !important;
+    cursor: pointer !important;
+}
+
+/* OTP Code input field */
+input[aria-label="6-Digit Verification Code"] {
+    text-align: center !important;
+    font-size: 1.5rem !important;
+    letter-spacing: 0.35em !important;
+    font-weight: 700 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    color: #60A5FA !important;
+    background: rgba(15, 23, 42, 0.8) !important;
+    border: 1px solid rgba(59, 130, 246, 0.4) !important;
+    border-radius: 12px !important;
+    padding: 12px 14px !important;
+}
+
+input[aria-label="6-Digit Verification Code"]:focus {
+    border-color: #3B82F6 !important;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3) !important;
 }
 
 /* Horizontal Case Status Lifecycle Tracker */

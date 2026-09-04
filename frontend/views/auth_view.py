@@ -1,10 +1,11 @@
 """
-Chargeback Evidence AI - Premium Split-Screen Authentication & Portal Selection
-Stripe/Ramp/Brex inspired login flow with zero-leakage security guards:
-1. Portal Selection (Merchant vs Customer)
-2. Phone Number Entry with Country Code
-3. 6-Digit OTP Verification
-4. Automatic Role-based Routing into isolated workspaces
+Chargeback Evidence AI - Premium Fintech Authentication & Portal Selection
+Stripe/Ramp/Brex/Linear inspired landing & authentication experience:
+1. Split-Screen Hero + Value Matrix (Left) & Glassmorphism Card (Right)
+2. Step 1: Portal Selection (Large interactive cards for Merchant and Customer)
+3. Step 2: Phone Login (Country code + Phone Number, no OTP visible yet)
+4. Step 3: 6-Digit OTP Verification (Centered monospace digits, resend code)
+5. Step 4: Automatic session authorization & role-based routing
 """
 
 import streamlit as st
@@ -12,6 +13,7 @@ from frontend.components import render_html
 
 
 def render_auth_view(service):
+    # Initialize authentication step & role in session state
     if "auth_step" not in st.session_state:
         st.session_state["auth_step"] = "portal_select"  # portal_select | phone_entry | otp_verify
     if "auth_role" not in st.session_state:
@@ -20,195 +22,268 @@ def render_auth_view(service):
     step = st.session_state["auth_step"]
     role = st.session_state["auth_role"]
 
-    # -------------------------------------------------------------
-    # 2-COLUMN SPLIT SCREEN: LEFT BRAND / RIGHT AUTH CARD
-    # -------------------------------------------------------------
-    col_left, col_right = st.columns([1.1, 1.0], gap="large")
+    # -----------------------------------------------------------------
+    # TWO-COLUMN SPLIT SCREEN: LEFT BRAND HERO / RIGHT AUTH CARD
+    # -----------------------------------------------------------------
+    col_left, col_right = st.columns([1.15, 1.0], gap="large")
 
+    # =================================================================
+    # LEFT COLUMN: BRANDING, HEADLINE, VALUE GRID, PARTNERS
+    # =================================================================
     with col_left:
         render_html("""
-<div style="padding: 40px 20px 40px 10px;">
-    <div style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 24px;">
-        <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #2563EB, #7C3AED); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; color: white; box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);">
-            ⚡
+<div style="padding: 10px 10px 20px 0;">
+    <!-- Top Brand Header -->
+    <div class="landing-brand-header">
+        <div class="landing-brand-logo">
+            <div class="landing-logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+            </div>
+            <span class="landing-brand-name">Chargeback Evidence AI</span>
         </div>
-        <span style="font-weight: 800; font-size: 1.3rem; letter-spacing: -0.02em; color: #F8FAFC;">Chargeback Evidence AI</span>
+        <span class="landing-tagline">Disputes. Resolved.</span>
     </div>
 
-    <div style="margin-bottom: 18px;">
-        <span class="sub-tag" style="background: rgba(59, 130, 246, 0.15); color: #93C5FD; border-color: rgba(59, 130, 246, 0.3); font-size: 0.74rem;">
-            ✦ AI-POWERED DISPUTE INTELLIGENCE
-        </span>
+    <!-- Small Badge -->
+    <div class="landing-badge">
+        <span>✦</span>
+        <span>AI-POWERED DISPUTE INTELLIGENCE</span>
     </div>
 
-    <h1 style="font-size: 2.7rem; font-weight: 800; letter-spacing: -0.035em; color: #F8FAFC; line-height: 1.15; margin-bottom: 18px;">
-        Turn chargeback evidence into <span style="background: linear-gradient(90deg, #60A5FA, #A78BFA); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">winning cases.</span>
+    <!-- Main Headline -->
+    <h1 class="landing-headline">
+        Turn chargeback<br>
+        evidence into<br>
+        <span class="gradient-text">winning cases.</span>
     </h1>
 
-    <p style="font-size: 1.05rem; color: #94A3B8; line-height: 1.6; margin-bottom: 32px; max-width: 520px;">
-        Investigate disputes, verify cross-document evidence, and generate submission-ready legal packets with 7 autonomous cooperating AI agents.
+    <!-- Supporting Text -->
+    <p class="landing-subtitle">
+        Investigate disputes, verify documents, uncover contradictions, and generate submission-ready evidence packets with AI.
     </p>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 480px;">
-        <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px 14px;">
-            <div style="font-size: 1.1rem; margin-bottom: 4px;">⚡</div>
-            <div style="font-size: 0.85rem; font-weight: 700; color: #F1F5F9;">AI Investigation</div>
-            <div style="font-size: 0.75rem; color: #64748B;">10-step multi-agent triage</div>
+    <!-- 4 Subtle Trust/Value Indicators (2x2 Grid) -->
+    <div class="trust-grid">
+        <div class="trust-item">
+            <div class="trust-icon investigation">✦</div>
+            <div>
+                <div class="trust-item-title">AI Investigation</div>
+                <div class="trust-item-desc">Analyze and extract key evidence</div>
+            </div>
         </div>
-        <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px 14px;">
-            <div style="font-size: 1.1rem; margin-bottom: 4px;">⚖️</div>
-            <div style="font-size: 0.85rem; font-weight: 700; color: #F1F5F9;">Evidence Verification</div>
-            <div style="font-size: 0.75rem; color: #64748B;">6-way triangulation</div>
+        <div class="trust-item">
+            <div class="trust-icon verification">🛡️</div>
+            <div>
+                <div class="trust-item-title">Evidence Verification</div>
+                <div class="trust-item-desc">Cross-check and detect inconsistencies</div>
+            </div>
         </div>
-        <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px 14px;">
-            <div style="font-size: 1.1rem; margin-bottom: 4px;">🔍</div>
-            <div style="font-size: 0.85rem; font-weight: 700; color: #F1F5F9;">Source Traceability</div>
-            <div style="font-size: 0.75rem; color: #64748B;">Zero-hallucination audits</div>
+        <div class="trust-item">
+            <div class="trust-icon traceability">📄</div>
+            <div>
+                <div class="trust-item-title">Source Traceability</div>
+                <div class="trust-item-desc">Every claim backed by source</div>
+            </div>
         </div>
-        <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px 14px;">
-            <div style="font-size: 1.1rem; margin-bottom: 4px;">🛡️</div>
-            <div style="font-size: 0.85rem; font-weight: 700; color: #F1F5F9;">Secure Proof Vault</div>
-            <div style="font-size: 0.75rem; color: #64748B;">AES-256 encrypted dockets</div>
+        <div class="trust-item">
+            <div class="trust-icon vault">🔒</div>
+            <div>
+                <div class="trust-item-title">Secure Evidence Vault</div>
+                <div class="trust-item-desc">Your data, always protected</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Partners Section -->
+    <div class="partners-section">
+        <div class="partners-label">Trusted by modern businesses</div>
+        <div class="partners-row">
+            <span class="partner-logo">stripe</span>
+            <span class="partner-logo">shopify</span>
+            <span class="partner-logo">Razorpay</span>
+            <span class="partner-logo">Paytm</span>
         </div>
     </div>
 </div>
 """)
 
+    # =================================================================
+    # RIGHT COLUMN: GLASSMORPHISM AUTHENTICATION CARD
+    # =================================================================
     with col_right:
         st.write("")
-        st.write("")
+        with st.container(key="auth_card_container"):
+            # -------------------------------------------------------------
+            # STEP 1: PORTAL SELECTION (MERCHANT VS CUSTOMER)
+            # -------------------------------------------------------------
+            if step == "portal_select":
+                render_html("""
+<div>
+    <div class="auth-card-heading">Welcome back</div>
+    <div class="auth-card-subheading">Choose how you'd like to access your workspace.</div>
 
-        # ---------------------------------------------------------
-        # STEP 1: PORTAL SELECTION SCREEN
-        # ---------------------------------------------------------
-        if step == "portal_select":
-            render_html("""
-<div style="background: rgba(18, 24, 38, 0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 32px 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(20px);">
-    <div style="margin-bottom: 24px;">
-        <h2 style="font-size: 1.5rem; font-weight: 800; color: #F8FAFC; margin: 0 0 6px 0;">Welcome</h2>
-        <p style="font-size: 0.88rem; color: #94A3B8; margin: 0;">Choose how you want to access your workspace.</p>
-    </div>
-</div>
-""")
-
-            # Merchant Card
-            render_html("""
-<div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 22px; margin-bottom: 16px; transition: border-color 0.2s ease;">
-    <div style="display: flex; gap: 16px; align-items: flex-start;">
-        <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(37, 99, 235, 0.3); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
-            🏢
-        </div>
-        <div style="flex: 1;">
-            <div style="font-weight: 700; font-size: 1.05rem; color: #F8FAFC; margin-bottom: 4px;">Merchant Portal</div>
-            <div style="font-size: 0.82rem; color: #94A3B8; line-height: 1.45; margin-bottom: 14px;">
-                Manage disputes, investigate evidence with 7 AI agents, and generate AI-powered chargeback packets.
+    <!-- Merchant Portal Card Visual -->
+    <div class="portal-card-box merchant-card">
+        <div class="portal-card-left">
+            <div class="portal-card-icon merchant">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                    <path d="M9 22v-4h6v4"></path>
+                    <path d="M8 6h.01"></path>
+                    <path d="M16 6h.01"></path>
+                    <path d="M8 10h.01"></path>
+                    <path d="M16 10h.01"></path>
+                    <path d="M8 14h.01"></path>
+                    <path d="M16 14h.01"></path>
+                </svg>
+            </div>
+            <div>
+                <div class="portal-card-title">Merchant Portal</div>
+                <div class="portal-card-desc">
+                    Manage chargebacks, investigate evidence, and create AI-powered submission-ready evidence packets.
+                </div>
             </div>
         </div>
+        <div class="portal-card-arrow">→</div>
     </div>
 </div>
 """)
-            if st.button("Continue as Merchant ➔", key="btn_choose_merchant", type="primary", use_container_width=True):
-                st.session_state["auth_role"] = "merchant"
-                st.session_state["auth_step"] = "phone_entry"
-                st.rerun()
-
-            st.write("")
-
-            # Customer Card
-            render_html("""
-<div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 22px; margin-bottom: 16px; transition: border-color 0.2s ease;">
-    <div style="display: flex; gap: 16px; align-items: flex-start;">
-        <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
-            👤
-        </div>
-        <div style="flex: 1;">
-            <div style="font-weight: 700; font-size: 1.05rem; color: #F8FAFC; margin-bottom: 4px;">Customer Portal</div>
-            <div style="font-size: 0.82rem; color: #94A3B8; line-height: 1.45; margin-bottom: 14px;">
-                Upload requested documents, manage your 5-category proof vault, and track your active case status.
-            </div>
-        </div>
-    </div>
-</div>
-""")
-            if st.button("Continue as Customer ➔", key="btn_choose_customer", type="secondary", use_container_width=True):
-                st.session_state["auth_role"] = "customer"
-                st.session_state["auth_step"] = "phone_entry"
-                st.rerun()
-
-        # ---------------------------------------------------------
-        # STEP 2: PHONE NUMBER ENTRY SCREEN
-        # ---------------------------------------------------------
-        elif step == "phone_entry":
-            title_text = "Merchant Sign In" if role == "merchant" else "Customer Sign In"
-            desc_text = "Enter your mobile number to securely access your workspace."
-
-            if st.button("← Back to portal selection", key="btn_back_to_portals"):
-                st.session_state["auth_step"] = "portal_select"
-                st.rerun()
-
-            render_html(f"""
-<div style="background: rgba(18, 24, 38, 0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 28px 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(20px); margin-top: 10px;">
-    <h2 style="font-size: 1.45rem; font-weight: 800; color: #F8FAFC; margin: 0 0 6px 0;">{title_text}</h2>
-    <p style="font-size: 0.86rem; color: #94A3B8; margin: 0 0 20px 0;">{desc_text}</p>
-</div>
-""")
-
-            default_ph = "+91 9876543210" if role == "merchant" else "+91 9811223344"
-            col_cc, col_num = st.columns([1, 2.5])
-            with col_cc:
-                country_code = st.selectbox("Country", ["🇮🇳 +91", "🇺🇸 +1", "🇬🇧 +44", "🇦🇪 +971"], index=0)
-            with col_num:
-                ph_digits = st.text_input("Mobile Number", value="9876543210" if role == "merchant" else "9811223344", placeholder="9876543210")
-
-            full_phone = f"{country_code.split(' ')[1]} {ph_digits}".strip()
-
-            if st.button("Send OTP ➔", type="primary", use_container_width=True, key="btn_send_otp"):
-                with st.spinner("Dispatching secure SMS verification code..."):
-                    res = service.send_otp(full_phone, user_type=role)
-                    st.session_state["phone_number"] = full_phone
-                    st.session_state["session_id"] = res.get("session_id", "sess_demo")
-                    st.session_state["demo_otp"] = res.get("test_otp", "123456")
-                    st.session_state["auth_step"] = "otp_verify"
+                # Clickable overlay button for Merchant Portal
+                if st.button("Select Merchant Portal", key="btn_portal_merchant", use_container_width=True):
+                    st.session_state["auth_role"] = "merchant"
+                    st.session_state["auth_step"] = "phone_entry"
                     st.rerun()
 
-            render_html(f"""
-<div style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 14px; margin-top: 14px; font-size: 0.78rem; color: #64748B;">
-    💡 <b>Demo Account:</b> {default_ph} &bull; OTP is generated instantly.
+                # Customer Portal Card Visual
+                render_html("""
+<div>
+    <div class="portal-card-box customer-card">
+        <div class="portal-card-left">
+            <div class="portal-card-icon customer">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </div>
+            <div>
+                <div class="portal-card-title">Customer Portal</div>
+                <div class="portal-card-desc">
+                    Upload requested documents, manage your proof vault, and track your dispute case.
+                </div>
+            </div>
+        </div>
+        <div class="portal-card-arrow">→</div>
+    </div>
+
+    <!-- Security Footer -->
+    <div class="auth-card-footer">
+        <div class="auth-card-footer-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span>Secure login powered by Supabase</span>
+        </div>
+        <div class="auth-card-footer-sub">Your data is encrypted and always protected.</div>
+    </div>
+</div>
+""")
+                # Clickable overlay button for Customer Portal
+                if st.button("Select Customer Portal", key="btn_portal_customer", use_container_width=True):
+                    st.session_state["auth_role"] = "customer"
+                    st.session_state["auth_step"] = "phone_entry"
+                    st.rerun()
+
+            # -------------------------------------------------------------
+            # STEP 2: PHONE LOGIN (REPLACES CONTENT IN SAME CARD)
+            # -------------------------------------------------------------
+            elif step == "phone_entry":
+                title_role = "Merchant" if role == "merchant" else "Customer"
+                default_phone = "9876543210" if role == "merchant" else "9123456780"
+
+                if st.button("← Back to portal selection", key="btn_back_to_portals"):
+                    st.session_state["auth_step"] = "portal_select"
+                    st.rerun()
+
+                render_html(f"""
+<div style="margin-top: 10px;">
+    <div style="margin-bottom: 12px;">
+        <span class="sub-tag" style="background: rgba(59, 130, 246, 0.15); color: #93C5FD; border-color: rgba(59, 130, 246, 0.3);">
+            {title_role.upper()} PORTAL
+        </span>
+    </div>
+    <div class="auth-card-heading">Sign in as {title_role}</div>
+    <div class="auth-card-subheading">
+        Enter your mobile number and we'll send you a secure verification code.
+    </div>
 </div>
 """)
 
-        # ---------------------------------------------------------
-        # STEP 3: OTP VERIFICATION SCREEN
-        # ---------------------------------------------------------
-        elif step == "otp_verify":
-            ph = st.session_state.get("phone_number", "+91 9876543210")
-            demo_code = st.session_state.get("demo_otp", "123456")
+                col_cc, col_num = st.columns([1.1, 2.5])
+                with col_cc:
+                    country_code = st.selectbox("Country", ["🇮🇳 +91", "🇺🇸 +1", "🇬🇧 +44", "🇦🇪 +971", "🇸🇬 +65"], index=0)
+                with col_num:
+                    ph_digits = st.text_input("Mobile Number", value=default_phone, placeholder="9876543210")
 
-            if st.button("← Change number", key="btn_change_num"):
-                st.session_state["auth_step"] = "phone_entry"
-                st.rerun()
+                full_phone = f"{country_code.split(' ')[1]} {ph_digits}".strip()
 
-            render_html(f"""
-<div style="background: rgba(18, 24, 38, 0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 28px 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(20px); margin-top: 10px;">
-    <h2 style="font-size: 1.45rem; font-weight: 800; color: #F8FAFC; margin: 0 0 6px 0;">Verify your number</h2>
-    <p style="font-size: 0.86rem; color: #94A3B8; margin: 0 0 16px 0;">
-        Enter the 6-digit code sent to <b style="color: #F1F5F9;">{ph}</b>
-    </p>
+                st.write("")
+                if st.button("Continue →", type="primary", use_container_width=True, key="btn_send_otp"):
+                    with st.spinner("Dispatching secure verification code..."):
+                        res = service.send_otp(full_phone, user_type=role)
+                        st.session_state["phone_number"] = full_phone
+                        st.session_state["session_id"] = res.get("session_id", "sess_demo")
+                        st.session_state["demo_otp"] = res.get("test_otp", "123456")
+                        st.session_state["auth_step"] = "otp_verify"
+                        st.rerun()
+
+                render_html("""
+<div style="text-align: center; margin-top: 16px; font-size: 0.76rem; color: #64748B; line-height: 1.4;">
+    By continuing, you agree to securely verify your account using a one-time code.
 </div>
 """)
 
-            otp_input = st.text_input(
-                "6-Digit OTP Code",
-                value=demo_code,
-                max_chars=6,
-                placeholder="123456",
-                help="Enter the 6-digit verification code"
-            )
+            # -------------------------------------------------------------
+            # STEP 3: OTP VERIFICATION (REPLACES CONTENT IN SAME CARD)
+            # -------------------------------------------------------------
+            elif step == "otp_verify":
+                ph = st.session_state.get("phone_number", "+91 98765 43210")
+                demo_code = st.session_state.get("demo_otp", "123456")
 
-            col_v1, col_v2 = st.columns([2, 1])
-            with col_v1:
-                if st.button("Verify & Continue ➔", type="primary", use_container_width=True, key="btn_verify_otp"):
-                    with st.spinner("Verifying cryptographic OTP signature..."):
+                if st.button("← Change number", key="btn_change_num"):
+                    st.session_state["auth_step"] = "phone_entry"
+                    st.rerun()
+
+                render_html(f"""
+<div style="margin-top: 10px;">
+    <div style="margin-bottom: 12px;">
+        <span class="sub-tag" style="background: rgba(59, 130, 246, 0.15); color: #93C5FD; border-color: rgba(59, 130, 246, 0.3);">
+            SECURITY CHECK
+        </span>
+    </div>
+    <div class="auth-card-heading">Verify your number</div>
+    <div class="auth-card-subheading">
+        We've sent a 6-digit verification code to: <br>
+        <b style="color: #F8FAFC; font-size: 1.05rem;">{ph}</b>
+    </div>
+</div>
+""")
+
+                otp_input = st.text_input(
+                    "6-Digit Verification Code",
+                    value=demo_code,
+                    max_chars=6,
+                    placeholder="123456",
+                    help="Enter the 6-digit verification code sent to your phone"
+                )
+
+                st.write("")
+                if st.button("Verify & Continue →", type="primary", use_container_width=True, key="btn_verify_otp"):
+                    with st.spinner("Authorizing secure workspace session..."):
                         auth_res = service.verify_otp(
                             st.session_state.get("phone_number", ph),
                             otp_input,
@@ -229,21 +304,24 @@ def render_auth_view(service):
                         else:
                             st.session_state["current_merchant"] = auth_res.get("merchant", {
                                 "id": "m_apex_01",
-                                "name": "Apex Retailers Pvt Ltd",
+                                "name": "Acme Global Merchants",
                                 "phone": ph
                             })
 
                         st.rerun()
 
-            with col_v2:
-                if st.button("Resend code", key="btn_resend_otp", use_container_width=True):
-                    res = service.send_otp(ph, user_type=role)
-                    st.session_state["demo_otp"] = res.get("test_otp", "123456")
-                    st.info("New OTP code dispatched!")
-                    st.rerun()
+                # Resend code
+                st.write("")
+                c_resend, _ = st.columns([2, 1])
+                with c_resend:
+                    if st.button("Didn't receive a code? Resend code", key="btn_resend_otp"):
+                        res = service.send_otp(ph, user_type=role)
+                        st.session_state["demo_otp"] = res.get("test_otp", "123456")
+                        st.info("New verification code dispatched!")
+                        st.rerun()
 
-            render_html(f"""
-<div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 10px 14px; margin-top: 16px; font-size: 0.8rem; color: #34D399;">
-    ✓ Active evaluation OTP: <b>{demo_code}</b>
+                render_html(f"""
+<div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 10px; padding: 10px 14px; margin-top: 16px; font-size: 0.8rem; color: #34D399; text-align: center;">
+    ✓ Active evaluation OTP code: <b>{demo_code}</b>
 </div>
 """)
