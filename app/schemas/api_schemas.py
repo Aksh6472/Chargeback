@@ -1,6 +1,6 @@
 """
 Chargeback Evidence AI - Pydantic API Schemas & Data Contracts
-Complete data contracts for FastAPI endpoints, agents, and Streamlit UI.
+Complete data contracts for FastAPI endpoints, agents, dual portal, and Streamlit UI.
 """
 
 from typing import List, Dict, Any, Optional
@@ -9,35 +9,36 @@ from pydantic import BaseModel, Field
 
 
 # -------------------------------------------------------------
-# Auth & KYC Vault Schemas
+# Auth & KYC Vault Schemas (Merchant & Customer Dual Portal)
 # -------------------------------------------------------------
 class PhoneOtpSendRequest(BaseModel):
-    phone: str = Field(..., example="+91 9876543210")
+    phone: str = Field(...)
 
 class PhoneOtpSendResponse(BaseModel):
     success: bool
     message: str
     session_id: str
-    test_otp: Optional[str] = "742918"  # Convenient demo OTP for test evaluation
+    test_otp: Optional[str] = "742918"  # Convenient demo OTP for instant evaluation
 
 class PhoneOtpVerifyRequest(BaseModel):
     phone: str
     otp: str
     session_id: str
+    user_type: str = "merchant"  # "merchant" or "customer"
 
 class MerchantProfileCreateRequest(BaseModel):
-    name: str = Field(..., example="Apex Retailers Pvt Ltd")
-    email: str = Field(..., example="finance@apexretail.in")
-    phone: str = Field(..., example="+91 9876543210")
-    gst_number: str = Field(..., example="29AAAAA0000A1Z5")
-    pan_number: str = Field(..., example="ABCDE1234F")
+    name: str = Field(...)
+    email: str = Field(...)
+    phone: str = Field(...)
+    gst_number: str = "29AAAAA0000A1Z5"
+    pan_number: str = "ABCDE1234F"
     business_type: str = "E-Commerce / D2C"
-    address: str = Field(..., example="42, Indiranagar 100ft Rd, Bengaluru, KA 560038")
+    address: str = "42, Indiranagar 100ft Rd, Bengaluru, KA 560038"
 
 class MerchantVaultDocumentResponse(BaseModel):
     id: str
     merchant_id: str
-    doc_type: str  # GST, PAN, REGISTRATION, ADDRESS_PROOF
+    doc_type: str  # GST Certificate, Business PAN, Registration Certificate, Business Address Proof, Authorization Letter
     file_name: str
     verification_status: str  # VERIFIED, PENDING, REJECTED
     uploaded_at: str
@@ -51,19 +52,41 @@ class MerchantProfileResponse(BaseModel):
     pan_number: str
     business_type: str
     address: str
+    is_verified: bool = True
     vault_documents: List[MerchantVaultDocumentResponse] = []
+
+class CustomerProfileResponse(BaseModel):
+    id: str
+    phone_number: str
+    full_name: str
+    email: Optional[str] = None
+    created_at: str
+
+class CustomerVaultDocumentResponse(BaseModel):
+    id: str
+    customer_id: str
+    doc_type: str  # Identity Proof, Billing Address, Delivery Proof, Purchase Receipt, Warranty Invoice
+    file_name: str
+    verification_status: str = "VERIFIED"
+    uploaded_at: str
+
+class ShareVaultDocRequest(BaseModel):
+    case_id: str
+    vault_doc_id: str
 
 
 # -------------------------------------------------------------
-# Case Management Schemas
+# Case Management & Lifecycle Schemas
 # -------------------------------------------------------------
 class CaseCreateRequest(BaseModel):
     merchant_id: Optional[str] = None
-    order_id: str = Field(..., example="ORD-2024-9842")
-    amount: float = Field(..., example=4299.00)
+    customer_id: Optional[str] = None
+    order_id: str = Field(...)
+    amount: float = Field(...)
     currency: str = "INR"
-    dispute_reason: str = Field(..., example="Product Not Received")
-    customer_name: str = Field(..., example="Aarav Sharma")
+    dispute_reason: str = Field(...)
+    dispute_type: Optional[str] = "Product Not Received"
+    customer_name: str = Field(...)
     customer_email: Optional[str] = "aarav.sharma@example.com"
     customer_phone: Optional[str] = "+91 9811223344"
     shipping_address: Optional[str] = "Flat 402, Green Glen Layout, Bellandur, Bengaluru, Karnataka 560103"
@@ -72,6 +95,8 @@ class CaseCreateRequest(BaseModel):
 class DocumentInfo(BaseModel):
     id: str
     case_id: str
+    owner_type: str = "merchant"
+    document_category: str = "evidence"
     doc_type: str
     file_name: str
     file_path: str
@@ -84,22 +109,45 @@ class DocumentInfo(BaseModel):
 class CaseSummaryResponse(BaseModel):
     id: str
     merchant_id: str
+    customer_id: Optional[str] = None
     order_id: str
-    status: str
+    status: str  # new, investigating, evidence_ready, submitted, won, lost
+    case_status: str = "new"
     amount: float
     currency: str
     dispute_reason: str
+    dispute_type: str = "Product Not Received"
     customer_name: str
-    customer_email: Optional[str]
+    customer_email: Optional[str] = None
     opened_at: str
     deadline_at: str
     evidence_score: Optional[float] = None
     win_probability: Optional[float] = None
     document_count: int = 0
 
+class CaseStatusUpdateRequest(BaseModel):
+    case_id: str
+    status: str  # new, investigating, evidence_ready, submitted, won, lost
+
 
 # -------------------------------------------------------------
-# Agent 1: OCR Agent Schemas (Page 15)
+# Agent 1: Document Agent Schemas
+# -------------------------------------------------------------
+class DocumentClassificationResult(BaseModel):
+    document_id: str
+    file_name: str
+    detected_type: str  # Invoice, Receipt, Chat, Courier, Email, Identity Proof, Authorization Letter
+    confidence: float
+    organization_folder: str
+
+class DocumentAgentOutput(BaseModel):
+    case_id: str
+    classified_documents: List[DocumentClassificationResult]
+    organization_summary: str
+
+
+# -------------------------------------------------------------
+# Agent 2: OCR Agent Schemas
 # -------------------------------------------------------------
 class OCRPreprocessMeta(BaseModel):
     deskewed: bool = True
@@ -112,38 +160,42 @@ class OCRAgentOutput(BaseModel):
     page_count: int
     raw_text: str
     confidence: float
+    has_tables: bool = False
     preprocessing: OCRPreprocessMeta
     extraction_method: str  # "pymupdf_text_layer" | "tesseract_fallback"
     needs_manual_review: bool = False
 
 
 # -------------------------------------------------------------
-# Agent 2: NLP Agent Schemas (Page 16)
+# Agent 3: NLP Agent Schemas
 # -------------------------------------------------------------
 class ExtractedEntityRecord(BaseModel):
-    entity_type: str  # customer_name, order_id, address, date, amount, tracking_id
+    entity_type: str  # customer_name, merchant_name, order_id, address, date, amount, tracking_id
     raw_value: str
     normalized_value: Any
     confidence: float
+    source_page: int = 1
     source_doc_type: str
 
 class NLPAgentOutput(BaseModel):
     case_id: str
     document_id: str
     entities: List[ExtractedEntityRecord]
+    entity_confidences: Dict[str, float] = {}
     normalized_dates: List[str] = []
     normalized_amounts: List[float] = []
     normalized_order_id: Optional[str] = None
     normalized_customer_name: Optional[str] = None
+    normalized_merchant_name: Optional[str] = None
     normalized_tracking_id: Optional[str] = None
     normalized_address: Optional[Dict[str, str]] = None
 
 
 # -------------------------------------------------------------
-# Agent 3: Verification Engine Schemas (Page 17)
+# Agent 4: Verification Agent Schemas
 # -------------------------------------------------------------
 class FieldConsistencyDetail(BaseModel):
-    field_name: str  # Name, Address, Amount, Dates, Tracking, Invoice
+    field_name: str  # Name, Address, Amount, Dates, Tracking, Order ID, Invoice
     match_percentage: float  # 0 to 100
     status: str  # MATCH, MINOR_VARIANCE, MISMATCH, MISSING
     explanation: str
@@ -159,25 +211,36 @@ class VerificationReportOutput(BaseModel):
 
 
 # -------------------------------------------------------------
-# Agent 4: ML Scoring Agent Schemas (Page 18)
+# Agent 5: ML Risk Agent & Next Evidence Recommendation Schemas
 # -------------------------------------------------------------
+class ScoreComponent(BaseModel):
+    name: str
+    points: int
+    is_positive: bool
+    explanation: str
+
+class RecommendedNextEvidence(BaseModel):
+    recommended_document: str  # e.g. "Courier Proof of Delivery (POD)"
+    win_probability_uplift_pct: int  # e.g. 14 (+14%)
+    reason: str
+    suggested_alternative: str  # e.g. "Customer Delivery Confirmation Email"
+
 class MLScoreOutput(BaseModel):
     case_id: str
     evidence_strength_score: int  # 0 - 100
+    score_label: str = "Moderate Strength"  # Strong, Moderate Strength, Weak
     win_probability: float  # 0.0 to 1.0
+    dispute_classification: str  # Product Not Received, Fraudulent Transaction, Duplicate Transaction, Unauthorized Payment, Service Not Delivered, Product Defective
     model_version: str = "xgb_v1.0.0"
-    metrics_summary: Dict[str, Any] = {
-        "precision": 89.6,
-        "recall": 89.4,
-        "f1_score": 89.5,
-        "test_cases": 660
-    }
-    feature_contributions: Dict[str, float]
+    score_breakdown: List[ScoreComponent] = []
+    recommended_next_evidence: RecommendedNextEvidence
     risk_level: str  # "Low Risk", "Moderate", "High Risk"
+    how_to_improve: List[str] = []
+    feature_contributions: Dict[str, float] = {}
 
 
 # -------------------------------------------------------------
-# Agent 5: RAG & Similar Case Retrieval Schemas (Page 19)
+# Agent 6: RAG Intelligence Agent Schemas
 # -------------------------------------------------------------
 class SimilarCaseItem(BaseModel):
     historical_id: str
@@ -188,6 +251,7 @@ class SimilarCaseItem(BaseModel):
     outcome: str  # "WIN" | "LOSE"
     evidence_quality: str
     summary: str
+    supporting_evidence: List[str] = []
     closed_at: str
 
 class RAGAgentOutput(BaseModel):
@@ -197,32 +261,62 @@ class RAGAgentOutput(BaseModel):
 
 
 # -------------------------------------------------------------
-# Agent 6: Fraud Intelligence (NetworkX) Schemas (Page 7)
+# Agent 7: Narrative Agent & Case Narrative Schemas
 # -------------------------------------------------------------
-class GraphNode(BaseModel):
-    id: str
-    label: str
-    node_type: str  # customer, merchant, address, device, order, ip
-    is_suspicious: bool = False
-
-class GraphEdge(BaseModel):
-    source: str
-    target: str
-    relation: str
-    weight: float = 1.0
-
-class FraudIntelligenceOutput(BaseModel):
+class AICaseNarrativeOutput(BaseModel):
     case_id: str
-    fraud_risk_score: int  # 0 - 100
-    risk_level: str  # "None", "Low", "Medium", "High"
-    suspicious_patterns: List[str]
-    nodes: List[GraphNode]
-    edges: List[GraphEdge]
+    order_id: str
+    incident_overview: str
+    timeline_summary: str
+    verified_facts: List[Dict[str, str]]
+    contradictions_audit: str
+    ai_reasoning: str
+    final_recommendation: str
 
 
 # -------------------------------------------------------------
-# Agent 7: Gemini Report Agent & Final Evidence Packet (Page 20)
+# Evidence Source Traceability Schemas
 # -------------------------------------------------------------
+class EvidenceTraceabilityResponse(BaseModel):
+    source_file: str
+    page_number: int = 1
+    extracted_text: str
+    ocr_confidence: float
+    entity_confidence: float
+    verified: bool = True
+
+
+# -------------------------------------------------------------
+# AI Evidence Chat Schemas
+# -------------------------------------------------------------
+class EvidenceCitation(BaseModel):
+    source_file: str
+    page_number: int
+    snippet: str
+    confidence: float
+
+class AIChatRequest(BaseModel):
+    case_id: str
+    question: str
+
+class AIChatResponse(BaseModel):
+    case_id: str
+    question: str
+    answer: str
+    citations: List[EvidenceCitation] = []
+
+
+# -------------------------------------------------------------
+# Interactive PDF Preview & Report Schemas
+# -------------------------------------------------------------
+class PDFReportEditRequest(BaseModel):
+    case_id: str
+    report_title: Optional[str] = "Chargeback Defense Packet"
+    executive_summary: Optional[str] = None
+    merchant_notes: Optional[str] = None
+    digital_signature_name: Optional[str] = "Apex Retail Operations"
+    include_narrative: bool = True
+
 class TimelineEvent(BaseModel):
     stage: str  # Ordered, Paid, Shipped, Delivered, Customer Contact, Chargeback Filed
     timestamp: str
@@ -235,21 +329,27 @@ class FinalEvidencePacketOutput(BaseModel):
     order_id: str
     evidence_strength_score: int
     win_probability: float
+    dispute_classification: str = "Product Not Received"
     executive_summary: str
+    case_narrative: Optional[AICaseNarrativeOutput] = None
     timeline: List[TimelineEvent]
     evidence_list: List[Dict[str, Any]]
     contradictions: List[str]
     missing_evidence: List[str]
+    recommended_next_evidence: Optional[RecommendedNextEvidence] = None
     recommendation: str
+    pdf_file_path: Optional[str] = None
     pdf_download_url: Optional[str] = None
     created_at: str
 
 
 # -------------------------------------------------------------
-# Full Pipeline Execution Schemas
+# Pipeline Step & Full Run Schemas (10-Step Investigation Timeline)
 # -------------------------------------------------------------
 class PipelineStepStatus(BaseModel):
+    step_number: int
     agent_name: str
+    step_title: str
     status: str  # "queued", "running", "complete", "error"
     progress: int  # 0 - 100
     execution_time_sec: float
@@ -262,4 +362,6 @@ class PipelineRunResponse(BaseModel):
     steps: List[PipelineStepStatus]
     evidence_score: int
     win_probability: float
+    dispute_classification: str = "Product Not Received"
     final_report: Optional[FinalEvidencePacketOutput] = None
+

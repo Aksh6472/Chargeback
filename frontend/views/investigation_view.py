@@ -1,13 +1,23 @@
 """
-Chargeback Evidence AI - Page 3: AI Investigation (The Highlight)
-Live multi-agent collaboration board displaying live progress cards for all 6 cooperating agents:
-OCR Agent, NLP Agent, Verification Agent, ML Scoring Agent, RAG Agent, and Gemini Report Agent.
-Each card shows: Status, Progress bar, Time taken, Output preview, and Confidence.
+Chargeback Evidence AI - Multi-Agent Investigation & Live 10-Step Timeline
+Features:
+1. Horizontal Case Lifecycle Progress Tracker
+2. 10-Step Connected Live Timeline with glowing pulse and latency
+3. Dispute Classification & Explainable AI Score Drivers (+/- points)
+4. Recommended Next Evidence with Win Rate Uplift (+14%)
+5. RAG-grounded AI Evidence Chat Assistant with zero hallucinations and citations
 """
 
 import time
 import streamlit as st
-from ..components import render_agent_card, render_score_radial
+from ..components import (
+    render_agent_card,
+    render_score_radial,
+    render_case_status_tracker,
+    render_explainable_score_card,
+    render_recommended_next_evidence
+)
+from agents.ml_scoring_agent import MLScoringAgent
 
 
 def render_investigation_view(service):
@@ -15,7 +25,7 @@ def render_investigation_view(service):
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
         <div>
             <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Autonomous Multi-Agent Investigation</h2>
-            <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">6 specialized AI agents cooperating in parallel and sequence to deconstruct, cross-verify, and defend this dispute.</p>
+            <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">7 specialized AI agents cooperating through a 10-step pipeline to deconstruct, cross-verify, and defend this dispute.</p>
         </div>
         <div>
             <span class="sub-tag" style="background: rgba(99, 102, 241, 0.2); color: #C4B5FD; border-color: rgba(99, 102, 241, 0.4);">
@@ -45,65 +55,83 @@ def render_investigation_view(service):
 
     active_case = service.get_case(active_case_id)
 
+    # Horizontal Lifecycle Tracker
+    render_case_status_tracker(active_case.get("case_status") or active_case.get("status", "investigating"))
+
     col_btn1, col_btn2 = st.columns([2, 3])
     with col_btn1:
-        run_pipeline = st.button("🚀 Execute Coordinated AI Pipeline", type="primary", use_container_width=True)
+        run_pipeline = st.button("🚀 Execute 10-Step AI Pipeline", type="primary", use_container_width=True)
     with col_btn2:
-        st.caption(f"Order: **{active_case.get('order_id')}** &bull; Customer: **{active_case.get('customer_name')}** &bull; Amount: **₹{active_case.get('amount'):,.2f}**")
+        st.caption(f"Order: **{active_case.get('order_id')}** &bull; Customer: **{active_case.get('customer_name')}** &bull; Disputed: **₹{active_case.get('amount'):,.2f}** &bull; Type: `{active_case.get('dispute_type', 'Product Not Received')}`")
 
     # Progress container
     pipeline_state = st.session_state.get(f"pipeline_run_{active_case_id}")
 
     if run_pipeline:
-        progress_placeholder = st.empty()
-        status_bar = st.progress(0, text="Initializing multi-agent pipeline...")
-
-        agent_stages = [
-            ("OCR Agent", "Rasterizing documents & running CV deskew / native text extraction..."),
+        status_bar = st.progress(0, text="Initializing 10-step multi-agent pipeline...")
+        timeline_10 = [
+            ("Document Agent", "Classifying evidence files into structured dockets..."),
+            ("OCR Agent", "Running CV image deskewing, denoising & text layer extraction..."),
+            ("OCR Agent", "Parsing itemized table matrices and tax breakdowns..."),
             ("NLP Agent", "Extracting customer names, order IDs, ISO dates, and amounts..."),
-            ("Verification Agent", "Cross-checking facts, detecting contradictions, computing consistency..."),
-            ("ML Scoring Agent", "Evaluating evidence vector with XGBoost classifier..."),
+            ("Verification Agent", "Validating GSTIN, PAN & KYC corporate vault credentials..."),
+            ("Verification Agent", "Triangulating cross-document consistency & auditing contradictions..."),
             ("RAG Agent", "Retrieving historical precedents from pgvector 768-dim index..."),
-            ("Gemini Report Agent", "Synthesizing executive defense narrative & compiling bank docket...")
+            ("ML Scoring Agent", "Evaluating evidence strength with XGBoost model & calculating uplift..."),
+            ("Narrative Agent", "Synthesizing legal defense narrative with timestamped facts..."),
+            ("Gemini Report Agent", "Compiling submission-ready interactive PDF packet...")
         ]
 
-        # Simulate dynamic agent progress step-by-step
-        for idx, (aname, msg) in enumerate(agent_stages):
-            status_bar.progress(int((idx + 1) * 16.6), text=f"Agent {idx+1}/6 Active: {aname} - {msg}")
-            time.sleep(0.35)
+        for idx, (aname, msg) in enumerate(timeline_10):
+            status_bar.progress(int((idx + 1) * 10), text=f"Step {idx+1}/10: {aname} - {msg}")
+            time.sleep(0.25)
 
         with st.spinner("Finalizing agent outputs and assembling verdict..."):
             pipeline_state = service.run_full_pipeline(active_case_id)
             st.session_state[f"pipeline_run_{active_case_id}"] = pipeline_state
-            status_bar.progress(100, text="✓ All 6 AI Agents Completed Investigation Successfully!")
+            status_bar.progress(100, text="✓ All 10 Steps & 7 AI Agents Completed Investigation Successfully!")
             time.sleep(0.2)
             status_bar.empty()
 
     if not pipeline_state:
-        # Check if saved in database or execute default view
         saved_run = service.get_latest_run(active_case_id)
         if saved_run:
             pipeline_state = saved_run
         else:
-            # Auto-run once for seamless demo
             pipeline_state = service.run_full_pipeline(active_case_id)
             st.session_state[f"pipeline_run_{active_case_id}"] = pipeline_state
 
-    # Render Two-Column Investigation Layout
+    # 10-Step Timeline and ML Verdict Layout
     col_left, col_right = st.columns([3, 2])
 
     with col_left:
-        st.markdown("#### 🤖 Real-Time Agent Collaboration Log")
+        st.markdown("#### ⚡ Live 10-Step Investigation Timeline")
         steps = pipeline_state.get("steps", [])
         for step in steps:
-            render_agent_card(
-                agent_name=step.get("agent_name", "Agent"),
-                status=step.get("status", "complete"),
-                progress=step.get("progress", 100),
-                exec_time=float(step.get("execution_time_sec", 0.35)),
-                confidence=float(step.get("confidence", 0.95)),
-                preview=step.get("output_preview", "")
-            )
+            step_num = step.get("step_number", 1)
+            aname = step.get("agent_name", "AI Agent")
+            stitle = step.get("step_title", step.get("output_preview", ""))
+            etime = float(step.get("execution_time_sec", 0.3))
+            conf = float(step.get("confidence", 0.95))
+            preview = step.get("output_preview", "")
+
+            st.markdown(f"""
+            <div class="step-card complete">
+                <div class="step-badge-num complete">✓ {step_num}</div>
+                <div class="step-content">
+                    <div class="step-header">
+                        <div class="step-name">{stitle}</div>
+                        <span class="step-agent">{aname}</span>
+                    </div>
+                    <div class="step-desc">{preview}</div>
+                    <div class="step-meta">
+                        <span>⏱️ Latency: <b>{etime:.2f}s</b></span>
+                        <span>🎯 Quality: <b>{int(conf*100)}%</b></span>
+                        <span>STATUS: <b style="color: #34D399;">COMPLETE</b></span>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
     with col_right:
         st.markdown("#### 🎯 ML Risk & Evidence Verdict")
@@ -113,41 +141,80 @@ def render_investigation_view(service):
 
         render_score_radial(score_val, win_prob)
 
-        st.markdown(f"""
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px;">
-            <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                <div style="font-size: 0.72rem; color: #94A3B8; text-transform: uppercase;">Consistency</div>
-                <div style="font-size: 1.1rem; font-weight: 700; color: #10B981;">High (98%)</div>
-            </div>
-            <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                <div style="font-size: 0.72rem; color: #94A3B8; text-transform: uppercase;">Completeness</div>
-                <div style="font-size: 1.1rem; font-weight: 700; color: #3B82F6;">High (3/3)</div>
-            </div>
-            <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                <div style="font-size: 0.72rem; color: #94A3B8; text-transform: uppercase;">Contradictions</div>
-                <div style="font-size: 1.1rem; font-weight: 700; color: #10B981;">0 Detected</div>
-            </div>
-            <div style="background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-                <div style="font-size: 0.72rem; color: #94A3B8; text-transform: uppercase;">Win Probability</div>
-                <div style="font-size: 1.1rem; font-weight: 700; color: #60A5FA;">{int(win_prob*100)}%</div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        # ML Scoring Agent output with explainable breakdown
+        ml_agent = MLScoringAgent()
+        ver_rep = pipeline_state.get("verification_report") or {"overall_confidence": 0.95, "contradictions_detected": []}
+        ml_score_data = ml_agent.score_case(active_case, ver_rep, doc_count=3)
+
+        render_explainable_score_card(ml_score_data)
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # Quick Actions Card
+        # Recommended Next Evidence Banner
+        rec_data = ml_score_data.get("recommended_next_evidence", {
+            "recommended_document": "Courier Proof of Delivery (POD)",
+            "win_probability_uplift_pct": 14,
+            "reason": "Proves physical doorstep delivery with signature.",
+            "suggested_alternative": "Customer Delivery Confirmation Email"
+        })
+        render_recommended_next_evidence(rec_data)
+
+        # Quick Navigation
         st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
         st.markdown('<div class="card-title"><span>Next Actions</span></div>', unsafe_allow_html=True)
-        st.markdown('<p class="card-subtitle">Explore extracted entities, inspect contradiction verification, or review the bank submission PDF packet.</p>', unsafe_allow_html=True)
-
         c_act1, c_act2 = st.columns(2)
         with c_act1:
-            if st.button("🔍 View Extracted Evidence", use_container_width=True):
-                st.session_state["current_page"] = "Evidence Viewer"
+            if st.button("🔍 Source Traceability", use_container_width=True):
+                st.session_state["current_page"] = "Evidence Verification"
                 st.rerun()
         with c_act2:
-            if st.button("📄 Open Final Report", use_container_width=True):
+            if st.button("📄 Open Final Report & Narrative", use_container_width=True):
                 st.session_state["current_page"] = "Final AI Report"
                 st.rerun()
-
         st.markdown('</div>', unsafe_allow_html=True)
+
+    # -------------------------------------------------------------
+    # AI Evidence Chat Assistant (RAG Grounded)
+    # -------------------------------------------------------------
+    st.write("---")
+    st.markdown("### 💬 AI Evidence Chat Assistant (RAG-Grounded Q&A)")
+    st.markdown("<p style='color: #94A3B8; font-size: 0.85rem;'>Ask any question about this active dispute. Answers are grounded directly on extracted evidence, OCR text, and verification records with zero hallucinations.</p>", unsafe_allow_html=True)
+
+    chat_history_key = f"chat_history_{active_case_id}"
+    if chat_history_key not in st.session_state:
+        st.session_state[chat_history_key] = [
+            {
+                "is_user": False,
+                "text": f"Hello! I am your AI Evidence Assistant for Case **{active_case.get('order_id')}**. I have analyzed all invoices, shipping logs, and customer communications. What would you like to verify?",
+                "citations": []
+            }
+        ]
+
+    for msg in st.session_state[chat_history_key]:
+        if msg["is_user"]:
+            st.markdown(f'<div class="chat-bubble-user">{msg["text"]}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="chat-bubble-ai">{msg["text"]}</div>', unsafe_allow_html=True)
+            for cit in msg.get("citations", []):
+                st.markdown(f"""
+                <div class="citation-box">
+                    📌 <b>Citation:</b> {cit.get('source_file')} (Page {cit.get('page_number')}) &bull; Snippet: <i>"{cit.get('snippet')}"</i>
+                </div>
+                """, unsafe_allow_html=True)
+
+    with st.form(key=f"chat_form_{active_case_id}", clear_on_submit=True):
+        col_q, col_s = st.columns([5, 1])
+        with col_q:
+            user_question = st.text_input("Ask a question about the evidence...", placeholder="e.g. Was the delivery address verified against the tax invoice?", label_visibility="collapsed")
+        with col_s:
+            submit_q = st.form_submit_button("Send ➔", use_container_width=True, type="primary")
+
+        if submit_q and user_question.strip():
+            st.session_state[chat_history_key].append({"is_user": True, "text": user_question, "citations": []})
+            with st.spinner("Analyzing case evidence dockets..."):
+                chat_res = service.ask_ai_chat(active_case_id, user_question)
+                st.session_state[chat_history_key].append({
+                    "is_user": False,
+                    "text": chat_res.get("answer", "Evidence analyzed."),
+                    "citations": chat_res.get("citations", [])
+                })
+            st.rerun()

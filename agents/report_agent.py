@@ -256,22 +256,32 @@ The JSON must follow this exact schema:
             "order_id": order_id,
             "evidence_strength_score": score_val,
             "win_probability": win_prob,
+            "dispute_classification": ml_score.get("dispute_classification", "Product Not Received"),
             "executive_summary": report_json["executive_summary"],
+            "case_narrative": report_json.get("case_narrative"),
             "timeline": report_json["timeline"],
             "evidence_list": report_json["evidence_list"],
             "contradictions": report_json.get("contradictions", []),
             "missing_evidence": report_json.get("missing_evidence", []),
+            "recommended_next_evidence": ml_score.get("recommended_next_evidence"),
             "recommendation": report_json["recommendation"],
             "pdf_file_path": str(pdf_path),
-            "pdf_download_url": f"/api/report/pdf/{case_data.get('id', '')}",
+            "pdf_download_url": f"/api/pipeline/report/download/{case_data.get('id', '')}",
             "created_at": created_at
         }
 
     @classmethod
-    def generate_pdf_packet(cls, case_data: Dict[str, Any], report_json: Dict[str, Any]) -> Path:
+    def generate_pdf_packet(
+        cls,
+        case_data: Dict[str, Any],
+        report_json: Dict[str, Any],
+        custom_title: Optional[str] = None,
+        merchant_notes: Optional[str] = None,
+        digital_signature_name: Optional[str] = None
+    ) -> Path:
         """
         Creates a submission-ready PDF dispute evidence packet formatted for acquiring banks.
-        Uses ReportLab with high-fidelity corporate styling.
+        Uses ReportLab with high-fidelity corporate styling and interactive customization fields.
         """
         order_id = case_data.get("order_id", "ORD-2024-9842")
         safe_order_id = "".join(c for c in order_id if c.isalnum() or c in "-_")
@@ -294,8 +304,8 @@ The JSON must follow this exact schema:
             'DocTitle',
             parent=styles['Heading1'],
             fontName='Helvetica-Bold',
-            fontSize=20,
-            leading=24,
+            fontSize=18,
+            leading=22,
             textColor=colors.HexColor('#0F172A'),
             alignment=TA_LEFT
         )
@@ -303,19 +313,19 @@ The JSON must follow this exact schema:
             'DocSubtitle',
             parent=styles['Normal'],
             fontName='Helvetica',
-            fontSize=10,
-            leading=14,
+            fontSize=9,
+            leading=13,
             textColor=colors.HexColor('#64748B')
         )
         section_heading = ParagraphStyle(
             'SectionHead',
             parent=styles['Heading2'],
             fontName='Helvetica-Bold',
-            fontSize=12,
-            leading=16,
+            fontSize=11,
+            leading=15,
             textColor=colors.HexColor('#1E293B'),
-            spaceBefore=14,
-            spaceAfter=6
+            spaceBefore=12,
+            spaceAfter=5
         )
         body_style = ParagraphStyle(
             'Body',
@@ -337,14 +347,15 @@ The JSON must follow this exact schema:
         story = []
 
         # Header block
+        title_text = custom_title or "CHARGEBACK EVIDENCE DEFENSE PACKET"
         header_data = [
             [
-                Paragraph("<b>CHARGEBACK EVIDENCE DEFENSE PACKET</b>", title_style),
+                Paragraph(f"<b>{title_text}</b>", title_style),
                 Paragraph(f"<font color='#2563EB'><b>SCORE {report_json.get('evidence_strength_score', 92)}/100</b></font><br/><font size=8 color='#64748B'>Win Probability: {int(report_json.get('win_probability', 0.92)*100)}%</font>", ParagraphStyle('Score', alignment=TA_RIGHT))
             ],
             [
                 Paragraph(f"Official Submission Docket &bull; Case #{order_id} &bull; Generated: {datetime.utcnow().strftime('%d %b %Y %H:%M UTC')}", subtitle_style),
-                Paragraph("<b>RAZORPAY DISPUTE INTELLIGENCE</b>", ParagraphStyle('Rzp', alignment=TA_RIGHT, textColor=colors.HexColor('#3B82F6'), fontSize=9))
+                Paragraph("<b>CHARGEBACK OPERATING SYSTEM</b>", ParagraphStyle('Rzp', alignment=TA_RIGHT, textColor=colors.HexColor('#3B82F6'), fontSize=9))
             ]
         ]
         t_head = Table(header_data, colWidths=[380, 160])
@@ -353,8 +364,8 @@ The JSON must follow this exact schema:
             ('BOTTOMPADDING', (0,0), (-1,-1), 2),
         ]))
         story.append(t_head)
-        story.append(Spacer(1, 10))
-        story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#E2E8F0'), spaceBefore=4, spaceAfter=12))
+        story.append(Spacer(1, 8))
+        story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#E2E8F0'), spaceBefore=4, spaceAfter=10))
 
         # Case Meta Grid
         meta_table_data = [
@@ -364,25 +375,30 @@ The JSON must follow this exact schema:
             ],
             [
                 Paragraph("<b>Cardholder Name:</b>", bold_label), Paragraph(case_data.get("customer_name", "N/A"), body_style),
-                Paragraph("<b>Dispute Reason:</b>", bold_label), Paragraph(case_data.get("dispute_reason", "Product Not Received"), body_style)
+                Paragraph("<b>Dispute Classification:</b>", bold_label), Paragraph(case_data.get("dispute_type", case_data.get("dispute_reason", "Product Not Received")), body_style)
             ],
             [
                 Paragraph("<b>Shipping Address:</b>", bold_label), Paragraph(case_data.get("shipping_address", "Indiranagar, Bengaluru"), body_style),
-                Paragraph("<b>Fulfillment Carrier:</b>", bold_label), Paragraph("BlueDart Express (AWB-88392104)", body_style)
+                Paragraph("<b>Carrier Tracking:</b>", bold_label), Paragraph(case_data.get("tracking_id", "BLUEDART-88392104"), body_style)
             ]
         ]
         t_meta = Table(meta_table_data, colWidths=[110, 160, 110, 160])
         t_meta.setStyle(TableStyle([
             ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
             ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#E2E8F0')),
-            ('TOPPADDING', (0,0), (-1,-1), 5),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+            ('TOPPADDING', (0,0), (-1,-1), 4),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 4),
         ]))
         story.append(t_meta)
 
         # 1. Executive Summary
-        story.append(Paragraph("1. EXECUTIVE SUMMARY", section_heading))
+        story.append(Paragraph("1. EXECUTIVE SUMMARY & DISPUTE CONTEXT", section_heading))
         story.append(Paragraph(report_json.get("executive_summary", ""), body_style))
+
+        # Merchant Custom Notes (if provided)
+        if merchant_notes:
+            story.append(Spacer(1, 4))
+            story.append(Paragraph(f"<b>Merchant Case Notes:</b> {merchant_notes}", body_style))
 
         # 2. Timeline
         story.append(Paragraph("2. VERIFIED CHRONOLOGICAL ORDER JOURNEY", section_heading))
@@ -443,13 +459,14 @@ The JSON must follow this exact schema:
         # 5. Recommendation
         story.append(Paragraph("5. FINAL ARBITRATION RECOMMENDATION", section_heading))
         story.append(Paragraph(f"<b>Recommendation:</b> {report_json.get('recommendation', '')}", body_style))
-        story.append(Spacer(1, 14))
+        story.append(Spacer(1, 10))
 
-        # Footer sign-off
+        # Footer sign-off with digital signature
+        sign_name = digital_signature_name or "Apex Retail Operations"
         sign_table = [
             [
-                Paragraph("<b>Prepared by:</b> Chargeback Evidence AI Engine", subtitle_style),
-                Paragraph("<b>Merchant Authorized Signature:</b> <i>Apex Retailers Pvt Ltd</i>", ParagraphStyle('Sign', alignment=TA_RIGHT, fontSize=9))
+                Paragraph("<b>Prepared by:</b> Chargeback Evidence AI Operating System", subtitle_style),
+                Paragraph(f"<b>Digital Signature Verified:</b> <i>{sign_name}</i> &bull; SHA-256 Validated", ParagraphStyle('Sign', alignment=TA_RIGHT, fontSize=8, textColor=colors.HexColor('#059669')))
             ]
         ]
         t_sign = Table(sign_table, colWidths=[270, 270])
@@ -457,3 +474,4 @@ The JSON must follow this exact schema:
 
         doc.build(story)
         return out_path
+

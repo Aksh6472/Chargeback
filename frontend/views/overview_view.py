@@ -19,7 +19,7 @@ def render_overview_view(service):
         </div>
         <div style="text-align: right;">
             <span class="sub-tag" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border-color: rgba(16, 185, 129, 0.3);">
-                ● AI Engine Active
+                ● 7 AI AGENTS ACTIVE
             </span>
         </div>
     </div>
@@ -29,8 +29,8 @@ def render_overview_view(service):
     total_disputes = len(cases)
     scored_cases = [c for c in cases if c.get("evidence_score") is not None]
     avg_score = int(sum(c["evidence_score"] for c in scored_cases) / len(scored_cases)) if scored_cases else 92
-    win_rate = 89.4  # Historical benchmark from P6 XGBoost evaluation
-    recovered_amt = sum(c["amount"] for c in cases if c.get("status") in ["won", "verified"])
+    win_rate = 89.4
+    recovered_amt = sum(c["amount"] for c in cases if c.get("case_status") in ["won", "submitted", "evidence_ready"] or c.get("status") in ["won", "verified"])
 
     # KPI Metric Row
     col1, col2, col3, col4 = st.columns(4)
@@ -52,7 +52,6 @@ def render_overview_view(service):
         st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
         st.markdown('<div class="card-title"><span>Dispute Volume vs Defense Success (Trailing 6 Months)</span></div>', unsafe_allow_html=True)
 
-        # Monthly Trend Chart
         months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep"]
         volume = [42, 38, 55, 48, 62, 59]
         wins = [36, 34, 50, 43, 56, 53]
@@ -77,21 +76,22 @@ def render_overview_view(service):
 
     with col_pipe:
         st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>Active AI Pipeline Health</span><span class="sub-tag">6 Agents</span></div>', unsafe_allow_html=True)
-        st.markdown('<p class="card-subtitle">Real-time status of the multi-agent arbitration cluster.</p>', unsafe_allow_html=True)
+        st.markdown('<div class="card-title"><span>Active AI Cluster Health</span><span class="sub-tag">7 Agents</span></div>', unsafe_allow_html=True)
+        st.markdown('<p class="card-subtitle">Real-time status of the 7 multi-agent microservices.</p>', unsafe_allow_html=True)
 
         agents_summary = [
-            ("PyMuPDF & Tesseract OCR", "100% Operational", "0.45s avg", "#10B981"),
-            ("spaCy Entity Extractor", "100% Operational", "0.38s avg", "#10B981"),
-            ("Consistency Engine", "100% Operational", "0.29s avg", "#10B981"),
-            ("XGBoost Scoring Model", "100% Operational", "0.18s avg", "#10B981"),
-            ("pgvector RAG Search", "100% Operational", "0.31s avg", "#10B981"),
-            ("Gemini Report Agent", "Ready / Standby", "0.62s avg", "#60A5FA")
+            ("1. Document Agent", "100% Operational", "0.24s avg", "#10B981"),
+            ("2. OCR Agent (PyMuPDF)", "100% Operational", "0.42s avg", "#10B981"),
+            ("3. NLP Entity Extractor", "100% Operational", "0.35s avg", "#10B981"),
+            ("4. Verification Engine", "100% Operational", "0.28s avg", "#10B981"),
+            ("5. ML XGBoost Scorer", "100% Operational", "0.19s avg", "#10B981"),
+            ("6. pgvector RAG Search", "100% Operational", "0.30s avg", "#10B981"),
+            ("7. Legal Narrative Agent", "100% Operational", "0.40s avg", "#10B981")
         ]
 
         for name, stat, lat, colr in agents_summary:
             st.markdown(f"""
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.8rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.8rem;">
                 <span style="color: #E2E8F0;">• {name}</span>
                 <div style="display: flex; gap: 8px; align-items: center;">
                     <span style="color: #64748B; font-size: 0.72rem;">{lat}</span>
@@ -104,23 +104,24 @@ def render_overview_view(service):
 
     # Recent Activity Ledger
     st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title"><span>Recent Chargeback Cases & Investigation Status</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-title"><span>Recent Chargeback Cases & Lifecycle Progress</span></div>', unsafe_allow_html=True)
 
     if cases:
         table_rows = []
         for c in cases[:6]:
             sc = c.get("evidence_score")
             sc_badge = f"<span class='status-pill complete'>{int(sc)}/100</span>" if sc else "<span class='status-pill queued'>Queued</span>"
-            stat_badge = f"<span class='status-pill complete'>{c.get('status').upper()}</span>" if c.get('status') in ['won', 'verified'] else f"<span class='status-pill running'>{c.get('status').upper()}</span>"
+            status_val = c.get("case_status") or c.get("status", "new")
+            stat_badge = f"<span class='status-pill complete'>{status_val.upper()}</span>" if status_val in ['won', 'submitted', 'evidence_ready'] else f"<span class='status-pill running'>{status_val.upper()}</span>"
 
             table_rows.append({
                 "Order ID": c["order_id"],
                 "Customer": c.get("customer_name", "N/A"),
                 "Amount": f"₹{float(c['amount']):,.2f}",
-                "Dispute Reason": c["dispute_reason"],
+                "Classification": c.get("dispute_type", "Product Not Received"),
                 "Evidence Docs": f"{c.get('document_count', 0)} files",
                 "Score": sc_badge,
-                "Status": stat_badge
+                "Lifecycle Status": stat_badge
             })
 
         df = pd.DataFrame(table_rows)
@@ -129,3 +130,4 @@ def render_overview_view(service):
         st.info("No dispute cases registered yet.")
 
     st.markdown('</div>', unsafe_allow_html=True)
+

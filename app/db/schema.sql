@@ -13,19 +13,31 @@ CREATE TABLE IF NOT EXISTS merchants (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     phone VARCHAR(32) NOT NULL,
+    phone_number VARCHAR(32),
     gst_number VARCHAR(32),
     pan_number VARCHAR(32),
     business_type VARCHAR(64) DEFAULT 'E-Commerce / D2C',
     address TEXT,
+    is_verified BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Merchant Vault Documents (KYC onboarding vault)
+-- 2. Customers Table (Dual Portal)
+CREATE TABLE IF NOT EXISTS customers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    phone_number VARCHAR(32) NOT NULL UNIQUE,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. Merchant Vault Documents (KYC onboarding vault)
 CREATE TABLE IF NOT EXISTS merchant_vault_documents (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     merchant_id UUID NOT NULL REFERENCES merchants(id) ON DELETE CASCADE,
-    doc_type VARCHAR(64) NOT NULL, -- GST, PAN, REGISTRATION, ADDRESS_PROOF
+    doc_type VARCHAR(64) NOT NULL, -- GST, PAN, REGISTRATION, ADDRESS_PROOF, AUTHORIZATION_LETTER
     file_name VARCHAR(255) NOT NULL,
     file_path TEXT NOT NULL,
     file_size_bytes BIGINT,
@@ -34,28 +46,49 @@ CREATE TABLE IF NOT EXISTS merchant_vault_documents (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. Chargeback Cases Table
+-- 4. Customer Proof Vault Documents (Reusable Document Repository)
+CREATE TABLE IF NOT EXISTS customer_vault_documents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    customer_id UUID NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+    doc_type VARCHAR(64) NOT NULL, -- IDENTITY_PROOF, BILLING_ADDRESS, DELIVERY_PROOF, PURCHASE_RECEIPT, WARRANTY_INVOICE
+    file_name VARCHAR(255) NOT NULL,
+    file_path TEXT NOT NULL,
+    file_size_bytes BIGINT,
+    verification_status VARCHAR(32) DEFAULT 'VERIFIED',
+    metadata JSONB DEFAULT '{}'::jsonb,
+    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 5. Chargeback Cases Table
 CREATE TABLE IF NOT EXISTS chargeback_cases (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     merchant_id UUID NOT NULL REFERENCES merchants(id) ON DELETE CASCADE,
+    customer_id UUID REFERENCES customers(id) ON DELETE SET NULL,
     order_id VARCHAR(128) NOT NULL,
-    status VARCHAR(64) DEFAULT 'investigating', -- pending, investigating, verified, won, lost, reviewing
+    status VARCHAR(64) DEFAULT 'new', -- new, investigating, evidence_ready, submitted, won, lost
+    case_status VARCHAR(64) DEFAULT 'new', -- live status lifecycle mirror
     amount NUMERIC(12, 2) NOT NULL,
     currency VARCHAR(8) DEFAULT 'INR',
     dispute_reason VARCHAR(255) NOT NULL, -- e.g. "Product Not Received", "Fraudulent / Unauthorized", "Not as Described"
+    dispute_type VARCHAR(128) DEFAULT 'Product Not Received', -- ML dispute classification
     customer_name VARCHAR(255),
     customer_email VARCHAR(255),
     customer_phone VARCHAR(32),
+    shipping_address TEXT,
+    tracking_id TEXT,
+    evidence_score NUMERIC(5, 2),
     opened_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     deadline_at TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP + INTERVAL '7 days'),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 4. Documents Table
+-- 6. Documents Table
 CREATE TABLE IF NOT EXISTS documents (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     case_id UUID NOT NULL REFERENCES chargeback_cases(id) ON DELETE CASCADE,
-    doc_type VARCHAR(64) NOT NULL, -- invoice, receipt, delivery_proof, tracking_slip, chat_log, refund_statement
+    owner_type VARCHAR(32) DEFAULT 'merchant', -- merchant, customer
+    document_category VARCHAR(64) DEFAULT 'evidence',
+    doc_type VARCHAR(64) NOT NULL, -- invoice, receipt, delivery_proof, tracking_slip, chat_log, refund_statement, identity_proof
     file_name VARCHAR(255) NOT NULL,
     file_path TEXT NOT NULL,
     file_size_bytes BIGINT,
@@ -68,18 +101,19 @@ CREATE TABLE IF NOT EXISTS documents (
     uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. Extracted Entities Table
+-- 7. Extracted Entities Table
 CREATE TABLE IF NOT EXISTS extracted_entities (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     document_id UUID NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
-    entity_type VARCHAR(64) NOT NULL, -- customer_name, order_id, address, date, amount, tracking_id
+    entity_type VARCHAR(64) NOT NULL, -- customer_name, merchant_name, order_id, address, date, amount, tracking_id
     raw_value TEXT NOT NULL,
     normalized_value JSONB NOT NULL DEFAULT '{}'::jsonb,
     confidence NUMERIC(5, 4) DEFAULT 1.0,
+    source_page INTEGER DEFAULT 1,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. Evidence Scores Table
+-- 8. Evidence Scores Table
 CREATE TABLE IF NOT EXISTS evidence_scores (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     case_id UUID NOT NULL REFERENCES chargeback_cases(id) ON DELETE CASCADE,
@@ -93,7 +127,7 @@ CREATE TABLE IF NOT EXISTS evidence_scores (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 7. Embeddings Table (pgvector 768-dim)
+-- 9. Embeddings Table (pgvector 768-dim)
 CREATE TABLE IF NOT EXISTS embeddings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     case_id UUID NOT NULL REFERENCES chargeback_cases(id) ON DELETE CASCADE,
@@ -102,7 +136,7 @@ CREATE TABLE IF NOT EXISTS embeddings (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 8. Historical Cases Table (pgvector 768-dim)
+-- 10. Historical Cases Table (pgvector 768-dim)
 CREATE TABLE IF NOT EXISTS historical_cases (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_id VARCHAR(128) NOT NULL,
@@ -121,11 +155,13 @@ CREATE TABLE IF NOT EXISTS historical_cases (
 -- Performance Indexes
 -- =========================================================================
 CREATE INDEX IF NOT EXISTS idx_chargeback_cases_merchant_id ON chargeback_cases(merchant_id);
+CREATE INDEX IF NOT EXISTS idx_chargeback_cases_customer_id ON chargeback_cases(customer_id);
 CREATE INDEX IF NOT EXISTS idx_documents_case_id ON documents(case_id);
 CREATE INDEX IF NOT EXISTS idx_extracted_entities_document_id ON extracted_entities(document_id);
 CREATE INDEX IF NOT EXISTS idx_evidence_scores_case_id ON evidence_scores(case_id);
 CREATE INDEX IF NOT EXISTS idx_embeddings_case_id ON embeddings(case_id);
 CREATE INDEX IF NOT EXISTS idx_vault_docs_merchant_id ON merchant_vault_documents(merchant_id);
+CREATE INDEX IF NOT EXISTS idx_vault_docs_customer_id ON customer_vault_documents(customer_id);
 
 -- Cosine Distance IVFFlat Indexes for fast 768-dim vector retrieval
 CREATE INDEX IF NOT EXISTS idx_embeddings_vector ON embeddings 
@@ -138,7 +174,9 @@ USING ivfflat (vector vector_cosine_ops) WITH (lists = 100);
 -- Row Level Security (RLS) Policies
 -- =========================================================================
 ALTER TABLE merchants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE merchant_vault_documents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customer_vault_documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chargeback_cases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE extracted_entities ENABLE ROW LEVEL SECURITY;
@@ -150,24 +188,32 @@ CREATE POLICY merchants_isolation_policy ON merchants
     FOR ALL
     USING (id = auth.uid());
 
+CREATE POLICY customers_isolation_policy ON customers
+    FOR ALL
+    USING (id = auth.uid());
+
 CREATE POLICY vault_docs_isolation_policy ON merchant_vault_documents
     FOR ALL
     USING (merchant_id = auth.uid());
 
+CREATE POLICY customer_vault_docs_isolation_policy ON customer_vault_documents
+    FOR ALL
+    USING (customer_id = auth.uid());
+
 CREATE POLICY cases_isolation_policy ON chargeback_cases
     FOR ALL
-    USING (merchant_id = auth.uid());
+    USING (merchant_id = auth.uid() OR customer_id = auth.uid());
 
 CREATE POLICY documents_isolation_policy ON documents
     FOR ALL
-    USING (case_id IN (SELECT id FROM chargeback_cases WHERE merchant_id = auth.uid()));
+    USING (case_id IN (SELECT id FROM chargeback_cases WHERE merchant_id = auth.uid() OR customer_id = auth.uid()));
 
 CREATE POLICY entities_isolation_policy ON extracted_entities
     FOR ALL
     USING (document_id IN (
         SELECT d.id FROM documents d 
         JOIN chargeback_cases c ON d.case_id = c.id 
-        WHERE c.merchant_id = auth.uid()
+        WHERE c.merchant_id = auth.uid() OR c.customer_id = auth.uid()
     ));
 
 CREATE POLICY scores_isolation_policy ON evidence_scores
@@ -177,3 +223,4 @@ CREATE POLICY scores_isolation_policy ON evidence_scores
 CREATE POLICY embeddings_isolation_policy ON embeddings
     FOR ALL
     USING (case_id IN (SELECT id FROM chargeback_cases WHERE merchant_id = auth.uid()));
+

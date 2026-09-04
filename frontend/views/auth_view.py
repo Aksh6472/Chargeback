@@ -1,44 +1,49 @@
 """
-Chargeback Evidence AI - Authentication & Onboarding View
-Implements 3-Screen Onboarding:
-Screen 1: Phone OTP Authentication (Supabase Auth / Demo engine)
-Screen 2: Merchant Business Profile (GST, PAN, Address, Category)
-Screen 3: Secure Document Vault (Upload GST cert, PAN, Reg cert, Address proof with verification status)
+Chargeback Evidence AI - Dual Portal Authentication & Verification Vault
+Supports Merchant and Customer logins via Phone OTP and KYC Document Vault.
 """
 
 import streamlit as st
 
-
 def render_auth_view(service):
     st.markdown("""
     <div style="margin-bottom: 24px;">
-        <h2 style="margin: 0; color: #F8FAFC; font-weight: 700; letter-spacing: -0.02em;">Merchant Access & Verification Vault</h2>
+        <h2 style="margin: 0; color: #F8FAFC; font-weight: 700; letter-spacing: -0.02em;">Access Portal & Verification Vault</h2>
         <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">Secure biometric & SMS OTP gateway backed by Supabase Auth and RLS document encryption.</p>
     </div>
     """, unsafe_allow_html=True)
 
     tab1, tab2, tab3 = st.tabs([
-        "📱 Screen 1: Phone OTP Login",
+        "📱 Screen 1: Dual Portal Phone OTP Login",
         "🏢 Screen 2: Merchant Profile",
-        "🛡️ Screen 3: Secure Document Vault"
+        "🛡️ Screen 3: Merchant Document Vault"
     ])
 
     # -------------------------------------------------------------
-    # SCREEN 1: Phone OTP Login
+    # SCREEN 1: Phone OTP Login (Merchant or Customer)
     # -------------------------------------------------------------
     with tab1:
         st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
         st.markdown('<div class="card-title"><span>Phone OTP Authentication</span><span class="sub-tag">Supabase Auth</span></div>', unsafe_allow_html=True)
-        st.markdown('<p class="card-subtitle">Zero-password passwordless merchant authentication. Enter registered business mobile number.</p>', unsafe_allow_html=True)
+        st.markdown('<p class="card-subtitle">Zero-password passwordless authentication for both Merchants and Customers.</p>', unsafe_allow_html=True)
+
+        user_type = st.radio(
+            "Select Portal Access Role",
+            ["Merchant / Operations", "Customer / Cardholder"],
+            index=0 if st.session_state.get("active_portal", "Merchant") == "Merchant" else 1,
+            horizontal=True
+        )
+        is_customer = "Customer" in user_type
+        default_phone = "+91 9811223344" if is_customer else "+91 9876543210"
 
         col1, col2 = st.columns([2, 1])
         with col1:
-            phone_input = st.text_input("Registered Phone Number", value=st.session_state.get("merchant_phone", "+91 9876543210"))
+            phone_input = st.text_input("Mobile Number (+91)", value=st.session_state.get("phone_input", default_phone))
         with col2:
             st.write("")
             st.write("")
             if st.button("Send Verification Code", use_container_width=True, type="primary"):
-                res = service.send_otp(phone_input)
+                res = service.send_otp(phone_input, user_type="customer" if is_customer else "merchant")
                 st.session_state["otp_sent"] = True
                 st.session_state["session_id"] = res["session_id"]
                 st.session_state["demo_otp"] = res["test_otp"]
@@ -48,11 +53,23 @@ def render_auth_view(service):
             st.write("---")
             otp_val = st.text_input("Enter 6-Digit OTP Code", value=st.session_state.get("demo_otp", "742918"))
             if st.button("Verify OTP & Authorize Session", use_container_width=True):
-                auth_res = service.verify_otp(phone_input, otp_val, st.session_state.get("session_id", ""))
-                st.session_state["authenticated"] = True
-                st.session_state["current_merchant"] = auth_res["merchant"]
-                st.balloons()
-                st.success(f"Welcome, {auth_res['merchant']['name']}! Merchant session authorized with Supabase RLS.")
+                auth_res = service.verify_otp(
+                    phone_input, otp_val,
+                    st.session_state.get("session_id", ""),
+                    user_type="customer" if is_customer else "merchant"
+                )
+                if is_customer:
+                    st.session_state["authenticated"] = True
+                    st.session_state["active_portal"] = "Customer"
+                    st.session_state["current_customer"] = auth_res["customer"]
+                    st.balloons()
+                    st.success(f"Welcome, {auth_res['customer']['full_name']}! Authorized Customer Proof Vault session.")
+                else:
+                    st.session_state["authenticated"] = True
+                    st.session_state["active_portal"] = "Merchant"
+                    st.session_state["current_merchant"] = auth_res["merchant"]
+                    st.balloons()
+                    st.success(f"Welcome, {auth_res['merchant']['name']}! Merchant session authorized with Supabase RLS.")
 
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -96,7 +113,7 @@ def render_auth_view(service):
         st.markdown('</div>', unsafe_allow_html=True)
 
     # -------------------------------------------------------------
-    # SCREEN 3: Secure Document Vault
+    # SCREEN 3: Merchant Document Vault
     # -------------------------------------------------------------
     with tab3:
         st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
@@ -108,13 +125,13 @@ def render_auth_view(service):
             doc_choice = st.selectbox("Document Category", [
                 "GST Certificate",
                 "Business PAN Card",
-                "Company Incorporation / Registration",
-                "Corporate Address Proof"
+                "Registration Certificate",
+                "Business Address Proof",
+                "Authorization Letter"
             ])
             uploaded_file = st.file_uploader("Select Certificate (PDF or Image)", type=["pdf", "png", "jpg", "jpeg"])
             if uploaded_file and st.button("Upload to Secure Vault", type="primary"):
-                dtype_code = doc_choice.split()[0].upper()
-                service.upload_vault_doc(dtype_code, uploaded_file.name, uploaded_file.getvalue())
+                service.upload_vault_doc(doc_choice, uploaded_file.name, uploaded_file.getvalue())
                 st.success(f"Uploaded {uploaded_file.name} to Supabase Storage with instant SHA-256 verification!")
 
         with col_up2:
@@ -123,16 +140,20 @@ def render_auth_view(service):
             vault_items = m.get("vault_documents", [])
             if vault_items:
                 for v in vault_items:
-                    st.markdown(f"""
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; margin-bottom: 8px;">
-                        <div>
+                    c1, c2 = st.columns([4, 1])
+                    with c1:
+                        st.markdown(f"""
+                        <div style="padding: 10px 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; margin-bottom: 8px;">
                             <div style="font-weight: 600; font-size: 0.88rem; color: #F1F5F9;">📁 {v['file_name']}</div>
-                            <div style="font-size: 0.74rem; color: #94A3B8;">Type: <b>{v['doc_type']}</b> &bull; Uploaded: {v.get('uploaded_at', '')[:10]}</div>
+                            <div style="font-size: 0.74rem; color: #94A3B8;">Type: <b>{v['doc_type']}</b> &bull; Uploaded: {v.get('uploaded_at', '')[:10]} &bull; <span style="color: #34D399;">✓ {v.get('verification_status', 'VERIFIED')}</span></div>
                         </div>
-                        <span class="status-pill complete">✓ {v.get('verification_status', 'VERIFIED')}</span>
-                    </div>
-                    """, unsafe_allow_html=True)
+                        """, unsafe_allow_html=True)
+                    with c2:
+                        if st.button("🗑️", key=f"del_m_vault_{v['id']}"):
+                            service.delete_merchant_vault_doc(v["id"])
+                            st.rerun()
             else:
                 st.info("No documents in vault yet. Upload your business certificates above.")
 
         st.markdown('</div>', unsafe_allow_html=True)
+

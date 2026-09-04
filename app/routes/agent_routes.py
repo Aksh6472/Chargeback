@@ -15,11 +15,13 @@ from typing import Dict, Any, List
 from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
 
+from agents.document_agent import DocumentAgent
 from agents.ocr_agent import OCRAgent
 from agents.nlp_agent import NLPAgent
 from agents.verification_engine import EvidenceConsistencyEngine
 from agents.ml_scoring_agent import MLScoringAgent
 from agents.rag_agent import RAGAgent
+from agents.narrative_agent import NarrativeAgent
 from agents.report_agent import GeminiReportAgent
 from app.db.repository import Repository
 
@@ -28,7 +30,18 @@ router = APIRouter(prefix="/api/agents", tags=["AI Agents"])
 ml_agent = MLScoringAgent()
 
 # -------------------------------------------------------------
-# 1. OCR Agent Endpoint
+# 1. Document Agent Endpoint
+# -------------------------------------------------------------
+class DocumentClassifyRequest(BaseModel):
+    case_id: str
+    documents: List[Dict[str, Any]]
+
+@router.post("/document-classifier")
+def run_document_agent(req: DocumentClassifyRequest):
+    return DocumentAgent.classify_and_organize(req.case_id, req.documents)
+
+# -------------------------------------------------------------
+# 2. OCR Agent Endpoint
 # -------------------------------------------------------------
 class OCRRequest(BaseModel):
     document_id: str
@@ -40,14 +53,10 @@ def run_ocr_agent(req: OCRRequest):
     if not p.exists():
         raise HTTPException(status_code=404, detail=f"File not found at path: {req.file_path}")
     result = OCRAgent.process_document(req.document_id, p)
-    # Persist in DB
-    doc = Repository.get_document_by_id(req.document_id)
-    if doc:
-        conn = Repository.get_or_create_default_merchant() # ensure initialized
     return result
 
 # -------------------------------------------------------------
-# 2. NLP Agent Endpoint
+# 3. NLP Agent Endpoint
 # -------------------------------------------------------------
 class NLPRequest(BaseModel):
     ocr_result: Dict[str, Any]
@@ -61,14 +70,13 @@ def run_nlp_agent(req: NLPRequest):
         known_customer_name=req.known_customer_name,
         known_order_id=req.known_order_id
     )
-    # Save entities if document_id present
     doc_id = req.ocr_result.get("document_id")
     if doc_id and result.get("entities"):
         Repository.save_extracted_entities(doc_id, result["entities"])
     return result
 
 # -------------------------------------------------------------
-# 3. Verification Engine Endpoint
+# 4. Verification Engine Endpoint
 # -------------------------------------------------------------
 class VerifyRequest(BaseModel):
     case_data: Dict[str, Any]
@@ -80,7 +88,7 @@ def run_verification_agent(req: VerifyRequest):
     return EvidenceConsistencyEngine.verify_case(req.case_data, req.documents, req.entities)
 
 # -------------------------------------------------------------
-# 4. ML Scoring Agent Endpoint
+# 5. ML Scoring Agent Endpoint
 # -------------------------------------------------------------
 class MLScoreRequest(BaseModel):
     case_data: Dict[str, Any]
@@ -90,7 +98,6 @@ class MLScoreRequest(BaseModel):
 @router.post("/ml-score")
 def run_ml_scoring_agent(req: MLScoreRequest):
     res = ml_agent.score_case(req.case_data, req.verification_report, req.doc_count)
-    # Persist score
     case_id = req.case_data.get("id")
     if case_id:
         Repository.save_evidence_score({
@@ -104,7 +111,7 @@ def run_ml_scoring_agent(req: MLScoreRequest):
     return res
 
 # -------------------------------------------------------------
-# 5. RAG Retrieval Endpoint
+# 6. RAG Retrieval Endpoint
 # -------------------------------------------------------------
 class RAGRequest(BaseModel):
     case_data: Dict[str, Any]
@@ -119,7 +126,24 @@ def run_rag_agent(req: RAGRequest):
     )
 
 # -------------------------------------------------------------
-# 6. Gemini Report Agent Endpoint
+# 7. Narrative Agent Endpoint
+# -------------------------------------------------------------
+class NarrativeRequest(BaseModel):
+    case_data: Dict[str, Any]
+    documents: List[Dict[str, Any]]
+    entities: List[Dict[str, Any]]
+    verification_report: Dict[str, Any]
+    ml_score: Dict[str, Any]
+
+@router.post("/narrative")
+def run_narrative_agent(req: NarrativeRequest):
+    return NarrativeAgent.generate_narrative(
+        req.case_data, req.documents, req.entities,
+        req.verification_report, req.ml_score
+    )
+
+# -------------------------------------------------------------
+# 8. Gemini Report Agent Endpoint
 # -------------------------------------------------------------
 class GeminiReportRequest(BaseModel):
     case_data: Dict[str, Any]
@@ -128,10 +152,12 @@ class GeminiReportRequest(BaseModel):
     verification_report: Dict[str, Any]
     ml_score: Dict[str, Any]
     similar_cases: List[Dict[str, Any]]
+    narrative: Dict[str, Any] = {}
 
 @router.post("/gemini-report")
 def run_gemini_report_agent(req: GeminiReportRequest):
     return GeminiReportAgent.generate_report(
         req.case_data, req.documents, req.entities,
-        req.verification_report, req.ml_score, req.similar_cases
+        req.verification_report, req.ml_score, req.similar_cases,
+        narrative=req.narrative
     )

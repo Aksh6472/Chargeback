@@ -5,6 +5,8 @@ Chargeback Evidence AI - Frontend Views
 from .auth_view import render_auth_view
 from .overview_view import render_overview_view
 from .create_case_view import render_create_case_view
+from .customer_portal_view import render_customer_portal_view
+from .ai_agents_view import render_ai_agents_view
 from .investigation_view import render_investigation_view
 from .evidence_viewer_view import render_evidence_viewer_view
 from .verification_view import render_verification_view
@@ -17,6 +19,8 @@ __all__ = [
     "render_auth_view",
     "render_overview_view",
     "render_create_case_view",
+    "render_customer_portal_view",
+    "render_ai_agents_view",
     "render_investigation_view",
     "render_evidence_viewer_view",
     "render_verification_view",
