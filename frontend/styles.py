@@ -9,18 +9,18 @@ FINTECH_CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-    --bg-primary: #0A0D14;
-    --bg-surface: #111522;
-    --bg-card: rgba(18, 24, 38, 0.7);
-    --bg-glass: rgba(255, 255, 255, 0.03);
+    --bg-primary: #090D16;
+    --bg-surface: #0F1626;
+    --bg-card: rgba(18, 24, 38, 0.75);
+    --bg-card-hover: rgba(24, 33, 53, 0.85);
     --border-color: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(59, 130, 246, 0.4);
+    --border-hover: rgba(59, 130, 246, 0.35);
     --text-primary: #F8FAFC;
     --text-secondary: #94A3B8;
     --text-muted: #64748B;
     --brand-primary: #3B82F6;
     --brand-gradient: linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #8B5CF6 100%);
-    --card-gradient: linear-gradient(180deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.8) 100%);
+    --card-gradient: linear-gradient(180deg, rgba(20, 28, 45, 0.7) 0%, rgba(12, 17, 29, 0.9) 100%);
     --success: #10B981;
     --warning: #F59E0B;
     --danger: #EF4444;
@@ -34,40 +34,62 @@ html, body, [class*="css"] {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
+.stApp {
+    background-color: var(--bg-primary) !important;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.06) 0px, transparent 50%) !important;
+}
+
 /* Hide Streamlit default decorations */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
-header {
-    background: transparent !important;
-}
-[data-testid="stHeader"] {
-    background: transparent !important;
-}
-[data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"] {
-    visibility: visible !important;
-    display: flex !important;
-    z-index: 999999 !important;
-    color: #F8FAFC !important;
+header {background: transparent !important;}
+[data-testid="stHeader"] {background: transparent !important;}
+
+/* Streamlit button overrides for fintech aesthetics */
+.stButton > button {
+    border-radius: var(--radius-sm) !important;
+    font-weight: 600 !important;
+    font-size: 0.86rem !important;
+    letter-spacing: -0.01em !important;
+    transition: all 0.2s ease !important;
+    border: 1px solid var(--border-color) !important;
 }
 
-/* Top Navigation Banner */
+.stButton > button:hover {
+    border-color: var(--brand-primary) !important;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2) !important;
+    transform: translateY(-1px) !important;
+}
+
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+}
+
+.stButton > button[kind="primary"]:hover {
+    background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%) !important;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45) !important;
+}
+
+/* Top App Header Container */
 .app-header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 14px 24px;
-    background: rgba(15, 23, 42, 0.75);
+    background: rgba(15, 22, 38, 0.8);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-color);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .brand-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 1.15rem;
     letter-spacing: -0.02em;
     background: linear-gradient(90deg, #60A5FA, #A78BFA);
@@ -77,48 +99,95 @@ header {
 
 .sub-tag {
     font-size: 0.72rem;
-    background: rgba(59, 130, 246, 0.15);
-    border: 1px solid rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.25);
     color: #93C5FD;
-    padding: 3px 8px;
+    padding: 3px 9px;
     border-radius: 999px;
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Fintech Cards */
+.fintech-card {
+    background: var(--card-gradient);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(16px);
+    transition: all 0.2s ease;
+}
+
+.fintech-card:hover {
+    border-color: var(--border-hover);
+}
+
+.card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-subtitle {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-bottom: 0;
 }
 
 /* Dual Portal Cards */
 .portal-card {
-    background: linear-gradient(180deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.9) 100%);
+    background: linear-gradient(180deg, rgba(22, 30, 49, 0.75) 0%, rgba(13, 18, 30, 0.95) 100%);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    padding: 28px;
-    text-align: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 28px 24px;
+    text-align: left;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .portal-card:hover {
-    border-color: #60A5FA;
-    transform: translateY(-4px);
+    border-color: #3B82F6;
+    transform: translateY(-3px);
     box-shadow: 0 16px 40px -10px rgba(59, 130, 246, 0.25);
 }
 
 .portal-icon {
-    font-size: 2.8rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
     margin-bottom: 16px;
-    display: inline-block;
 }
 
 .portal-title {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #F8FAFC;
     margin-bottom: 8px;
 }
 
 .portal-desc {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     color: #94A3B8;
     line-height: 1.5;
     margin-bottom: 20px;
@@ -129,10 +198,10 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(15, 23, 42, 0.7);
+    background: rgba(15, 22, 36, 0.8);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: 14px 20px;
+    padding: 12px 20px;
     margin-bottom: 20px;
     overflow-x: auto;
 }
@@ -170,14 +239,14 @@ header {
 }
 
 .lifecycle-step.active .lifecycle-dot {
-    background: #3B82F6;
+    background: #2563EB;
     color: #FFFFFF;
-    box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.6);
     border-color: #60A5FA;
 }
 
 .lifecycle-step.completed .lifecycle-dot {
-    background: rgba(16, 185, 129, 0.2);
+    background: rgba(16, 185, 129, 0.18);
     color: #34D399;
     border-color: #10B981;
 }
@@ -194,45 +263,12 @@ header {
     background: linear-gradient(90deg, #10B981, #3B82F6);
 }
 
-/* Glassmorphic Cards */
-.fintech-card {
-    background: var(--card-gradient);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 20px;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(16px);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.fintech-card:hover {
-    border-color: var(--border-hover);
-    box-shadow: 0 8px 30px -4px rgba(59, 130, 246, 0.15);
-}
-
-.card-title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.card-subtitle {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    line-height: 1.4;
-}
-
 /* KPI Metric Cards */
 .metric-container {
     display: flex;
     flex-direction: column;
-    padding: 16px 20px;
-    background: rgba(18, 24, 38, 0.6);
+    padding: 18px 20px;
+    background: rgba(18, 24, 38, 0.65);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     transition: border-color 0.2s ease;
@@ -243,7 +279,7 @@ header {
 }
 
 .metric-label {
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -251,7 +287,7 @@ header {
 }
 
 .metric-value {
-    font-size: 1.9rem;
+    font-size: 1.85rem;
     font-weight: 800;
     color: var(--text-primary);
     margin: 4px 0;
@@ -269,22 +305,16 @@ header {
 .trend-up { color: var(--success); }
 .trend-neutral { color: #60A5FA; }
 
-/* 10-Step Live Investigation Timeline */
-.timeline-10-step {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin: 16px 0;
-}
-
+/* 10-Step Timeline */
 .step-card {
-    background: rgba(15, 23, 42, 0.75);
+    background: rgba(15, 22, 36, 0.75);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     padding: 14px 18px;
     display: flex;
     align-items: flex-start;
     gap: 16px;
+    margin-bottom: 10px;
     transition: all 0.2s ease;
 }
 
@@ -302,21 +332,18 @@ header {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: rgba(59, 130, 246, 0.2);
-    border: 1px solid rgba(59, 130, 246, 0.4);
-    color: #93C5FD;
-    font-weight: 700;
-    font-size: 0.85rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
     flex-shrink: 0;
 }
 
 .step-badge-num.complete {
     background: rgba(16, 185, 129, 0.2);
-    border-color: #10B981;
     color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
 }
 
 .step-content {
@@ -331,17 +358,17 @@ header {
 }
 
 .step-name {
-    font-size: 0.92rem;
     font-weight: 600;
+    font-size: 0.92rem;
     color: #F8FAFC;
 }
 
 .step-agent {
     font-size: 0.72rem;
-    color: #A78BFA;
-    background: rgba(139, 92, 246, 0.15);
-    padding: 2px 8px;
-    border-radius: 999px;
+    color: #60A5FA;
+    background: rgba(59, 130, 246, 0.12);
+    padding: 2px 7px;
+    border-radius: 4px;
     font-weight: 600;
 }
 
@@ -349,23 +376,53 @@ header {
     font-size: 0.82rem;
     color: #94A3B8;
     line-height: 1.4;
+    margin-bottom: 8px;
 }
 
 .step-meta {
     display: flex;
-    gap: 14px;
-    font-size: 0.75rem;
+    gap: 16px;
+    font-size: 0.74rem;
     color: #64748B;
-    margin-top: 6px;
-    font-family: 'JetBrains Mono', monospace;
 }
 
-/* Explainable Score Drivers Card */
+/* Status Pills */
+.status-pill {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-pill.complete, .status-pill.won {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-pill.running, .status-pill.investigating {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60A5FA;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.status-pill.new {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94A3B8;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+/* Score Breakdown & Uplift */
 .score-breakdown-container {
-    background: rgba(15, 23, 42, 0.8);
+    background: rgba(15, 22, 36, 0.75);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: 18px;
+    padding: 16px;
     margin-top: 14px;
 }
 
@@ -373,155 +430,98 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 7px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    font-size: 0.85rem;
-}
-
-.score-item:last-child {
-    border-bottom: none;
 }
 
 .score-pts-positive {
-    color: #34D399;
+    font-size: 0.86rem;
     font-weight: 700;
-    font-family: 'JetBrains Mono', monospace;
+    color: #34D399;
 }
 
 .score-pts-negative {
-    color: #F87171;
+    font-size: 0.86rem;
     font-weight: 700;
-    font-family: 'JetBrains Mono', monospace;
+    color: #F87171;
 }
 
-/* Recommended Next Evidence Banner */
 .uplift-banner {
-    background: linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
-    border: 1px solid rgba(16, 185, 129, 0.35);
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.12) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.25);
     border-radius: var(--radius-md);
-    padding: 16px 20px;
-    margin: 16px 0;
+    padding: 14px 18px;
+    margin: 14px 0;
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
 }
 
 .uplift-badge {
-    background: #10B981;
-    color: #FFFFFF;
-    font-weight: 800;
-    font-size: 1.1rem;
-    padding: 6px 14px;
-    border-radius: var(--radius-sm);
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #34D399;
 }
 
-/* Traceable Claim Popover / Box */
+/* Clickable Traceable Claim */
 .traceable-claim {
-    background: rgba(30, 41, 59, 0.6);
+    background: rgba(18, 26, 44, 0.7);
     border: 1px solid rgba(59, 130, 246, 0.25);
     border-radius: var(--radius-sm);
-    padding: 10px 14px;
-    margin-bottom: 8px;
-    font-size: 0.85rem;
+    padding: 12px 16px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .traceable-claim:hover {
-    border-color: #60A5FA;
-    background: rgba(59, 130, 246, 0.12);
+    border-color: #3B82F6;
+    background: rgba(30, 58, 138, 0.15);
 }
 
 .source-badge {
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     color: #93C5FD;
-    background: rgba(59, 130, 246, 0.2);
-    padding: 2px 8px;
+    background: rgba(59, 130, 246, 0.15);
+    padding: 3px 8px;
     border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace;
+    border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
-/* AI Chat Assistant Widget */
-.chat-container {
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 16px;
-    margin-top: 16px;
-}
-
+/* Chat Assistant Bubbles */
 .chat-bubble-user {
-    background: rgba(59, 130, 246, 0.2);
+    background: rgba(37, 99, 235, 0.25);
     border: 1px solid rgba(59, 130, 246, 0.4);
-    border-radius: 12px 12px 0 12px;
-    padding: 10px 14px;
-    margin: 8px 0;
+    border-radius: 12px 12px 2px 12px;
+    padding: 12px 16px;
+    margin: 8px 0 8px auto;
+    max-width: 80%;
     color: #F8FAFC;
     font-size: 0.88rem;
-    max-width: 85%;
-    margin-left: auto;
 }
 
 .chat-bubble-ai {
-    background: rgba(30, 41, 59, 0.7);
-    border: 1px solid var(--border-color);
-    border-radius: 12px 12px 12px 0;
-    padding: 12px 16px;
-    margin: 8px 0;
+    background: rgba(18, 26, 44, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px 12px 12px 2px;
+    padding: 14px 18px;
+    margin: 8px auto 8px 0;
+    max-width: 85%;
     color: #E2E8F0;
     font-size: 0.88rem;
-    max-width: 90%;
     line-height: 1.5;
 }
 
 .citation-box {
-    margin-top: 8px;
-    padding: 6px 10px;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.35);
     border-left: 3px solid #3B82F6;
-    border-radius: 0 4px 4px 0;
-    font-size: 0.75rem;
+    padding: 6px 12px;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.78rem;
     color: #94A3B8;
-    font-family: 'JetBrains Mono', monospace;
-}
-
-/* Tag / Badge Chips */
-.tag-chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 9px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    margin-right: 6px;
-    margin-bottom: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.tag-blue { background: rgba(59, 130, 246, 0.15); color: #93C5FD; border-color: rgba(59, 130, 246, 0.3); }
-.tag-green { background: rgba(16, 185, 129, 0.15); color: #6EE7B7; border-color: rgba(16, 185, 129, 0.3); }
-.tag-purple { background: rgba(139, 92, 246, 0.15); color: #C4B5FD; border-color: rgba(139, 92, 246, 0.3); }
-.tag-amber { background: rgba(245, 158, 11, 0.15); color: #FCD34D; border-color: rgba(245, 158, 11, 0.3); }
-.tag-rose { background: rgba(244, 63, 94, 0.15); color: #FDA4AF; border-color: rgba(244, 63, 94, 0.3); }
-
-/* Score Gauge Box */
-.score-badge-huge {
-    font-size: 3.2rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, #10B981, #3B82F6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    line-height: 1;
-}
-
-/* Sidebar Custom Styling */
-[data-testid="stSidebar"] {
-    background-color: #0A0D14 !important;
-    border-right: 1px solid var(--border-color);
+    margin-top: 6px;
 }
 </style>
 """
