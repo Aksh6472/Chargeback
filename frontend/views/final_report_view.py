@@ -10,23 +10,23 @@ Features:
 
 import streamlit as st
 from pathlib import Path
-from frontend.components import render_case_status_tracker
+from frontend.components import render_case_status_tracker, render_html
 
 
 def render_final_report_view(service):
-    st.markdown("""
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
-        <div>
-            <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Chargeback Defense Packet & Interactive PDF</h2>
-            <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">Submission-ready formal dispute packet formatted for acquirers, Visa, Mastercard & NPCI arbitration with interactive custom editing.</p>
-        </div>
-        <div>
-            <span class="sub-tag" style="background: rgba(59, 130, 246, 0.2); color: #93C5FD; border-color: rgba(59, 130, 246, 0.4);">
-                INTERACTIVE PDF BUILDER
-            </span>
-        </div>
+    render_html("""
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+    <div>
+        <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Chargeback Defense Packet & Interactive PDF</h2>
+        <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">Submission-ready formal dispute packet formatted for acquirers, Visa, Mastercard & NPCI arbitration with interactive custom editing.</p>
     </div>
-    """, unsafe_allow_html=True)
+    <div>
+        <span class="sub-tag" style="background: rgba(59, 130, 246, 0.2); color: #93C5FD; border-color: rgba(59, 130, 246, 0.4);">
+            INTERACTIVE PDF BUILDER
+        </span>
+    </div>
+</div>
+""")
 
     cases = service.list_cases()
     if not cases:
@@ -49,25 +49,25 @@ def render_final_report_view(service):
     win_prob = rep.get("win_probability", active_case.get("win_probability", 0.92))
 
     # Header Card with Score Badge
-    st.markdown(f"""
-    <div class="fintech-card" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #10B981;">
-        <div>
-            <div style="font-size: 1.25rem; font-weight: 800; color: #F8FAFC;">
-                Chargeback Evidence Report — Case #{active_case.get('order_id')}
-            </div>
-            <div style="font-size: 0.82rem; color: #94A3B8; margin-top: 4px;">
-                Customer: <b>{active_case.get('customer_name')}</b> &bull; Disputed Amount: <b>₹{float(active_case.get('amount', 4299)):,.2f}</b> &bull; Classification: <b>{active_case.get('dispute_type', 'Product Not Received')}</b>
-            </div>
+    render_html(f"""
+<div class="fintech-card" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #10B981;">
+    <div>
+        <div style="font-size: 1.25rem; font-weight: 800; color: #F8FAFC;">
+            Chargeback Evidence Report — Case #{active_case.get('order_id')}
         </div>
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="text-align: right;">
-                <div style="font-size: 0.72rem; color: #94A3B8; text-transform: uppercase;">Evidence Strength</div>
-                <div style="font-size: 2.2rem; font-weight: 900; color: #10B981; line-height: 1;">SCORE {score_val}</div>
-                <div style="font-size: 0.75rem; color: #60A5FA;">Win Probability: {int(win_prob*100)}%</div>
-            </div>
+        <div style="font-size: 0.82rem; color: #94A3B8; margin-top: 4px;">
+            Customer: <b>{active_case.get('customer_name')}</b> &bull; Disputed Amount: <b>₹{float(active_case.get('amount', 4299)):,.2f}</b> &bull; Classification: <b>{active_case.get('dispute_type', 'Product Not Received')}</b>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="text-align: right;">
+            <div style="font-size: 0.72rem; color: #94A3B8; text-transform: uppercase;">Evidence Strength</div>
+            <div style="font-size: 2.2rem; font-weight: 900; color: #10B981; line-height: 1;">SCORE {score_val}</div>
+            <div style="font-size: 0.75rem; color: #60A5FA;">Win Probability: {int(win_prob*100)}%</div>
+        </div>
+    </div>
+</div>
+""")
 
     tab_doc, tab_narrative, tab_interactive = st.tabs([
         "📄 Evidence Packet Summary",
@@ -97,82 +97,93 @@ def render_final_report_view(service):
                 st.caption("Official bank dispute document generated with SHA-256 digital seal.")
 
         # Executive Summary
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>1. EXECUTIVE SUMMARY</span></div>', unsafe_allow_html=True)
-        st.markdown(f"""
-        <p style="font-size: 0.9rem; color: #CBD5E1; line-height: 1.6; margin: 0;">
-            {rep.get('executive_summary', 'The order was placed, paid, and delivered to the address on file with signed confirmation. All key facts are consistent across invoice, receipt, and courier records.')}
-        </p>
-        """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        exec_summary = rep.get('executive_summary', 'The order was placed, paid, and delivered to the address on file with signed confirmation. All key facts are consistent across invoice, receipt, and courier records.')
+        render_html(f"""
+<div class="fintech-card">
+    <div class="card-title"><span>1. EXECUTIVE SUMMARY</span></div>
+    <p style="font-size: 0.9rem; color: #CBD5E1; line-height: 1.6; margin: 0;">
+        {exec_summary}
+    </p>
+</div>
+""")
 
         # Contradictions & Missing Evidence
         col_c, col_m = st.columns(2)
         with col_c:
-            st.markdown('<div class="fintech-card" style="min-height: 160px;">', unsafe_allow_html=True)
-            st.markdown('<div class="card-title"><span>2. CONTRADICTIONS AUDIT</span></div>', unsafe_allow_html=True)
             contras = rep.get("contradictions", [])
-            if not contras:
-                st.markdown("""
-                <div style="font-size: 0.88rem; color: #10B981; font-weight: 600;">
-                    ✓ Zero contradictions detected across submitted evidence documents.
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                for c in contras:
-                    st.error(c)
-            st.markdown('</div>', unsafe_allow_html=True)
+            contra_msg = "✓ Zero contradictions detected across submitted evidence documents." if not contras else "<br>".join(contras)
+            contra_color = "#10B981" if not contras else "#EF4444"
+            render_html(f"""
+<div class="fintech-card" style="min-height: 160px;">
+    <div class="card-title"><span>2. CONTRADICTIONS AUDIT</span></div>
+    <div style="font-size: 0.88rem; color: {contra_color}; font-weight: 600;">
+        {contra_msg}
+    </div>
+</div>
+""")
 
         with col_m:
-            st.markdown('<div class="fintech-card" style="min-height: 160px;">', unsafe_allow_html=True)
-            st.markdown('<div class="card-title"><span>3. RECOMMENDED NEXT EVIDENCE</span></div>', unsafe_allow_html=True)
             rec = rep.get("recommended_next_evidence") or {}
-            st.markdown(f"""
-            <div style="font-size: 0.88rem; color: #34D399; font-weight: 700;">
-                +{rec.get('win_probability_uplift_pct', 14)}% Win Rate Uplift: {rec.get('recommended_document', 'Courier Proof of Delivery (POD)')}
-            </div>
-            <p style="font-size: 0.78rem; color: #94A3B8; margin-top: 4px;">{rec.get('reason', 'Attaching physical signature proof maximizes acquirer acceptance.')}</p>
-            """, unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            uplift_pct = rec.get('win_probability_uplift_pct', 14)
+            rec_doc = rec.get('recommended_document', 'Courier Proof of Delivery (POD)')
+            rec_reason = rec.get('reason', 'Attaching physical signature proof maximizes acquirer acceptance.')
+            render_html(f"""
+<div class="fintech-card" style="min-height: 160px;">
+    <div class="card-title"><span>3. RECOMMENDED NEXT EVIDENCE</span></div>
+    <div style="font-size: 0.88rem; color: #34D399; font-weight: 700;">
+        +{uplift_pct}% Win Rate Uplift: {rec_doc}
+    </div>
+    <p style="font-size: 0.78rem; color: #94A3B8; margin-top: 4px;">{rec_reason}</p>
+</div>
+""")
 
         # Exhibits Table
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>4. EVIDENCE EXHIBIT CHECKLIST</span></div>', unsafe_allow_html=True)
         ev_list = rep.get("evidence_list", [
             {"type": "Tax Invoice", "details": "Matches billing name, itemized pricing, and tax breakups", "weight": "High"},
             {"type": "Payment Authorization Receipt", "details": "Reconciles 100% with gateway settlement", "weight": "High"},
             {"type": "Proof of Delivery (POD)", "details": "Carrier GPS timestamp and consignee signature confirmation", "weight": "High"}
         ])
 
+        exhibit_rows = []
         for ev in ev_list:
-            st.markdown(f"""
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
-                <div>
-                    <span style="font-weight: 600; color: #F8FAFC;">📁 {ev.get('type')}</span>
-                    <div style="font-size: 0.78rem; color: #94A3B8;">{ev.get('details')}</div>
-                </div>
-                <span class="tag-chip tag-green">{ev.get('weight', 'High')}</span>
-            </div>
-            """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+            exhibit_rows.append(f"""
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+    <div>
+        <span style="font-weight: 600; color: #F8FAFC;">📁 {ev.get('type')}</span>
+        <div style="font-size: 0.78rem; color: #94A3B8;">{ev.get('details')}</div>
+    </div>
+    <span class="tag-chip tag-green">{ev.get('weight', 'High')}</span>
+</div>
+""")
+
+        render_html(f"""
+<div class="fintech-card">
+    <div class="card-title"><span>4. EVIDENCE EXHIBIT CHECKLIST</span></div>
+    {''.join(exhibit_rows)}
+</div>
+""")
 
     # -------------------------------------------------------------
     # TAB 2: AI Case Narrative (6 Structured Sections)
     # -------------------------------------------------------------
     with tab_narrative:
         nar = rep.get("case_narrative") or {}
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>Structured AI Case Narrative</span><span class="sub-tag">Legal Grounding</span></div>', unsafe_allow_html=True)
+        render_html("""
+<div class="fintech-card">
+    <div class="card-title"><span>Structured AI Case Narrative</span><span class="sub-tag">Legal Grounding</span></div>
+</div>
+""")
 
         st.markdown("##### 1. Incident Overview")
         st.info(nar.get("incident_overview", f"Dispute #{active_case.get('order_id')} filed under reason '{active_case.get('dispute_reason')}'. Merchant provided full documentation."))
 
         st.markdown("##### 2. Chronological Timeline Summary")
-        st.markdown(f"""
-        <div style="background: rgba(0,0,0,0.3); padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; color: #E2E8F0; line-height: 1.5;">
-            {nar.get('timeline_summary', '1. Order Placed -> 2. Payment Verified -> 3. Dispatched -> 4. Delivered')}
-        </div>
-        """, unsafe_allow_html=True)
+        timeline_text = nar.get('timeline_summary', '1. Order Placed -> 2. Payment Verified -> 3. Dispatched -> 4. Delivered')
+        render_html(f"""
+<div style="background: rgba(0,0,0,0.3); padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; color: #E2E8F0; line-height: 1.5; margin-bottom: 16px;">
+    {timeline_text}
+</div>
+""")
 
         st.markdown("##### 3. Verified Factual Findings")
         verified_facts = nar.get("verified_facts", [
@@ -186,29 +197,29 @@ def render_final_report_view(service):
         st.markdown(f"_{nar.get('contradictions_audit', 'No factual contradictions detected across invoice, shipping logs, and customer chat history.')}_")
 
         st.markdown("##### 5. AI Reasoning & Precedent Evidence")
-        st.markdown(f"""
-        <div style="background: rgba(30, 41, 59, 0.6); padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; color: #93C5FD; border-left: 3px solid #3B82F6;">
-            {nar.get('ai_reasoning', 'Historical precedent indicates 94% merchant win probability when both AWB POD and GST invoice are submitted.')}
-        </div>
-        """, unsafe_allow_html=True)
+        reasoning_text = nar.get('ai_reasoning', 'Historical precedent indicates 94% merchant win probability when both AWB POD and GST invoice are submitted.')
+        render_html(f"""
+<div style="background: rgba(30, 41, 59, 0.6); padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; color: #93C5FD; border-left: 3px solid #3B82F6; margin: 8px 0 16px 0;">
+    {reasoning_text}
+</div>
+""")
 
         st.markdown("##### 6. Formal Arbitration Recommendation")
         st.success(nar.get("final_recommendation", "Submit full defense docket immediately as evidence completeness is 100%."))
-        st.markdown('</div>', unsafe_allow_html=True)
 
     # -------------------------------------------------------------
     # TAB 3: Interactive PDF Preview & Case Approval
     # -------------------------------------------------------------
     with tab_interactive:
-        st.markdown("""
-        <div class="fintech-card">
-            <div class="card-title">
-                <span>Interactive PDF Editor & Case Submission</span>
-                <span class="sub-tag">Live Draft Customization</span>
-            </div>
-            <p class="card-subtitle">Edit report titles, add merchant custom notes, apply digital signature, and formally approve the dispute packet to payment gateway.</p>
-        </div>
-        """, unsafe_allow_html=True)
+        render_html("""
+<div class="fintech-card">
+    <div class="card-title">
+        <span>Interactive PDF Editor & Case Submission</span>
+        <span class="sub-tag">Live Draft Customization</span>
+    </div>
+    <p class="card-subtitle">Edit report titles, add merchant custom notes, apply digital signature, and formally approve the dispute packet to payment gateway.</p>
+</div>
+""")
 
         with st.form("interactive_pdf_form"):
             col_e1, col_e2 = st.columns(2)
@@ -243,4 +254,3 @@ def render_final_report_view(service):
                 st.balloons()
                 st.success("Case marked as SUBMITTED! Formal defense docket transmitted to payment gateway & bank.")
                 st.rerun()
-

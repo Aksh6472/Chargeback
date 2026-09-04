@@ -224,6 +224,30 @@ class Repository:
         return dict(row) if row else None
 
     @staticmethod
+    def list_customers() -> List[Dict[str, Any]]:
+        conn = get_db()
+        c = conn.cursor()
+        c.execute("SELECT * FROM customers ORDER BY created_at DESC")
+        rows = [dict(r) for r in c.fetchall()]
+        conn.close()
+        if not rows:
+            # Default seeded customer
+            default_cust = {
+                "id": "cust_aarav_01",
+                "phone_number": "+91 9811223344",
+                "full_name": "Aarav Sharma",
+                "email": "aarav.sharma@example.com",
+                "created_at": _now_iso()
+            }
+            Repository.upsert_customer(default_cust)
+            return [default_cust]
+        return rows
+
+    @staticmethod
+    def list_all_customers() -> List[Dict[str, Any]]:
+        return Repository.list_customers()
+
+    @staticmethod
     def get_customer_by_id(customer_id: str) -> Optional[Dict[str, Any]]:
         conn = get_db()
         c = conn.cursor()

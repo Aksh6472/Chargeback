@@ -7,23 +7,23 @@ recent activity ledger, AI investigation progress preview, and animated statisti
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-from ..components import render_kpi_card
+from frontend.components import render_kpi_card, render_html
 
 
 def render_overview_view(service):
-    st.markdown("""
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
-        <div>
-            <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Executive Dispute Intelligence</h2>
-            <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">Real-time automated chargeback defense pipeline across acquiring banks & card networks.</p>
-        </div>
-        <div style="text-align: right;">
-            <span class="sub-tag" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border-color: rgba(16, 185, 129, 0.3);">
-                ● 7 AI AGENTS ACTIVE
-            </span>
-        </div>
+    render_html("""
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+    <div>
+        <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Executive Dispute Intelligence</h2>
+        <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">Real-time automated chargeback defense pipeline across acquiring banks & card networks.</p>
     </div>
-    """, unsafe_allow_html=True)
+    <div style="text-align: right;">
+        <span class="sub-tag" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border-color: rgba(16, 185, 129, 0.3);">
+            ● 7 AI AGENTS ACTIVE
+        </span>
+    </div>
+</div>
+""")
 
     cases = service.list_cases()
     total_disputes = len(cases)
@@ -49,8 +49,11 @@ def render_overview_view(service):
     col_chart, col_pipe = st.columns([3, 2])
 
     with col_chart:
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>Dispute Volume vs Defense Success (Trailing 6 Months)</span></div>', unsafe_allow_html=True)
+        render_html("""
+<div class="fintech-card">
+    <div class="card-title"><span>Dispute Volume vs Defense Success (Trailing 6 Months)</span></div>
+</div>
+""")
 
         months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep"]
         volume = [42, 38, 55, 48, 62, 59]
@@ -72,12 +75,14 @@ def render_overview_view(service):
         fig.update_xaxes(showgrid=False, color="#64748B")
         fig.update_yaxes(showgrid=True, gridcolor="rgba(255,255,255,0.06)", color="#64748B")
         st.plotly_chart(fig, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with col_pipe:
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>Active AI Cluster Health</span><span class="sub-tag">7 Agents</span></div>', unsafe_allow_html=True)
-        st.markdown('<p class="card-subtitle">Real-time status of the 7 multi-agent microservices.</p>', unsafe_allow_html=True)
+        render_html("""
+<div class="fintech-card">
+    <div class="card-title"><span>Active AI Cluster Health</span><span class="sub-tag">7 Agents</span></div>
+    <p class="card-subtitle">Real-time status of the 7 multi-agent microservices.</p>
+</div>
+""")
 
         agents_summary = [
             ("1. Document Agent", "100% Operational", "0.24s avg", "#10B981"),
@@ -89,45 +94,35 @@ def render_overview_view(service):
             ("7. Legal Narrative Agent", "100% Operational", "0.40s avg", "#10B981")
         ]
 
+        summary_rows = []
         for name, stat, lat, colr in agents_summary:
-            st.markdown(f"""
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.8rem;">
-                <span style="color: #E2E8F0;">• {name}</span>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <span style="color: #64748B; font-size: 0.72rem;">{lat}</span>
-                    <span style="color: {colr}; font-weight: 600; font-size: 0.75rem;">{stat}</span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            summary_rows.append(f"""
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.82rem;">
+    <span style="color: #E2E8F0;">• {name}</span>
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <span style="color: #64748B; font-size: 0.72rem;">{lat}</span>
+        <span style="color: {colr}; font-weight: 600; font-size: 0.75rem;">{stat}</span>
+    </div>
+</div>
+""")
 
-        st.markdown('</div>', unsafe_allow_html=True)
+        render_html(f"""
+<div class="fintech-card">
+    {''.join(summary_rows)}
+</div>
+""")
 
-    # Recent Activity Ledger
-    st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title"><span>Recent Chargeback Cases & Lifecycle Progress</span></div>', unsafe_allow_html=True)
-
+    # Recent Disputes Table
+    st.markdown("#### 📑 Active Dispute Dockets & Evidence Status")
     if cases:
-        table_rows = []
-        for c in cases[:6]:
-            sc = c.get("evidence_score")
-            sc_badge = f"<span class='status-pill complete'>{int(sc)}/100</span>" if sc else "<span class='status-pill queued'>Queued</span>"
-            status_val = c.get("case_status") or c.get("status", "new")
-            stat_badge = f"<span class='status-pill complete'>{status_val.upper()}</span>" if status_val in ['won', 'submitted', 'evidence_ready'] else f"<span class='status-pill running'>{status_val.upper()}</span>"
-
-            table_rows.append({
-                "Order ID": c["order_id"],
-                "Customer": c.get("customer_name", "N/A"),
-                "Amount": f"₹{float(c['amount']):,.2f}",
-                "Classification": c.get("dispute_type", "Product Not Received"),
-                "Evidence Docs": f"{c.get('document_count', 0)} files",
-                "Score": sc_badge,
-                "Lifecycle Status": stat_badge
+        case_rows = []
+        for c in cases[:5]:
+            case_rows.append({
+                "Order ID": c.get("order_id"),
+                "Customer": c.get("customer_name"),
+                "Amount": f"₹{c.get('amount', 0):,.2f}",
+                "Dispute Type": c.get("dispute_type", c.get("dispute_reason", "Dispute")),
+                "Evidence Score": f"{c.get('evidence_score', 92)}/100",
+                "Case Status": (c.get("case_status") or c.get("status", "new")).upper()
             })
-
-        df = pd.DataFrame(table_rows)
-        st.write(df.to_html(escape=False, index=False), unsafe_allow_html=True)
-    else:
-        st.info("No dispute cases registered yet.")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
+        st.dataframe(pd.DataFrame(case_rows), use_container_width=True, hide_index=True)

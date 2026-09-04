@@ -115,3 +115,11 @@ class DocumentAgent:
             "classified_documents": classified,
             "organization_summary": summary
         }
+
+    @classmethod
+    def classify_and_organize(cls, *args, **kwargs) -> Dict[str, Any]:
+        if len(args) == 1 and isinstance(args[0], list):
+            return cls.organize_docket("case_default", args[0])
+        elif len(args) == 2:
+            return cls.organize_docket(args[0], args[1])
+        return cls.organize_docket(kwargs.get("case_id", "case_default"), kwargs.get("documents", []))

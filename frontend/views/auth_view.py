@@ -4,14 +4,16 @@ Supports Merchant and Customer logins via Phone OTP and KYC Document Vault.
 """
 
 import streamlit as st
+from frontend.components import render_html
+
 
 def render_auth_view(service):
-    st.markdown("""
-    <div style="margin-bottom: 24px;">
-        <h2 style="margin: 0; color: #F8FAFC; font-weight: 700; letter-spacing: -0.02em;">Access Portal & Verification Vault</h2>
-        <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">Secure biometric & SMS OTP gateway backed by Supabase Auth and RLS document encryption.</p>
-    </div>
-    """, unsafe_allow_html=True)
+    render_html("""
+<div style="margin-bottom: 24px;">
+    <h2 style="margin: 0; color: #F8FAFC; font-weight: 700; letter-spacing: -0.02em;">Access Portal & Verification Vault</h2>
+    <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">Secure biometric & SMS OTP gateway backed by Supabase Auth and RLS document encryption.</p>
+</div>
+""")
 
     tab1, tab2, tab3 = st.tabs([
         "📱 Screen 1: Dual Portal Phone OTP Login",
@@ -23,9 +25,12 @@ def render_auth_view(service):
     # SCREEN 1: Phone OTP Login (Merchant or Customer)
     # -------------------------------------------------------------
     with tab1:
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>Phone OTP Authentication</span><span class="sub-tag">Supabase Auth</span></div>', unsafe_allow_html=True)
-        st.markdown('<p class="card-subtitle">Zero-password passwordless authentication for both Merchants and Customers.</p>', unsafe_allow_html=True)
+        render_html("""
+<div class="fintech-card">
+    <div class="card-title"><span>Phone OTP Authentication</span><span class="sub-tag">Supabase Auth</span></div>
+    <p class="card-subtitle">Zero-password passwordless authentication for both Merchants and Customers.</p>
+</div>
+""")
 
         user_type = st.radio(
             "Select Portal Access Role",
@@ -64,22 +69,25 @@ def render_auth_view(service):
                     st.session_state["current_customer"] = auth_res["customer"]
                     st.balloons()
                     st.success(f"Welcome, {auth_res['customer']['full_name']}! Authorized Customer Proof Vault session.")
+                    st.rerun()
                 else:
                     st.session_state["authenticated"] = True
                     st.session_state["active_portal"] = "Merchant"
                     st.session_state["current_merchant"] = auth_res["merchant"]
                     st.balloons()
                     st.success(f"Welcome, {auth_res['merchant']['name']}! Merchant session authorized with Supabase RLS.")
-
-        st.markdown('</div>', unsafe_allow_html=True)
+                    st.rerun()
 
     # -------------------------------------------------------------
     # SCREEN 2: Merchant Profile
     # -------------------------------------------------------------
     with tab2:
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>Business Information Profile</span><span class="sub-tag">KYC Level 2</span></div>', unsafe_allow_html=True)
-        st.markdown('<p class="card-subtitle">Business credentials used in dispute representment filings and arbitration dockets.</p>', unsafe_allow_html=True)
+        render_html("""
+<div class="fintech-card">
+    <div class="card-title"><span>Business Information Profile</span><span class="sub-tag">KYC Level 2</span></div>
+    <p class="card-subtitle">Business credentials used in dispute representment filings and arbitration dockets.</p>
+</div>
+""")
 
         m = service.get_merchant_profile()
         with st.form("merchant_profile_form"):
@@ -110,15 +118,16 @@ def render_auth_view(service):
                 st.session_state["current_merchant"] = service.get_merchant_profile()
                 st.success("Merchant profile updated successfully!")
 
-        st.markdown('</div>', unsafe_allow_html=True)
-
     # -------------------------------------------------------------
     # SCREEN 3: Merchant Document Vault
     # -------------------------------------------------------------
     with tab3:
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>Merchant Secure Document Vault</span><span class="sub-tag">Supabase Storage</span></div>', unsafe_allow_html=True)
-        st.markdown('<p class="card-subtitle">Upload corporate identity certificates. Once verified, these proofs auto-attach to bank dispute filings.</p>', unsafe_allow_html=True)
+        render_html("""
+<div class="fintech-card">
+    <div class="card-title"><span>Merchant Secure Document Vault</span><span class="sub-tag">Supabase Storage</span></div>
+    <p class="card-subtitle">Upload corporate identity certificates. Once verified, these proofs auto-attach to bank dispute filings.</p>
+</div>
+""")
 
         col_up1, col_up2 = st.columns([1, 2])
         with col_up1:
@@ -133,6 +142,7 @@ def render_auth_view(service):
             if uploaded_file and st.button("Upload to Secure Vault", type="primary"):
                 service.upload_vault_doc(doc_choice, uploaded_file.name, uploaded_file.getvalue())
                 st.success(f"Uploaded {uploaded_file.name} to Supabase Storage with instant SHA-256 verification!")
+                st.rerun()
 
         with col_up2:
             st.markdown("#### Vault Inventory & Verification Status")
@@ -142,18 +152,15 @@ def render_auth_view(service):
                 for v in vault_items:
                     c1, c2 = st.columns([4, 1])
                     with c1:
-                        st.markdown(f"""
-                        <div style="padding: 10px 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; margin-bottom: 8px;">
-                            <div style="font-weight: 600; font-size: 0.88rem; color: #F1F5F9;">📁 {v['file_name']}</div>
-                            <div style="font-size: 0.74rem; color: #94A3B8;">Type: <b>{v['doc_type']}</b> &bull; Uploaded: {v.get('uploaded_at', '')[:10]} &bull; <span style="color: #34D399;">✓ {v.get('verification_status', 'VERIFIED')}</span></div>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        render_html(f"""
+<div style="padding: 10px 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; margin-bottom: 8px;">
+    <div style="font-weight: 600; font-size: 0.88rem; color: #F1F5F9;">📁 {v['file_name']}</div>
+    <div style="font-size: 0.74rem; color: #94A3B8;">Type: <b>{v['doc_type']}</b> &bull; Uploaded: {v.get('uploaded_at', '')[:10]} &bull; <span style="color: #34D399;">✓ {v.get('verification_status', 'VERIFIED')}</span></div>
+</div>
+""")
                     with c2:
                         if st.button("🗑️", key=f"del_m_vault_{v['id']}"):
                             service.delete_merchant_vault_doc(v["id"])
                             st.rerun()
             else:
                 st.info("No documents in vault yet. Upload your business certificates above.")
-
-        st.markdown('</div>', unsafe_allow_html=True)
-

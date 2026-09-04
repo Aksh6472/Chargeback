@@ -10,30 +10,31 @@ Features:
 
 import time
 import streamlit as st
-from ..components import (
+from frontend.components import (
     render_agent_card,
     render_score_radial,
     render_case_status_tracker,
     render_explainable_score_card,
-    render_recommended_next_evidence
+    render_recommended_next_evidence,
+    render_html
 )
 from agents.ml_scoring_agent import MLScoringAgent
 
 
 def render_investigation_view(service):
-    st.markdown("""
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
-        <div>
-            <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Autonomous Multi-Agent Investigation</h2>
-            <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">7 specialized AI agents cooperating through a 10-step pipeline to deconstruct, cross-verify, and defend this dispute.</p>
-        </div>
-        <div>
-            <span class="sub-tag" style="background: rgba(99, 102, 241, 0.2); color: #C4B5FD; border-color: rgba(99, 102, 241, 0.4);">
-                ⚡ n8n ORCHESTRATED
-            </span>
-        </div>
+    render_html("""
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+    <div>
+        <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Autonomous Multi-Agent Investigation</h2>
+        <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">7 specialized AI agents cooperating through a 10-step pipeline to deconstruct, cross-verify, and defend this dispute.</p>
     </div>
-    """, unsafe_allow_html=True)
+    <div>
+        <span class="sub-tag" style="background: rgba(99, 102, 241, 0.2); color: #C4B5FD; border-color: rgba(99, 102, 241, 0.4);">
+            ⚡ n8n ORCHESTRATED
+        </span>
+    </div>
+</div>
+""")
 
     # Active case selection
     cases = service.list_cases()
@@ -84,13 +85,13 @@ def render_investigation_view(service):
 
         for idx, (aname, msg) in enumerate(timeline_10):
             status_bar.progress(int((idx + 1) * 10), text=f"Step {idx+1}/10: {aname} - {msg}")
-            time.sleep(0.25)
+            time.sleep(0.18)
 
         with st.spinner("Finalizing agent outputs and assembling verdict..."):
             pipeline_state = service.run_full_pipeline(active_case_id)
             st.session_state[f"pipeline_run_{active_case_id}"] = pipeline_state
             status_bar.progress(100, text="✓ All 10 Steps & 7 AI Agents Completed Investigation Successfully!")
-            time.sleep(0.2)
+            time.sleep(0.15)
             status_bar.empty()
 
     if not pipeline_state:
@@ -115,27 +116,26 @@ def render_investigation_view(service):
             conf = float(step.get("confidence", 0.95))
             preview = step.get("output_preview", "")
 
-            st.markdown(f"""
-            <div class="step-card complete">
-                <div class="step-badge-num complete">✓ {step_num}</div>
-                <div class="step-content">
-                    <div class="step-header">
-                        <div class="step-name">{stitle}</div>
-                        <span class="step-agent">{aname}</span>
-                    </div>
-                    <div class="step-desc">{preview}</div>
-                    <div class="step-meta">
-                        <span>⏱️ Latency: <b>{etime:.2f}s</b></span>
-                        <span>🎯 Quality: <b>{int(conf*100)}%</b></span>
-                        <span>STATUS: <b style="color: #34D399;">COMPLETE</b></span>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            render_html(f"""
+<div class="step-card complete">
+    <div class="step-badge-num complete">✓ {step_num}</div>
+    <div class="step-content">
+        <div class="step-header">
+            <div class="step-name">{stitle}</div>
+            <span class="step-agent">{aname}</span>
+        </div>
+        <div class="step-desc">{preview}</div>
+        <div class="step-meta">
+            <span>⏱️ Latency: <b>{etime:.2f}s</b></span>
+            <span>🎯 Quality: <b>{int(conf*100)}%</b></span>
+            <span>STATUS: <b style="color: #34D399;">COMPLETE</b></span>
+        </div>
+    </div>
+</div>
+""")
 
     with col_right:
         st.markdown("#### 🎯 ML Risk & Evidence Verdict")
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
         score_val = pipeline_state.get("evidence_score", 92)
         win_prob = pipeline_state.get("win_probability", 0.92)
 
@@ -147,7 +147,6 @@ def render_investigation_view(service):
         ml_score_data = ml_agent.score_case(active_case, ver_rep, doc_count=3)
 
         render_explainable_score_card(ml_score_data)
-        st.markdown('</div>', unsafe_allow_html=True)
 
         # Recommended Next Evidence Banner
         rec_data = ml_score_data.get("recommended_next_evidence", {
@@ -159,18 +158,20 @@ def render_investigation_view(service):
         render_recommended_next_evidence(rec_data)
 
         # Quick Navigation
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>Next Actions</span></div>', unsafe_allow_html=True)
+        render_html("""
+<div class="fintech-card">
+    <div class="card-title"><span>Next Actions</span></div>
+</div>
+""")
         c_act1, c_act2 = st.columns(2)
         with c_act1:
             if st.button("🔍 Source Traceability", use_container_width=True):
-                st.session_state["current_page"] = "Evidence Verification"
+                st.session_state["current_page"] = "Verification Center"
                 st.rerun()
         with c_act2:
             if st.button("📄 Open Final Report & Narrative", use_container_width=True):
                 st.session_state["current_page"] = "Final AI Report"
                 st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
 
     # -------------------------------------------------------------
     # AI Evidence Chat Assistant (RAG Grounded)
@@ -191,15 +192,15 @@ def render_investigation_view(service):
 
     for msg in st.session_state[chat_history_key]:
         if msg["is_user"]:
-            st.markdown(f'<div class="chat-bubble-user">{msg["text"]}</div>', unsafe_allow_html=True)
+            render_html(f'<div class="chat-bubble-user">{msg["text"]}</div>')
         else:
-            st.markdown(f'<div class="chat-bubble-ai">{msg["text"]}</div>', unsafe_allow_html=True)
+            render_html(f'<div class="chat-bubble-ai">{msg["text"]}</div>')
             for cit in msg.get("citations", []):
-                st.markdown(f"""
-                <div class="citation-box">
-                    📌 <b>Citation:</b> {cit.get('source_file')} (Page {cit.get('page_number')}) &bull; Snippet: <i>"{cit.get('snippet')}"</i>
-                </div>
-                """, unsafe_allow_html=True)
+                render_html(f"""
+<div class="citation-box">
+    📌 <b>Citation:</b> {cit.get('source_file')} (Page {cit.get('page_number')}) &bull; Snippet: <i>"{cit.get('snippet')}"</i>
+</div>
+""")
 
     with st.form(key=f"chat_form_{active_case_id}", clear_on_submit=True):
         col_q, col_s = st.columns([5, 1])
