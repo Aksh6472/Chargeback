@@ -47,13 +47,38 @@ Generate a comprehensive, structured case narrative in strictly valid JSON forma
         cls,
         case_data: Dict[str, Any],
         documents: List[Dict[str, Any]],
-        verification_report: Dict[str, Any],
-        ml_score: Dict[str, Any],
-        timeline_events: Optional[List[Dict[str, Any]]] = None
+        *args,
+        **kwargs
     ) -> Dict[str, Any]:
         """
         Synthesizes dispute narrative via Gemini API or structured deterministic reasoning.
+        Accepts either:
+          (case_data, documents, verification_report, ml_score) OR
+          (case_data, documents, entities, verification_report, ml_score)
         """
+        # Dynamically resolve verification_report and ml_score from args/kwargs
+        verification_report = kwargs.get("verification_report")
+        ml_score = kwargs.get("ml_score")
+
+        if args:
+            if isinstance(args[0], list):
+                # Called with: case, documents, entities, verification_report, ml_score
+                if len(args) > 1 and verification_report is None:
+                    verification_report = args[1]
+                if len(args) > 2 and ml_score is None:
+                    ml_score = args[2]
+            elif isinstance(args[0], dict):
+                # Called with: case, documents, verification_report, ml_score
+                if verification_report is None:
+                    verification_report = args[0]
+                if len(args) > 1 and ml_score is None:
+                    ml_score = args[1]
+
+        if not isinstance(verification_report, dict):
+            verification_report = {}
+        if not isinstance(ml_score, dict):
+            ml_score = {}
+
         order_id = case_data.get("order_id", "ORD-2024-9842")
         customer_name = case_data.get("customer_name", "Aarav Sharma")
         amount = case_data.get("amount", 4299.00)

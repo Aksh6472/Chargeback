@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-fixed":"#101c2a","secondary-fixed-dim":"#bbc7da","on-secondary-container":"#596576","surface-bright":"#f8f9fb","secondary":"#535f70","inverse-primary":"#bcc8d2","on-error-container":"#93000a","inverse-on-surface":"#f0f1f3","inverse-surface":"#2e3132","on-tertiary":"#ffffff","tertiary-container":"#00422b","on-error":"#ffffff","surface":"#f8f9fb","on-tertiary-fixed-variant":"#005236","tertiary-fixed":"#6ffbbe","on-secondary":"#ffffff","on-primary":"#ffffff","on-background":"#191c1e","primary-container":"#2f3a42","on-tertiary-container":"#10b981","surface-container-lowest":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#4edea3","outline-variant":"#c4c7cb","surface-container":"#edeef0","on-primary-fixed-variant":"#3d4850","on-tertiary-fixed":"#002113","on-primary-fixed":"#121d24","surface-container-low":"#f2f4f6","surface-tint":"#556069","primary-fixed":"#d8e4ee","surface-container-high":"#e7e8ea","primary":"#1a242c","surface-dim":"#d9dadc","error-container":"#ffdad6","surface-variant":"#e1e2e4","on-primary-container":"#98a4ad","on-surface-variant":"#43474b","tertiary":"#002a1a","secondary-fixed":"#d7e3f7","on-secondary-fixed-variant":"#3c4857","background":"#f8f9fb","secondary-container":"#d7e3f7","outline":"#74777b","surface-container-highest":"#e1e2e4","on-surface":"#191c1e","primary-fixed-dim":"#bcc8d2"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-2xs":"0.25rem","space-lg":"1.5rem","space-xs":"0.5rem","sidebar-width":"260px","space-3xl":"3rem","margin-desktop":"2rem","space-2xl":"2.5rem","space-md":"1rem","gutter-desktop":"1.5rem","space-xl":"2rem","space-sm":"0.75rem"},fontFamily:{"label-md":["Inter"],"headline-lg":["Inter"],"code-sm":["JetBrains Mono"],"headline-lg-mobile":["Inter"],"body-md":["Inter"],"headline-sm":["Inter"],"headline-md":["Inter"],"body-sm":["Inter"],"display-lg":["Inter"],"body-lg":["Inter"],"label-xs-caps":["Inter"]},fontSize:{"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.04em","fontWeight":"600"}],"headline-lg":["28px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"700"}],"code-sm":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"500"}],"headline-lg-mobile":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"700"}],"body-md":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"400"}],"headline-sm":["16px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-md":["20px",{"lineHeight":"28px","letterSpacing":"-0.015em","fontWeight":"600"}],"body-sm":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"400"}],"display-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.025em","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"24px","letterSpacing":"-0.005em","fontWeight":"400"}],"label-xs-caps":["11px",{"lineHeight":"14px","letterSpacing":"0.06em","fontWeight":"700"}]}}}};</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-sidebar-width bg-primary-container z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.08)]"><div class="flex flex-col"><div class="px-space-md pt-space-lg pb-space-md flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Chargeback Evidence AI Shield Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UchQ-dzHKdsfhRqtbB_c-fQQuos_adSff3Hur5i25xfP1RXsZpLKfwewAMAhnpRkevIyLIvkedFeTPhdEQvBxAbLs8aUizc0MW8g4VzvvLayUs2XrcVcwvi1P-LS_dArQ3WYBMnWhW53KrAaf0pBEBPxadqkSNvx3BdreU9PeSbnUYx8k-pvoOiv90pPRhyJxE4Do0B4P53NSBoMSQFD_HC6oUI6vaQIcxmSr_zAslCr4Y_oNAKBlPFXMo"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-primary tracking-tight leading-none">Evidence AI</span><span class="font-label-xs-caps text-label-xs-caps text-on-primary-container uppercase tracking-wider mt-1">Dispute Shield</span></div></div><span class="font-label-xs-caps text-label-xs-caps uppercase px-space-xs py-0.5 rounded bg-surface-container-highest/20 text-on-primary">Enterprise</span></div><nav class="mt-space-sm px-space-sm space-y-1" data-active-classes="bg-primary text-on-primary font-semibold"><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="overview" href="#overview"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-body-md text-body-md">Overview</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="disputes" href="#disputes"><span class="material-symbols-outlined text-[20px]">gavel</span><span class="font-body-md text-body-md">Disputes</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="dispute-detail" href="#dispute-detail"><span class="material-symbols-outlined text-[20px]">description</span><span class="font-body-md text-body-md">Dispute Detail</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="evidence-library" href="#evidence"><span class="material-symbols-outlined text-[20px]">folder_open</span><span class="font-body-md text-body-md">Evidence Library</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg transition-colors bg-primary text-on-primary font-semibold" data-path="evidence-package-builder" href="#evidence-package"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-body-md text-body-md">Package Builder</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="customers" href="#customers"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-body-md text-body-md">Customers</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="reports" href="#reports"><span class="material-symbols-outlined text-[20px]">query_stats</span><span class="font-body-md text-body-md">Reports</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="settings" href="#settings"><span class="material-symbols-outlined text-[20px]">settings</span><span class="font-body-md text-body-md">Settings</span></a></nav></div><div class="p-space-sm mx-space-sm mb-space-md rounded-xl bg-primary/40"><div class="flex items-center gap-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfDWSZdL3vdczJ2QpGTCJVMSXdY54KqiG49Lc8a7AMsuvmAp-8z4BwQS90L7_yxTDuKO5vqlZwIdvAHoTb2EEXfbtVI0r70uy8nRMf6imd2BH1nlTqlj2QSts9ZkVeTJ0nKiceFALuYk90hMmKmFcDpMVCSL89mzlrmArRnY-4CBBTOnZWZdI0GEUS8J65fG30AzS0nNCcjZYdMk2J6AIQqPsjO4qtMkM7TCLwgKrSqz58nRLm9off_Q"/><div class="flex flex-col min-w-0 flex-1"><span class="font-headline-sm text-headline-sm text-on-primary truncate">Sarah Jenkins</span><span class="font-body-sm text-body-sm text-on-primary-container truncate">Director of Risk &amp; Fraud</span><span class="font-code-sm text-code-sm text-on-primary-container/80 truncate">s.jenkins@enterprise.com</span></div><a class="text-on-primary-container hover:text-on-primary transition-colors p-1 rounded" data-path="settings" href="#settings"><span class="material-symbols-outlined text-[20px]">more_vert</span></a></div></div></aside><div class="pl-sidebar-width"><header class="fixed top-0 left-sidebar-width right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-xl"><div class="flex items-center gap-space-md w-full max-w-md"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[20px]">search</span><input class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary outline-none focus:ring-2 focus:ring-primary/20 shadow-sm" placeholder="Search dispute ID, ARN, cardholder, or BIN..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-tertiary-container text-on-tertiary-container"><span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span><span class="font-label-xs-caps text-label-xs-caps uppercase">Production • Live</span></div><button class="relative p-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span></button><button class="flex items-center gap-space-xs px-space-md py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm"><span class="material-symbols-outlined text-[18px]">add</span><span>New Dispute</span></button><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-1 ring-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfDWSZdL3vdczJ2QpGTCJVMSXdY54KqiG49Lc8a7AMsuvmAp-8z4BwQS90L7_yxTDuKO5vqlZwIdvAHoTb2EEXfbtVI0r70uy8nRMf6imd2BH1nlTqlj2QSts9ZkVeTJ0nKiceFALuYk90hMmKmFcDpMVCSL89mzlrmArRnY-4CBBTOnZWZdI0GEUS8J65fG30AzS0nNCcjZYdMk2J6AIQqPsjO4qtMkM7TCLwgKrSqz58nRLm9off_Q"/></div></header><main class="relative pt-16 bg-background min-h-screen px-space-xl py-space-lg"><div class="flex flex-col w-full">
+<section class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-space-md mb-space-lg">
+<div>
+<div class="flex items-center gap-space-xs text-secondary font-label-xs-caps uppercase tracking-wider mb-1">
+<span>Dispute Shield</span>
+<span class="text-outline-variant">•</span>
+<span>Rebuttal Generation Engine</span>
+<span class="text-outline-variant">•</span>
+<span class="text-on-tertiary-container font-semibold">Audit Ready v3.4</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Evidence Package Builder</h1>
+<p class="font-body-md text-body-md text-secondary mt-0.5">
+        Review, organize, and compile your case documentation into a court and card-network ready dispute package.
+      </p>
+</div>
+<div class="flex items-center flex-wrap gap-space-sm">
+<button class="px-space-md py-2 rounded-lg bg-surface-container-lowest text-primary shadow-sm hover:bg-surface-container transition-colors flex items-center gap-space-xs font-label-md text-label-md" type="button">
+<span class="material-symbols-outlined text-[18px]">save</span>
+<span>Save Draft</span>
+</button>
+<button class="px-space-md py-2 rounded-lg bg-surface-container-lowest text-primary shadow-sm hover:bg-surface-container transition-colors flex items-center gap-space-xs font-label-md text-label-md" id="fullscreenToggle" type="button">
+<span class="material-symbols-outlined text-[18px]">open_in_full</span>
+<span>Preview Fullscreen</span>
+</button>
+<button class="px-space-lg py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container shadow-md transition-all flex items-center gap-space-xs font-label-md text-label-md group" id="primaryDownloadBtn" type="button">
+<span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-y-0.5">download</span>
+<span>Download Evidence Package PDF</span>
+</button>
+</div>
+</section>
+<div class="grid grid-cols-12 gap-space-lg items-start">
+<!-- LEFT PANEL: Thumbnails & Reordering (20% -> col-span-3) -->
+<aside class="col-span-12 lg:col-span-3 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">layers</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Document Sequence</span>
+</div>
+<span class="font-code-sm text-code-sm px-2 py-0.5 rounded-full bg-surface-container-high text-secondary">6 Pages</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+          Drag handles to re-index sequence. Scheme requirements mandate summary on page 1.
+        </p>
+<!-- Document Thumbnail List -->
+<div class="flex flex-col gap-space-xs mt-space-xs" id="docThumbnails">
+<!-- Item 1: Active -->
+<div class="group relative flex items-start gap-space-xs p-space-sm rounded-lg bg-surface-container-low shadow-sm cursor-pointer transition-all">
+<span class="material-symbols-outlined text-secondary hover:text-on-surface cursor-grab active:cursor-grabbing text-[18px] mt-1 shrink-0">drag_indicator</span>
+<div class="w-10 h-14 bg-surface-container-lowest shadow-sm rounded flex flex-col items-center justify-between p-1 shrink-0 overflow-hidden">
+<div class="w-full h-1 bg-primary rounded-full"></div>
+<div class="w-full space-y-0.5">
+<div class="w-3/4 h-0.5 bg-outline-variant"></div>
+<div class="w-full h-0.5 bg-outline-variant"></div>
+<div class="w-2/3 h-0.5 bg-outline-variant"></div>
+</div>
+<span class="font-code-sm text-[8px] text-secondary">P.1</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-1">
+<span class="font-label-md text-label-md text-primary font-bold truncate">1. Cover &amp; Synopsis</span>
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary truncate">Visa Compelling Standard</span>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary mt-1">Core Requirement</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="group relative flex items-start gap-space-xs p-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container-low shadow-sm cursor-pointer transition-all">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary cursor-grab active:cursor-grabbing text-[18px] mt-1 shrink-0">drag_indicator</span>
+<div class="w-10 h-14 bg-surface-container shadow-sm rounded flex flex-col items-center justify-between p-1 shrink-0 overflow-hidden">
+<div class="w-full space-y-1 mt-1">
+<div class="w-4/5 h-0.5 bg-outline-variant"></div>
+<div class="w-full h-0.5 bg-outline-variant"></div>
+<div class="w-3/5 h-0.5 bg-outline-variant"></div>
+</div>
+<span class="font-code-sm text-[8px] text-secondary">P.2</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface truncate">2. Table of Contents</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary truncate">Exhibit Map &amp; Citations</span>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary mt-1">Indexed</span>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="group relative flex items-start gap-space-xs p-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container-low shadow-sm cursor-pointer transition-all">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary cursor-grab active:cursor-grabbing text-[18px] mt-1 shrink-0">drag_indicator</span>
+<div class="w-10 h-14 bg-surface-container shadow-sm rounded flex flex-col items-center justify-between p-1 shrink-0 overflow-hidden">
+<span class="material-symbols-outlined text-[12px] text-on-tertiary-container mt-1">verified_user</span>
+<div class="w-full space-y-0.5">
+<div class="w-full h-0.5 bg-outline-variant"></div>
+<div class="w-2/3 h-0.5 bg-outline-variant"></div>
+</div>
+<span class="font-code-sm text-[8px] text-secondary">P.3</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface truncate">3. 3DS Auth Verification</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary truncate">ECI 05 • Frictionless Pass</span>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-on-tertiary-container mt-1 font-semibold">Liability Shift</span>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="group relative flex items-start gap-space-xs p-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container-low shadow-sm cursor-pointer transition-all">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary cursor-grab active:cursor-grabbing text-[18px] mt-1 shrink-0">drag_indicator</span>
+<div class="w-10 h-14 bg-surface-container shadow-sm rounded flex flex-col items-center justify-between p-1 shrink-0 overflow-hidden">
+<span class="material-symbols-outlined text-[12px] text-secondary mt-1">local_shipping</span>
+<div class="w-full space-y-0.5">
+<div class="w-4/5 h-0.5 bg-outline-variant"></div>
+<div class="w-3/4 h-0.5 bg-outline-variant"></div>
+</div>
+<span class="font-code-sm text-[8px] text-secondary">P.4</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface truncate">4. Carrier POD Receipt</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary truncate">FedEx #794829103829</span>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary mt-1">Adult Signature</span>
+</div>
+</div>
+<!-- Item 5 -->
+<div class="group relative flex items-start gap-space-xs p-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container-low shadow-sm cursor-pointer transition-all">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary cursor-grab active:cursor-grabbing text-[18px] mt-1 shrink-0">drag_indicator</span>
+<div class="w-10 h-14 bg-surface-container shadow-sm rounded flex flex-col items-center justify-between p-1 shrink-0 overflow-hidden">
+<span class="material-symbols-outlined text-[12px] text-secondary mt-1">mail</span>
+<div class="w-full space-y-0.5">
+<div class="w-full h-0.5 bg-outline-variant"></div>
+<div class="w-1/2 h-0.5 bg-outline-variant"></div>
+</div>
+<span class="font-code-sm text-[8px] text-secondary">P.5</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface truncate">5. Customer Comms Log</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary truncate">Zendesk Ticket #49281</span>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary mt-1">4 Messages</span>
+</div>
+</div>
+<!-- Item 6 -->
+<div class="group relative flex items-start gap-space-xs p-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container-low shadow-sm cursor-pointer transition-all">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary cursor-grab active:cursor-grabbing text-[18px] mt-1 shrink-0">drag_indicator</span>
+<div class="w-10 h-14 bg-surface-container shadow-sm rounded flex flex-col items-center justify-between p-1 shrink-0 overflow-hidden">
+<span class="material-symbols-outlined text-[12px] text-secondary mt-1">policy</span>
+<div class="w-full space-y-0.5">
+<div class="w-4/5 h-0.5 bg-outline-variant"></div>
+<div class="w-3/5 h-0.5 bg-outline-variant"></div>
+</div>
+<span class="font-code-sm text-[8px] text-secondary">P.6</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface truncate">6. Terms &amp; Clickwrap Log</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary truncate">IP/Timestamp Consent Hash</span>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary mt-1">Enforceable</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-space-sm py-2.5 px-space-sm rounded-lg bg-surface-container-high hover:bg-surface-variant text-primary font-label-md text-label-md transition-colors flex items-center justify-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>+ Add Document to Package</span>
+</button>
+</div>
+<!-- Quick Document Audit Card -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm space-y-space-sm">
+<div class="flex items-center gap-space-xs text-on-surface font-headline-sm text-headline-sm">
+<span class="material-symbols-outlined text-on-tertiary-container text-[20px]">shield</span>
+<span>Network Rebuttal Strength</span>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between font-body-sm text-body-sm">
+<span class="text-secondary">Visa CE 3.0 Compliance</span>
+<span class="font-bold text-on-surface">98% Match</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-on-tertiary-container rounded-full w-[98%]"></div>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+          All mandatory tier-1 requirements satisfied: Verified Delivery Address matches 3DS AVS billing location.
+        </p>
+</div>
+</aside>
+<!-- CENTER PANEL: Document Preview Workspace (55% -> col-span-6) -->
+<main class="col-span-12 lg:col-span-6 flex flex-col gap-space-sm">
+<!-- Toolbar controls -->
+<div class="bg-surface-container-lowest px-space-md py-space-xs rounded-xl shadow-sm flex items-center justify-between gap-space-sm flex-wrap">
+<div class="flex items-center gap-space-xs">
+<button class="p-1.5 rounded text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" id="prevPageBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<span class="font-code-sm text-code-sm text-on-surface px-2 py-0.5 rounded bg-surface-container-low font-semibold">1 / 6</span>
+<button class="p-1.5 rounded text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" id="nextPageBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<div class="flex items-center gap-space-sm text-secondary">
+<div class="flex items-center gap-space-2xs bg-surface-container-low px-2 py-1 rounded-lg">
+<button class="p-1 rounded hover:bg-surface-container transition-colors" id="zoomOutBtn" title="Zoom Out" type="button">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<span class="font-code-sm text-code-sm px-1 text-on-surface font-semibold" id="zoomLevel">100%</span>
+<button class="p-1 rounded hover:bg-surface-container transition-colors" id="zoomInBtn" title="Zoom In" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+<button class="px-2.5 py-1 rounded bg-surface-container-low hover:bg-surface-container text-secondary hover:text-on-surface text-label-md font-label-md transition-colors flex items-center gap-1" id="fitWidthBtn" type="button">
+<span class="material-symbols-outlined text-[16px]">fit_screen</span>
+<span>Fit Width</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-secondary hover:text-on-surface transition-colors" id="printPageBtn" title="Print Sheet" type="button">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+</div>
+</div>
+<!-- PDF Canvas Viewport -->
+<div class="relative bg-surface-container-high p-space-md sm:p-space-lg rounded-2xl flex justify-center overflow-auto shadow-inner min-h-[820px]" id="pdfViewport">
+<!-- Simulated 8.5x11 Sheet -->
+<article class="w-full max-w-[620px] bg-surface-container-lowest shadow-xl rounded-sm p-8 sm:p-10 flex flex-col justify-between text-on-surface transition-transform duration-200 ease-out origin-top" id="pdfSheet">
+<div class="flex flex-col gap-space-md">
+<!-- Document Header -->
+<header class="flex items-start justify-between pb-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[24px]">shield</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-primary uppercase tracking-tight font-bold">Formal Chargeback Rebuttal</span>
+<span class="font-label-xs-caps text-label-xs-caps text-secondary uppercase tracking-widest">Network Evidence Docket</span>
+</div>
+</div>
+<div class="text-right flex flex-col">
+<span class="font-code-sm text-code-sm text-primary font-bold">REF: CB-2026-1042</span>
+<span class="font-body-sm text-body-sm text-secondary">Date: October 26, 2026</span>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-on-tertiary-container font-semibold mt-0.5">Status: Formal Response</span>
+</div>
+</header>
+<!-- Case Synopsis Table -->
+<section class="rounded-lg bg-surface-container-low p-space-sm shadow-sm">
+<div class="flex items-center justify-between pb-space-xs mb-space-xs">
+<span class="font-label-xs-caps text-label-xs-caps uppercase tracking-wider text-secondary font-bold">Case Synopsis &amp; Dispute Metadata</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-lowest font-code-sm text-code-sm text-primary shadow-sm font-semibold">ARN: 745829104928190284</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-y-space-xs gap-x-space-md font-body-sm text-body-sm">
+<div>
+<span class="text-secondary text-[11px] block">Merchant of Record</span>
+<span class="font-semibold text-primary">Meridian Logistics Inc.</span>
+</div>
+<div>
+<span class="text-secondary text-[11px] block">Payment Gateway</span>
+<span class="font-semibold text-primary">Stripe Payments US</span>
+</div>
+<div>
+<span class="text-secondary text-[11px] block">Acquiring Bank</span>
+<span class="font-semibold text-primary">Wells Fargo, N.A.</span>
+</div>
+<div>
+<span class="text-secondary text-[11px] block">Card Scheme</span>
+<div class="flex items-center gap-1 font-semibold text-primary">
+<span class="w-2 h-2 rounded-full bg-[#1A1F71]"></span>
+<span>Visa Enterprise</span>
+</div>
+</div>
+<div>
+<span class="text-secondary text-[11px] block">Dispute Reason Code</span>
+<span class="font-semibold text-error">10.4 (Fraudulent Transaction)</span>
+</div>
+<div>
+<span class="text-secondary text-[11px] block">Disputed Amount</span>
+<span class="font-bold text-primary font-code-sm text-code-sm">$3,450.00 USD</span>
+</div>
+</div>
+</section>
+<!-- Section 1: Executive Summary -->
+<section class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-1 h-3.5 rounded-full bg-primary"></span>
+<h2 class="font-headline-sm text-headline-sm text-primary">1. Executive Summary &amp; Compelling Evidence</h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed text-justify">
+                Meridian Logistics Inc. formally contests the chargeback claim referenced above. The cardholder alleges unauthorized activity under Visa Reason Code 10.4. However, pursuant to Visa Core Rules Section 10.4.4 (Compelling Evidence Standard 3.0), the merchant hereby produces undeniable verification confirming genuine cardholder authorization, authenticated 3-D Secure version 2.2.0 verification, and physical delivery confirmed by the recipient’s legal signature at the verified cardholder address.
+              </p>
+</section>
+<!-- Section 2: Chronological Timeline -->
+<section class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-1 h-3.5 rounded-full bg-primary"></span>
+<h2 class="font-headline-sm text-headline-sm text-primary">2. Chronological Sequence of Verified Events</h2>
+</div>
+<div class="relative pl-6 space-y-space-sm mt-1">
+<!-- Timeline vertical track -->
+<div class="absolute left-2.5 top-1 bottom-1 w-0.5 bg-surface-variant rounded"></div>
+<!-- Event 1 -->
+<div class="relative flex items-start gap-space-sm">
+<span class="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-primary ring-4 ring-surface-container-lowest"></span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-code-sm text-code-sm text-primary font-bold">Oct 12, 2026 • 14:22:04 UTC</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container font-label-xs-caps text-label-xs-caps text-secondary uppercase">Order Placement</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+                      Cardholder placed Order #ORD-84920 from IP 198.51.100.42 (Seattle, WA). Device fingerprint matched previous 3 undisputed purchases.
+                    </p>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="relative flex items-start gap-space-sm">
+<span class="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-on-tertiary-container ring-4 ring-surface-container-lowest"></span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-code-sm text-code-sm text-on-tertiary-container font-bold">Oct 12, 2026 • 14:22:11 UTC</span>
+<span class="px-1.5 py-0.2 rounded bg-tertiary-container text-on-tertiary font-label-xs-caps text-label-xs-caps uppercase">3DS 2.2 Shift</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+                      3-D Secure authenticated via issuing bank (CAVV: <span class="font-code-sm text-code-sm">AAABBIIIIQUmZpAFAyAAAAA=</span>). ECI result: 05 (Fully Authenticated).
+                    </p>
+</div>
+</div>
+<!-- Event 3 -->
+<div class="relative flex items-start gap-space-sm">
+<span class="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-primary ring-4 ring-surface-container-lowest"></span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-code-sm text-code-sm text-primary font-bold">Oct 13, 2026 • 09:15:00 UTC</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container font-label-xs-caps text-label-xs-caps text-secondary uppercase">Fulfillment</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+                      Dispatched via FedEx Priority Overnight. Barcode scanned onto manifest truck #FL-904.
+                    </p>
+</div>
+</div>
+<!-- Event 4 -->
+<div class="relative flex items-start gap-space-sm">
+<span class="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-on-tertiary-container ring-4 ring-surface-container-lowest"></span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-code-sm text-code-sm text-on-tertiary-container font-bold">Oct 14, 2026 • 11:42:19 UTC</span>
+<span class="px-1.5 py-0.2 rounded bg-tertiary-container text-on-tertiary font-label-xs-caps text-label-xs-caps uppercase">Signed Delivery</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+                      Direct signature recorded: "D. Sterling" at cardholder billing address (482 Elmwood Ave, Seattle WA).
+                    </p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Document Footer -->
+<footer class="pt-space-md mt-space-md flex items-center justify-between text-secondary font-code-sm text-code-sm">
+<span class="text-[10px]">Page 1 of 6 • Confidential Merchant Dispute Submission</span>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[14px] text-on-tertiary-container">verified</span>
+<span class="text-[10px] font-semibold text-primary">Chargeback Evidence AI Verified</span>
+</div>
+</footer>
+</article>
+</div>
+</main>
+<!-- RIGHT PANEL: Editing & Package Controls (25% -> col-span-3) -->
+<aside class="col-span-12 lg:col-span-3 flex flex-col gap-space-md">
+<!-- Case Meta Badge -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm space-y-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary font-bold">Target Case</span>
+<span class="px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-xs-caps text-label-xs-caps font-semibold">Priority • 48h Due</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary">#CB-2026-1042</h3>
+<p class="font-body-sm text-body-sm text-secondary">Meridian Logistics Inc • Dispute Center</p>
+</div>
+</div>
+<!-- Rebuttal Letter Options Form -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs pb-space-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">tune</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Rebuttal Inclusions</span>
+</div>
+<div class="space-y-space-sm">
+<label class="flex items-start gap-space-xs cursor-pointer group">
+<input checked="" class="mt-1 w-4 h-4 rounded text-primary bg-surface-container-low accent-primary cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary">Include Formal Cover Page</span>
+<span class="font-body-sm text-body-sm text-secondary">Standard executive claim summary sheet.</span>
+</div>
+</label>
+<label class="flex items-start gap-space-xs cursor-pointer group">
+<input checked="" class="mt-1 w-4 h-4 rounded text-primary bg-surface-container-low accent-primary cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary">Evidence Timeline Matrix</span>
+<span class="font-body-sm text-body-sm text-secondary">Audit trail of order lifecycle with micro-timestamps.</span>
+</div>
+</label>
+<label class="flex items-start gap-space-xs cursor-pointer group">
+<input checked="" class="mt-1 w-4 h-4 rounded text-primary bg-surface-container-low accent-primary cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary">Card Scheme Citations</span>
+<span class="font-body-sm text-body-sm text-secondary">Visa Core Rule 10.4 CE Standard 3.0 clauses.</span>
+</div>
+</label>
+<label class="flex items-start gap-space-xs cursor-pointer group">
+<input checked="" class="mt-1 w-4 h-4 rounded text-primary bg-surface-container-low accent-primary cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary">Merchant Digital Affidavit</span>
+<span class="font-body-sm text-body-sm text-secondary">Signed electronic declaration under perjury penalties.</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Watermark & Compliance Options -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs pb-space-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">lock_reset</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Redaction &amp; Security</span>
+</div>
+<div class="space-y-space-sm">
+<label class="flex items-start gap-space-xs cursor-pointer group">
+<input checked="" class="mt-1 w-4 h-4 rounded text-primary accent-primary cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary">PCI-DSS Redaction</span>
+<span class="font-code-sm text-code-sm text-secondary">Mask: •••• •••• •••• 4821</span>
+</div>
+</label>
+<label class="flex items-start gap-space-xs cursor-pointer group">
+<input checked="" class="mt-1 w-4 h-4 rounded text-primary accent-primary cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary">SHA-256 Tamper Seal</span>
+<span class="font-code-sm text-code-sm text-secondary truncate">Hash: 8f4e...9b11 (Cryptographic)</span>
+</div>
+</label>
+<label class="flex items-start gap-space-xs cursor-pointer group">
+<input class="mt-1 w-4 h-4 rounded text-primary accent-primary cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary">Network Stamp Watermark</span>
+<span class="font-body-sm text-body-sm text-secondary">Diagonally imprinted "COPY • EVIDENCE" text.</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Package Generation Status & Action -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary font-bold">Package Status</span>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-on-tertiary-container font-semibold">Pre-compiled</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-primary block mt-1">Ready for Generation</span>
+<span class="font-body-sm text-body-sm text-secondary">6 attachments consolidated • 10.2 MB</span>
+</div>
+<!-- Compilation Progress Preview Box -->
+<div class="bg-surface-container-low p-space-sm rounded-lg space-y-2" id="compilationBox">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<span class="text-secondary">Compilation Buffer</span>
+<span class="font-code-sm text-code-sm text-primary font-bold" id="compilerCounter">6 / 6 Compiled</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-300 w-full" id="compilerProgressBar"></div>
+</div>
+<div class="flex items-center gap-space-xs text-secondary font-code-sm text-[11px]">
+<span class="material-symbols-outlined text-[14px] text-on-tertiary-container">check_circle</span>
+<span>PDF/A-1b ISO 19005-1 Verified</span>
+</div>
+</div>
+<button class="w-full py-3 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container shadow-md transition-all flex items-center justify-center gap-space-xs" id="generatePdfBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+<span>Generate &amp; Download PDF</span>
+</button>
+<button class="w-full py-2 rounded-lg bg-transparent text-secondary hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center justify-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">send_and_archive</span>
+<span>Direct Dispatch to Visa Resolve Online (VROL)</span>
+</button>
+</div>
+</aside>
+</div>
+<!-- Interactive Feedback Toast / Status Banner (hidden by default) -->
+<div class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-space-sm px-space-md py-space-sm rounded-xl bg-primary text-on-primary shadow-xl" id="toastNotification">
+<span class="material-symbols-outlined text-on-tertiary-container text-[22px]">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-primary">Compilation Complete</span>
+<span class="font-body-sm text-body-sm text-on-primary-container">Evidence package downloaded as PDF (10.2 MB).</span>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    let currentZoom = 100;
+    const pdfSheet = document.getElementById('pdfSheet');
+    const zoomLevelEl = document.getElementById('zoomLevel');
+    const zoomInBtn = document.getElementById('zoomInBtn');
+    const zoomOutBtn = document.getElementById('zoomOutBtn');
+    const fitWidthBtn = document.getElementById('fitWidthBtn');
+    const generateBtn = document.getElementById('generatePdfBtn');
+    const primaryDownloadBtn = document.getElementById('primaryDownloadBtn');
+    const toast = document.getElementById('toastNotification');
+    const compilerCounter = document.getElementById('compilerCounter');
+    const compilerBar = document.getElementById('compilerProgressBar');
+
+    function updateZoom(val) {
+      currentZoom = Math.min(150, Math.max(70, val));
+      if (pdfSheet) {
+        pdfSheet.style.transform = `scale(${currentZoom / 100})`;
+      }
+      if (zoomLevelEl) {
+        zoomLevelEl.textContent = `${currentZoom}%`;
+      }
+    }
+
+    if (zoomInBtn) {
+      zoomInBtn.addEventListener('click', () => updateZoom(currentZoom + 10));
+    }
+
+    if (zoomOutBtn) {
+      zoomOutBtn.addEventListener('click', () => updateZoom(currentZoom - 10));
+    }
+
+    if (fitWidthBtn) {
+      fitWidthBtn.addEventListener('click', () => updateZoom(100));
+    }
+
+    function showDownloadSimulation() {
+      if (generateBtn) {
+        generateBtn.disabled = true;
+        generateBtn.classList.add('opacity-75');
+      }
+      if (compilerBar) {
+        compilerBar.style.width = '0%';
+        compilerCounter.textContent = '0 / 6 Compiling...';
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += 20;
+          compilerBar.style.width = `${progress}%`;
+          compilerCounter.textContent = `${Math.min(6, Math.floor(progress / 16.6))} / 6 Compiling...`;
+          
+          if (progress >= 100) {
+            clearInterval(interval);
+            compilerCounter.textContent = '6 / 6 Compiled';
+            if (generateBtn) {
+              generateBtn.disabled = false;
+              generateBtn.classList.remove('opacity-75');
+            }
+            if (toast) {
+              toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+              setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+              }, 4000);
+            }
+          }
+        }, 120);
+      }
+    }
+
+    if (generateBtn) {
+      generateBtn.addEventListener('click', showDownloadSimulation);
+    }
+    if (primaryDownloadBtn) {
+      primaryDownloadBtn.addEventListener('click', showDownloadSimulation);
+    }
+
+    // Fullscreen Preview Toggle Simulation
+    const fullscreenToggle = document.getElementById('fullscreenToggle');
+    const pdfViewport = document.getElementById('pdfViewport');
+    if (fullscreenToggle && pdfViewport) {
+      fullscreenToggle.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          pdfViewport.requestFullscreen().catch(err => {
+            // Fallback preview notification if blocked by browser policy
+            alert('Fullscreen preview requested for PDF Docket view.');
+          });
+        } else {
+          document.exitFullscreen();
+        }
+      });
+    }
+  })();
+</script></main></div></body></html>

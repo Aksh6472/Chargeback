@@ -62,6 +62,10 @@ class DisputeService:
         return Repository.get_customer_by_id(customer_id)
 
     @classmethod
+    def update_customer_profile(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        return Repository.upsert_customer(data)
+
+    @classmethod
     def list_all_customers(cls) -> List[Dict[str, Any]]:
         return Repository.list_customers()
 
@@ -87,15 +91,34 @@ class DisputeService:
 
     @classmethod
     def upload_customer_vault_doc(cls, customer_id: str, doc_type: str, file_name: str, file_bytes: bytes) -> Dict[str, Any]:
-        settings.UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
-        save_path = settings.UPLOADS_DIR / f"cust_vault_{doc_type}_{file_name}"
-        with open(save_path, "wb") as f:
-            f.write(file_bytes)
-        return Repository.add_customer_vault_doc(customer_id, doc_type, file_name, str(save_path))
+        return cls.add_customer_vault_doc(customer_id=customer_id, doc_type=doc_type, file_name=file_name, file_bytes=file_bytes)
 
     @classmethod
-    def delete_customer_vault_doc(cls, doc_id: str) -> bool:
-        return Repository.delete_customer_vault_doc(doc_id)
+    def add_customer_vault_doc(
+        cls, customer_id: str, doc_type: str = "", category: str = "",
+        file_name: str = "document.pdf", file_bytes: bytes = b"", file_path: str = ""
+    ) -> Dict[str, Any]:
+        final_doc_type = category or doc_type or "Customer Document"
+        settings.UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+        if not file_path:
+            clean_type = "".join(c for c in final_doc_type if c.isalnum() or c in ("-", "_")).strip()
+            save_path = settings.UPLOADS_DIR / f"cust_vault_{clean_type}_{file_name}"
+            if file_bytes:
+                with open(save_path, "wb") as f:
+                    f.write(file_bytes)
+            elif not save_path.exists():
+                save_path.write_text(f"Customer Proof Vault: {final_doc_type} - {file_name}")
+            final_path = str(save_path)
+        else:
+            final_path = file_path
+        return Repository.add_customer_vault_doc(
+            customer_id, final_doc_type, file_name, final_path,
+            len(file_bytes) if file_bytes else 1024 * 25
+        )
+
+    @classmethod
+    def delete_customer_vault_doc(cls, doc_id: str, customer_id: Optional[str] = None) -> bool:
+        return Repository.delete_customer_vault_doc(doc_id, customer_id)
 
     @classmethod
     def replace_customer_vault_doc(cls, doc_id: str, file_name: str, file_bytes: bytes) -> Optional[Dict[str, Any]]:
@@ -107,7 +130,15 @@ class DisputeService:
 
     @classmethod
     def share_vault_doc_to_case(cls, vault_doc_id: str, case_id: str) -> Optional[Dict[str, Any]]:
-        return Repository.share_customer_vault_doc_to_case(vault_doc_id, case_id)
+        return Repository.share_customer_vault_doc_to_case(case_id=case_id, vault_doc_id=vault_doc_id)
+
+    @classmethod
+    def get_case_documents(cls, case_id: str) -> List[Dict[str, Any]]:
+        return Repository.list_documents_for_case(case_id)
+
+    @classmethod
+    def list_case_documents(cls, case_id: str) -> List[Dict[str, Any]]:
+        return Repository.list_documents_for_case(case_id)
 
     # ---------------------------------------------------------
     # Cases & Documents
@@ -297,7 +328,15 @@ class DisputeService:
         return ChatAgent.answer_question(case_id, question, case, docs, ents, ver)
 
     @classmethod
-    def preview_report(cls, case_id: str, report_title: str, merchant_notes: str, signature_name: str) -> Dict[str, Any]:
+    def preview_report(
+        cls,
+        case_id: str,
+        report_title: str = "COMPREHENSIVE CHARGEBACK REBUTTAL PACKET",
+        merchant_notes: str = "",
+        signature_name: str = "Authorized Operations Lead",
+        executive_summary: Optional[str] = None,
+        evidence_descriptions: Optional[Dict[str, str]] = None
+    ) -> Dict[str, Any]:
         from agents.verification_engine import EvidenceConsistencyEngine
         from agents.ml_scoring_agent import MLScoringAgent
         from agents.rag_agent import RAGAgent
@@ -323,7 +362,9 @@ class DisputeService:
             narrative=narrative,
             report_title=report_title,
             merchant_notes=merchant_notes,
-            digital_signature_name=signature_name
+            digital_signature_name=signature_name,
+            executive_summary=executive_summary,
+            evidence_descriptions=evidence_descriptions
         )
 
     @classmethod

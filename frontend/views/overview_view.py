@@ -1,17 +1,6 @@
 """
-Chargeback Evidence AI - Merchant Executive Dashboard & Unified Case Detail
-Stripe & Ramp inspired fintech OS with:
-1. Executive greeting & 4 KPI cards (Active Cases, Evidence Ready, Win Probability, Pending Action)
-2. Interactive Recent Cases Ledger with 1-click 'Open Case' drilldown
-3. Actionable AI Recommendations section
-4. Unified Case Detail View with 7 cohesive tabs:
-   - Overview
-   - Investigation (10-Step Timeline + ML Risk Verdict + Explainable Score + AI Evidence Chat)
-   - Evidence
-   - Verification (with Clickable Source Traceability)
-   - AI Intelligence (RAG & Precedents)
-   - Narrative (6 Structured Sections)
-   - Final Report (Interactive PDF Editor & Approval)
+Chargeback Evidence AI - Stitch Overview Dashboard & Case Detail Workspace
+Matching overview_chargeback_evidence_ai/code.html and dispute_cb_2026_1042_workspace_chargeback_evidence_ai/code.html
 """
 
 import streamlit as st
@@ -44,19 +33,26 @@ def render_overview_view(service):
     m = service.get_merchant_profile()
     m_name = m.get("name", "Apex Retailers Pvt Ltd") if m else "Apex Retailers Pvt Ltd"
 
+    # Screen Header & Operational Strip
     render_html(f"""
 <div style="margin-bottom: 24px;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
         <div>
-            <h1 style="font-size: 1.85rem; font-weight: 800; letter-spacing: -0.03em; color: #F8FAFC; margin: 0 0 4px 0;">
-                Good morning, {m_name}
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #64748B; letter-spacing: 0.06em;">Dispute Operations</span>
+                <span style="width: 4px; height: 4px; border-radius: 50%; background: #CBD5E1;"></span>
+                <span class="font-mono" style="font-size: 0.72rem; color: #64748B;">Q1 Re-presentment Cycle</span>
+            </div>
+            <h1 style="font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; color: #191C1E; margin: 0 0 4px 0;">
+                Overview
             </h1>
-            <p style="color: #94A3B8; font-size: 0.9rem; margin: 0;">Here's what's happening across your chargeback disputes today.</p>
+            <p style="color: #64748B; font-size: 0.88rem; margin: 0;">Track your active disputes, evidence completeness, and recovery rate across payment rails.</p>
         </div>
-        <div style="text-align: right;">
-            <span class="sub-tag" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border-color: rgba(16, 185, 129, 0.3);">
-                ● 7 AI AGENTS ACTIVE
-            </span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="background: #F2F4F6; border: 1px solid #E5E7EB; padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; color: #191C1E; display: flex; align-items: center; gap: 6px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: #10B981;">sync</span>
+                <span class="font-mono">Auto-sync: Active (Live)</span>
+            </div>
         </div>
     </div>
 </div>
@@ -66,147 +62,365 @@ def render_overview_view(service):
     total_cases = len(cases)
     evidence_ready_cases = [c for c in cases if (c.get("case_status") or c.get("status")) in ["evidence_ready", "submitted", "won"]]
     pending_action_cases = [c for c in cases if (c.get("case_status") or c.get("status")) in ["new", "investigating"]]
+    total_exposure = sum(float(c.get("amount", 0)) for c in cases)
 
-    # 4 Meaningful KPI Cards
+    # 4 Summary Metric Cards (Matching Stitch UI Strip)
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        render_kpi_card("Active Cases", f"{total_cases}", "3 new this week", True)
+        render_kpi_card(
+            title="Active Disputes",
+            value=f"{total_cases}",
+            trend="+4 cases",
+            is_up=True,
+            footer_label="Dispute Exposure",
+            footer_val=f"₹{total_exposure:,.0f}",
+            icon_name="account_balance_wallet"
+        )
     with col2:
-        render_kpi_card("Evidence Ready", f"{len(evidence_ready_cases)}", "Ready for submission", True)
+        render_kpi_card(
+            title="Evidence Pending",
+            value=f"{len(pending_action_cases)}",
+            trend="Needs docs within 48h",
+            is_up=False,
+            footer_label="Urgent SLA Window",
+            footer_val=f"{len(pending_action_cases)} In Collection",
+            icon_name="timer"
+        )
     with col3:
-        render_kpi_card("Win Probability", "89.4%", "+8.2% vs manual", True)
+        render_kpi_card(
+            title="Cases Ready",
+            value=f"{len(evidence_ready_cases)}",
+            trend="94% win probability",
+            is_up=True,
+            footer_label="Packets Verified",
+            footer_val="Auto-dispatchable",
+            icon_name="fact_check"
+        )
     with col4:
-        render_kpi_card("Pending Action", f"{len(pending_action_cases)}", "Requires review", False)
+        render_kpi_card(
+            title="Win Rate",
+            value="78.4%",
+            trend="+3.2% vs benchmark",
+            is_up=True,
+            footer_label="Protected Capital",
+            footer_val=f"₹{total_exposure * 0.78:,.0f}",
+            icon_name="trending_up"
+        )
 
     st.write("")
 
-    # -------------------------------------------------------------
-    # ACTIONABLE AI RECOMMENDATIONS
-    # -------------------------------------------------------------
-    render_html("""
-<div class="fintech-card" style="border-left: 4px solid #3B82F6; padding: 18px 20px;">
-    <div style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #60A5FA; letter-spacing: 0.05em; margin-bottom: 4px;">
-        🤖 Autonomous AI Recommendations
-    </div>
-    <div style="font-size: 0.95rem; font-weight: 600; color: #F1F5F9; margin-bottom: 8px;">
-        3 cases require additional delivery evidence to maximize win probability.
-    </div>
-    <div style="font-size: 0.82rem; color: #94A3B8; line-height: 1.5;">
-        • Attaching customer-signed Courier Proof of Delivery (POD) increases win rates by <b>+14%</b> under Visa & Mastercard Compelling Evidence rules.<br>
-        • 1 case has address token variance that can be resolved using Customer Proof Vault.<br>
-        • 8 cases are fully reconciled and ready for instant one-click approval & submission.
-    </div>
-</div>
-""")
+    # Primary Asymmetric Grid (65% Left / 35% Right)
+    col_main, col_side = st.columns([1.85, 1.0], gap="large")
 
-    st.write("")
-
-    # -------------------------------------------------------------
-    # RECENT CASES LIST / TABLE
-    # -------------------------------------------------------------
-    render_html("""
-<div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0 12px 0;">
-    <h3 style="font-size: 1.15rem; font-weight: 700; color: #F8FAFC; margin: 0;">Dispute Cases</h3>
-    <span style="font-size: 0.8rem; color: #64748B;">Showing all live cases</span>
-</div>
-""")
-
-    if not cases:
-        st.info("No dispute cases registered. Click 'Create Case' to upload an order dispute.")
-        return
-
-    for c in cases:
-        cid = c.get("id")
-        oid = c.get("order_id", "ORD-UNKNOWN")
-        cname = c.get("customer_name", "Cardholder")
-        amount = c.get("amount", 0.0)
-        dtype = c.get("dispute_type", c.get("dispute_reason", "Product Not Received"))
-        score = int(c.get("evidence_score", 92))
-        status = (c.get("case_status") or c.get("status", "new")).upper()
-        updated = c.get("updated_at", c.get("opened_at", "Today"))[:10]
-
-        pill_class = "complete" if status in ["SUBMITTED", "WON", "EVIDENCE_READY"] else ("running" if status == "INVESTIGATING" else "new")
-        score_color = "#10B981" if score >= 80 else "#3B82F6"
-
+    # =============================================================
+    # LEFT COLUMN (65%): RECENT DISPUTES TABLE & DISPOSITION CHART
+    # =============================================================
+    with col_main:
+        # Table Header Box
         render_html(f"""
-<div class="fintech-card" style="padding: 16px 20px; margin-bottom: 12px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <h2 style="font-size: 1.15rem; font-weight: 700; color: #191C1E; margin: 0;">Recent Disputes</h2>
+            <span class="font-mono" style="background: #E1E2E4; color: #43474B; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px;">{total_cases} active</span>
+        </div>
+        <p style="font-size: 0.8rem; color: #64748B; margin: 2px 0 0 0;">Prioritized cases awaiting merchant review, evidence collection, or automatic delivery.</p>
+    </div>
+</div>
+""")
+
+        if not cases:
+            st.info("No dispute cases registered yet. Click 'Create Case' to upload a dispute.")
+        else:
+            # Render Table in Stitch Card Format
+            for c in cases:
+                cid = c.get("id")
+                oid = c.get("order_id", "ORD-UNKNOWN")
+                cname = c.get("customer_name", "Cardholder")
+                amount = float(c.get("amount", 0.0))
+                dtype = c.get("dispute_type", c.get("dispute_reason", "Product Not Received"))
+                score = int(c.get("evidence_score", 85))
+                status_raw = (c.get("case_status") or c.get("status", "new")).lower()
+
+                if status_raw in ["submitted", "won"]:
+                    pill_class = "stitch-pill-success"
+                    pill_text = "Submitted" if status_raw == "submitted" else "Closed (Won)"
+                elif status_raw in ["evidence_ready", "rebuttal_drafted"]:
+                    pill_class = "stitch-pill-info"
+                    pill_text = "Ready to Submit"
+                else:
+                    pill_class = "stitch-pill-warning"
+                    pill_text = "Collecting Evidence"
+
+                # Progress completeness
+                comp_pct = score
+                comp_bar_color = "#10B981" if comp_pct >= 80 else "#2F3A42"
+
+                render_html(f"""
+<div class="stitch-card" style="padding: 1.15rem; margin-bottom: 10px; border: 1px solid #E5E7EB;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-        <div style="min-width: 200px;">
-            <div style="font-size: 1.05rem; font-weight: 700; color: #F8FAFC;">{oid}</div>
-            <div style="font-size: 0.82rem; color: #94A3B8;">Customer: <b>{cname}</b> &bull; Disputed: <b>₹{amount:,.2f}</b></div>
+        <div style="min-width: 170px;">
+            <span class="font-mono" style="font-weight: 700; font-size: 0.95rem; color: #1A242C;">#{oid}</span>
+            <div style="font-size: 0.82rem; color: #191C1E; font-weight: 600; margin-top: 2px;">{cname}</div>
+            <div class="font-mono" style="font-size: 0.72rem; color: #64748B;">Visa &bull; {c.get('tracking_id', 'AWB-LIVE')}</div>
         </div>
         <div>
-            <div style="font-size: 0.72rem; color: #64748B; text-transform: uppercase;">Dispute Type</div>
-            <div style="font-size: 0.86rem; font-weight: 600; color: #E2E8F0;">🏷️ {dtype}</div>
+            <div style="font-size: 0.68rem; text-transform: uppercase; color: #64748B; font-weight: 700;">Amount</div>
+            <div class="font-mono" style="font-size: 1rem; font-weight: 700; color: #191C1E;">₹{amount:,.2f}</div>
         </div>
         <div>
-            <div style="font-size: 0.72rem; color: #64748B; text-transform: uppercase;">Evidence Strength</div>
-            <div style="font-size: 0.95rem; font-weight: 800; color: {score_color};">{score}/100</div>
+            <div style="font-size: 0.68rem; text-transform: uppercase; color: #64748B; font-weight: 700;">Reason</div>
+            <div style="font-size: 0.8rem; font-weight: 600; color: #43474B; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{dtype}</div>
+        </div>
+        <div style="min-width: 120px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: #64748B; margin-bottom: 4px;">
+                <span>Completeness</span>
+                <span class="font-mono" style="font-weight: 700; color: {comp_bar_color};">{comp_pct}%</span>
+            </div>
+            <div style="height: 5px; background: #EDEEF0; border-radius: 9999px; overflow: hidden;">
+                <div style="width: {comp_pct}%; height: 100%; background: {comp_bar_color}; border-radius: 9999px;"></div>
+            </div>
         </div>
         <div>
-            <div style="font-size: 0.72rem; color: #64748B; text-transform: uppercase;">Status</div>
-            <span class="status-pill {pill_class}">{status}</span>
-        </div>
-        <div>
-            <div style="font-size: 0.72rem; color: #64748B; text-transform: uppercase;">Last Updated</div>
-            <div style="font-size: 0.82rem; color: #94A3B8;">{updated}</div>
+            <span class="stitch-pill {pill_class}">
+                <span class="stitch-pill-dot"></span>
+                <span>{pill_text}</span>
+            </span>
         </div>
     </div>
 </div>
 """)
-        col_space, col_btn = st.columns([4, 1])
-        with col_btn:
-            if st.button("Open Case ➔", key=f"open_case_{cid}", type="primary", use_container_width=True):
-                st.session_state["viewing_case_detail"] = cid
-                st.session_state["active_case_id"] = cid
-                st.rerun()
+                col_sp, col_b = st.columns([4, 1])
+                with col_b:
+                    if st.button("Review Case ➔", key=f"btn_open_ov_{cid}", type="primary", use_container_width=True):
+                        st.session_state["viewing_case_detail"] = cid
+                        st.session_state["active_case_id"] = cid
+                        st.rerun()
+
+        # Weekly Disposition Velocity Chart (from Stitch UI)
+        render_html("""
+<div class="stitch-card" style="margin-top: 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+            <h3 style="font-size: 0.95rem; font-weight: 700; color: #191C1E; margin: 0;">Weekly Dispute Disposition Velocity</h3>
+            <p style="font-size: 0.78rem; color: #64748B; margin: 2px 0 0 0;">Volume processed vs counter-evidence recovery rate</p>
+        </div>
+        <span class="stitch-pill stitch-pill-neutral">Rolling 7-Day</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center;">
+        <div style="background: #F8F9FB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 8px 4px;">
+            <div style="height: 70px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 6px;">
+                <div style="width: 70%; background: #2F3A42; height: 60%; border-radius: 4px 4px 0 0;"></div>
+            </div>
+            <span class="font-mono" style="font-size: 0.72rem; color: #64748B;">Mon</span>
+            <div class="font-mono" style="font-size: 0.76rem; font-weight: 700; color: #191C1E;">₹12.4k</div>
+        </div>
+        <div style="background: #F8F9FB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 8px 4px;">
+            <div style="height: 70px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 6px;">
+                <div style="width: 70%; background: #2F3A42; height: 40%; border-radius: 4px 4px 0 0;"></div>
+            </div>
+            <span class="font-mono" style="font-size: 0.72rem; color: #64748B;">Tue</span>
+            <div class="font-mono" style="font-size: 0.76rem; font-weight: 700; color: #191C1E;">₹8.1k</div>
+        </div>
+        <div style="background: #F8F9FB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 8px 4px;">
+            <div style="height: 70px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 6px;">
+                <div style="width: 70%; background: #2F3A42; height: 85%; border-radius: 4px 4px 0 0;"></div>
+            </div>
+            <span class="font-mono" style="font-size: 0.72rem; color: #64748B;">Wed</span>
+            <div class="font-mono" style="font-size: 0.76rem; font-weight: 700; color: #191C1E;">₹19.2k</div>
+        </div>
+        <div style="background: #F8F9FB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 8px 4px;">
+            <div style="height: 70px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 6px;">
+                <div style="width: 70%; background: #2F3A42; height: 70%; border-radius: 4px 4px 0 0;"></div>
+            </div>
+            <span class="font-mono" style="font-size: 0.72rem; color: #64748B;">Thu</span>
+            <div class="font-mono" style="font-size: 0.76rem; font-weight: 700; color: #191C1E;">₹15.0k</div>
+        </div>
+        <div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 8px; padding: 8px 4px;">
+            <div style="height: 70px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 6px;">
+                <div style="width: 70%; background: #10B981; height: 95%; border-radius: 4px 4px 0 0;"></div>
+            </div>
+            <span class="font-mono" style="font-size: 0.72rem; font-weight: 700; color: #065F46;">Today</span>
+            <div class="font-mono" style="font-size: 0.76rem; font-weight: 800; color: #065F46;">₹22.8k</div>
+        </div>
+        <div style="background: #F8F9FB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 8px 4px; opacity: 0.6;">
+            <div style="height: 70px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 6px;">
+                <div style="width: 70%; background: #CBD5E1; height: 30%; border-radius: 4px 4px 0 0;"></div>
+            </div>
+            <span class="font-mono" style="font-size: 0.72rem; color: #64748B;">Sat</span>
+            <div class="font-mono" style="font-size: 0.76rem; color: #64748B;">Est.</div>
+        </div>
+        <div style="background: #F8F9FB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 8px 4px; opacity: 0.6;">
+            <div style="height: 70px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 6px;">
+                <div style="width: 70%; background: #CBD5E1; height: 25%; border-radius: 4px 4px 0 0;"></div>
+            </div>
+            <span class="font-mono" style="font-size: 0.72rem; color: #64748B;">Sun</span>
+            <div class="font-mono" style="font-size: 0.76rem; color: #64748B;">Est.</div>
+        </div>
+    </div>
+</div>
+""")
+
+    # =============================================================
+    # RIGHT COLUMN (35%): EVIDENCE PROGRESS & RECENT ACTIVITY
+    # =============================================================
+    with col_side:
+        # Card 1: Evidence Progress
+        render_html("""
+<div class="stitch-card" style="padding: 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="material-symbols-outlined" style="color: #1A242C; font-size: 18px;">task_alt</span>
+            <h3 style="font-size: 0.95rem; font-weight: 700; color: #191C1E; margin: 0;">Evidence Progress</h3>
+        </div>
+        <span class="stitch-pill stitch-pill-info">In-Flight</span>
+    </div>
+    <p style="font-size: 0.78rem; color: #64748B; margin: 0 0 12px 0;">Dossier completion status for pending gateway submissions.</p>
+
+    <!-- Case Item A -->
+    <div style="background: #F8F9FB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 12px; margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span class="font-mono" style="font-weight: 700; color: #191C1E; font-size: 0.85rem;">#CB-2026-1042</span>
+            <span class="font-mono" style="font-size: 0.8rem; font-weight: 700; color: #10B981;">8 of 10</span>
+        </div>
+        <div style="height: 4px; background: #EDEEF0; border-radius: 9999px; overflow: hidden; margin-bottom: 8px;">
+            <div style="width: 80%; height: 100%; background: #10B981;"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.76rem; color: #43474B;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="material-symbols-outlined" style="font-size: 14px; color: #10B981;">check_circle</span>
+                <span>Signed Proof of Delivery (BlueDart)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="material-symbols-outlined" style="font-size: 14px; color: #10B981;">check_circle</span>
+                <span>AVS &amp; 3DS Authentication Token</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; color: #EF4444;">
+                <span class="material-symbols-outlined" style="font-size: 14px;">pending</span>
+                <span>Waiting on terms acceptance log</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Case Item B -->
+    <div style="background: #F8F9FB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span class="font-mono" style="font-weight: 700; color: #191C1E; font-size: 0.85rem;">#CB-2026-1034</span>
+            <span class="font-mono" style="font-size: 0.8rem; font-weight: 700; color: #EF4444;">4 of 9</span>
+        </div>
+        <div style="height: 4px; background: #EDEEF0; border-radius: 9999px; overflow: hidden; margin-bottom: 8px;">
+            <div style="width: 45%; height: 100%; background: #EF4444;"></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.76rem; color: #43474B;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="material-symbols-outlined" style="font-size: 14px; color: #10B981;">check_circle</span>
+                <span>Initial Invoice &amp; Settlement Ledger</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; color: #EF4444;">
+                <span class="material-symbols-outlined" style="font-size: 14px;">warning</span>
+                <span>Needs merchant refund ledger log</span>
+            </div>
+        </div>
+    </div>
+</div>
+""")
+
+        # Card 2: Recent Activity Timeline Feed
+        render_html("""
+<div class="stitch-card" style="padding: 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="material-symbols-outlined" style="color: #1A242C; font-size: 18px;">history</span>
+            <h3 style="font-size: 0.95rem; font-weight: 700; color: #191C1E; margin: 0;">Recent Activity</h3>
+        </div>
+    </div>
+    <p style="font-size: 0.78rem; color: #64748B; margin: 0 0 14px 0;">Live event stream from gateway webhooks and document pipelines.</p>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; border-left: 2px solid #E5E7EB; padding-left: 14px; margin-left: 6px;">
+        <div>
+            <div class="font-mono" style="font-size: 0.7rem; color: #64748B;">12 mins ago &bull; EVIDENCE UPLOAD</div>
+            <div style="font-size: 0.82rem; color: #191C1E; font-weight: 600; margin-top: 2px;">
+                Signed proof of delivery PDF uploaded for case <span class="font-mono" style="color: #1A242C;">#CB-2026-1042</span>
+            </div>
+        </div>
+        <div>
+            <div class="font-mono" style="font-size: 0.7rem; color: #64748B;">45 mins ago &bull; PACKET BUILT</div>
+            <div style="font-size: 0.82rem; color: #191C1E; font-weight: 600; margin-top: 2px;">
+                Automated package compiled for <span style="font-weight: 700;">Aarav Sharma</span> (₹14,999.00)
+            </div>
+        </div>
+        <div>
+            <div class="font-mono" style="font-size: 0.7rem; color: #10B981; font-weight: 700;">2 hours ago &bull; PORTAL VICTORY</div>
+            <div style="font-size: 0.82rem; color: #191C1E; font-weight: 600; margin-top: 2px;">
+                Case <span class="font-mono" style="color: #1A242C;">#CB-2026-1021</span> marked <b style="color: #10B981;">Won</b> by card dispute portal (+₹2,190 recovered)
+            </div>
+        </div>
+    </div>
+</div>
+""")
+
+        # Card 3: Shield Active Card
+        render_html("""
+<div style="background: #1A242C; color: #FFFFFF; border-radius: 12px; padding: 1.25rem; box-shadow: 0 4px 12px rgba(26,36,44,0.15);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="material-symbols-outlined" style="color: #6FFBBE; font-size: 20px;">verified_user</span>
+            <span style="font-weight: 700; font-size: 0.9rem; color: #FFFFFF;">Chargeback Shield Active</span>
+        </div>
+        <span class="font-mono" style="font-size: 0.72rem; color: #98A4AD;">v4.12</span>
+    </div>
+    <p style="font-size: 0.8rem; color: #BCC8D2; line-height: 1.45; margin: 0 0 10px 0;">
+        Automated rules are monitoring active cases across Visa Resolve Online &amp; Mastercard Dispute Resolution.
+    </p>
+    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
+        <span class="font-mono" style="font-size: 0.72rem; color: #6FFBBE;">All Rails Synced</span>
+    </div>
+</div>
+""")
 
 
 # -------------------------------------------------------------
-# UNIFIED CASE DETAIL VIEW (Section 7)
+# UNIFIED CASE DETAIL WORKSPACE (Matching Stitch Case Detail)
 # -------------------------------------------------------------
 def render_case_detail_view(service, case_id: str):
     case = service.get_case(case_id)
     if not case:
-        st.error("Case not found.")
-        if st.button("← Back to Cases"):
+        st.error("Dispute case not found.")
+        if st.button("← Back to Overview"):
             st.session_state["viewing_case_detail"] = None
             st.rerun()
         return
 
-    # Back to Cases button
-    if st.button("← Back to Cases", key="btn_back_to_cases"):
+    if st.button("← Back to Overview", key="btn_back_to_ov"):
         st.session_state["viewing_case_detail"] = None
         st.rerun()
 
     c_status = (case.get("case_status") or case.get("status", "new")).upper()
-    pill_class = "complete" if c_status in ["SUBMITTED", "WON", "EVIDENCE_READY"] else ("running" if c_status == "INVESTIGATING" else "new")
+    pill_class = "stitch-pill-success" if c_status in ["SUBMITTED", "WON", "EVIDENCE_READY"] else "stitch-pill-warning"
     score_val = int(case.get("evidence_score", 92))
-    score_label = "Strong Evidence" if score_val >= 80 else "Moderate Strength"
     dispute_type = case.get("dispute_type", case.get("dispute_reason", "Product Not Received"))
 
-    # Top Case Banner
+    # Top Case Detail Banner
     render_html(f"""
-<div class="fintech-card" style="margin-bottom: 16px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+<div class="stitch-card" style="margin-bottom: 16px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
         <div>
             <div style="display: flex; align-items: center; gap: 10px;">
-                <h2 style="font-size: 1.5rem; font-weight: 800; color: #F8FAFC; margin: 0;">Case #{case.get('order_id')}</h2>
-                <span class="status-pill {pill_class}">{c_status}</span>
+                <h2 style="font-size: 1.45rem; font-weight: 800; color: #191C1E; margin: 0;">Dispute #{case.get('order_id')}</h2>
+                <span class="stitch-pill {pill_class}">{c_status}</span>
             </div>
-            <div style="font-size: 0.85rem; color: #94A3B8; margin-top: 4px;">
-                Customer: <b>{case.get('customer_name')}</b> &bull; Amount: <b>₹{case.get('amount', 0):,.2f}</b> &bull; AWB: <b>{case.get('tracking_id', 'BLUEDART')}</b>
+            <div style="font-size: 0.84rem; color: #64748B; margin-top: 4px;">
+                Customer: <b>{case.get('customer_name')}</b> &bull; Disputed Amount: <b>₹{case.get('amount', 0):,.2f}</b> &bull; AWB: <span class="font-mono">{case.get('tracking_id', 'BLUEDART')}</span>
             </div>
         </div>
-        <div style="display: flex; gap: 24px; align-items: center;">
+        <div style="display: flex; gap: 20px; align-items: center;">
             <div>
-                <div style="font-size: 0.72rem; color: #64748B; text-transform: uppercase;">Dispute Type</div>
-                <div style="font-size: 1.05rem; font-weight: 700; color: #60A5FA;">🏷️ {dispute_type}</div>
+                <div style="font-size: 0.68rem; color: #64748B; text-transform: uppercase; font-weight: 700;">Dispute Classification</div>
+                <div style="font-size: 0.95rem; font-weight: 700; color: #191C1E;">🏷️ {dispute_type}</div>
             </div>
             <div style="text-align: right;">
-                <div style="font-size: 0.72rem; color: #64748B; text-transform: uppercase;">Evidence Strength</div>
-                <div style="font-size: 1.3rem; font-weight: 800; color: #10B981;">{score_val}/100</div>
-                <div style="font-size: 0.72rem; color: #94A3B8;">{score_label}</div>
+                <div style="font-size: 0.68rem; color: #64748B; text-transform: uppercase; font-weight: 700;">Evidence Strength</div>
+                <div style="font-size: 1.35rem; font-weight: 800; color: #10B981;">{score_val}/100</div>
             </div>
         </div>
     </div>
@@ -224,7 +438,7 @@ def render_case_detail_view(service, case_id: str):
         "⚖️ Verification & Traceability",
         "📚 AI Intelligence",
         "✍️ Case Narrative",
-        "📄 Final Report (PDF)"
+        "📄 Final Package"
     ])
 
     pipeline_state = service.get_latest_run(case_id) or service.run_full_pipeline(case_id)
@@ -234,25 +448,26 @@ def render_case_detail_view(service, case_id: str):
         col_o1, col_o2 = st.columns(2)
         with col_o1:
             render_html("""
-<div class="fintech-card">
-    <div class="card-title"><span>Order & Transaction Details</span></div>
+<div class="stitch-card">
+    <h3 class="stitch-card-title">Order & Transaction Authentication</h3>
+    <p class="stitch-card-subtitle">Verified transaction attributes captured via payment gateway and 3D-Secure.</p>
 </div>
 """)
-            st.markdown(f"**Order Reference:** `{case.get('order_id')}`")
-            st.markdown(f"**Transaction Amount:** `₹{case.get('amount', 0):,.2f} {case.get('currency', 'INR')}`")
-            st.markdown(f"**Payment Gateway:** Razorpay Standard Checkout")
-            st.markdown(f"**Dispute Reason Filed:** {case.get('dispute_reason')}")
+            st.markdown(f"**Order ID / Reference:** `{case.get('order_id')}`")
+            st.markdown(f"**Settlement Amount:** `₹{case.get('amount', 0):,.2f} {case.get('currency', 'INR')}`")
+            st.markdown(f"**Dispute Reason Code:** {case.get('dispute_reason')}")
             st.markdown(f"**Carrier Tracking AWB:** `{case.get('tracking_id', 'BLUEDART-88392104')}`")
         with col_o2:
             render_html("""
-<div class="fintech-card">
-    <div class="card-title"><span>Cardholder & Shipping Profile</span></div>
+<div class="stitch-card">
+    <h3 class="stitch-card-title">Cardholder & Fulfillment Details</h3>
+    <p class="stitch-card-subtitle">Verified identity credentials and doorstep destination records.</p>
 </div>
 """)
-            st.markdown(f"**Customer Full Name:** {case.get('customer_name')}")
+            st.markdown(f"**Customer Name:** {case.get('customer_name')}")
             st.markdown(f"**Email Address:** {case.get('customer_email', 'aarav.sharma@example.com')}")
             st.markdown(f"**Phone Number:** {case.get('customer_phone', '+91 9811223344')}")
-            st.markdown(f"**Delivery Shipping Address:**\n> {case.get('shipping_address')}")
+            st.markdown(f"**Shipping Address:**\n> {case.get('shipping_address')}")
 
     # TAB 2: LIVE INVESTIGATION
     with tab_inv:
@@ -269,25 +484,20 @@ def render_case_detail_view(service, case_id: str):
                 conf = float(step.get("confidence", 0.95))
 
                 render_html(f"""
-<div class="step-card complete">
-    <div class="step-badge-num complete">✓ {snum}</div>
-    <div class="step-content">
-        <div class="step-header">
-            <div class="step-name">{stitle}</div>
-            <span class="step-agent">{aname}</span>
-        </div>
-        <div class="step-desc">{preview}</div>
-        <div class="step-meta">
-            <span>⏱️ {etime:.2f}s</span>
-            <span>🎯 Quality: {int(conf*100)}%</span>
-            <span>STATUS: <b style="color: #34D399;">COMPLETE</b></span>
-        </div>
+<div class="stitch-card" style="padding: 1rem; margin-bottom: 8px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <div style="font-weight: 700; font-size: 0.9rem; color: #191C1E;">Step {snum}: {stitle}</div>
+        <span class="stitch-pill stitch-pill-success">{aname}</span>
+    </div>
+    <div style="font-size: 0.82rem; color: #43474B; margin-bottom: 6px;">{preview}</div>
+    <div class="font-mono" style="font-size: 0.72rem; color: #64748B;">
+        ⏱️ {etime:.2f}s &bull; Quality: {int(conf*100)}% &bull; <b style="color: #10B981;">COMPLETED</b>
     </div>
 </div>
 """)
 
         with col_r:
-            st.markdown("#### 🎯 ML Risk & Evidence Verdict")
+            st.markdown("#### 🎯 Case Readiness & Score Breakdown")
             render_score_radial(score_val, pipeline_state.get("win_probability", 0.92))
 
             ml_agent = MLScoringAgent()
@@ -295,52 +505,25 @@ def render_case_detail_view(service, case_id: str):
             ml_score_data = ml_agent.score_case(case, ver_rep, doc_count=3)
             render_explainable_score_card(ml_score_data)
 
-            # Recommended Next Evidence
             rec = ml_score_data.get("recommended_next_evidence", {})
             render_recommended_next_evidence(rec)
-
-            with st.expander("🔍 Click to view Explainable AI Calculations"):
-                st.markdown(f"**Model:** XGBoost Classifier v1.0.0 (Trained on 660 historical cardholder disputes)")
-                st.markdown(f"**Precision:** `89.6%` &bull; **Recall:** `89.4%` &bull; **F1 Score:** `89.5%`")
-                st.markdown("Top Feature Weights: Consistency Confidence (24%), Document Completeness (21%), Name Token Match (16%), Address Levenshtein (14%).")
-
-        # Chat Assistant
-        st.write("---")
-        st.markdown("### 💬 AI Evidence Chat Assistant (RAG Grounded)")
-        st.caption("Ask questions strictly based on current dispute evidence records with verified citations.")
-        q_user = st.text_input("Ask a case question...", placeholder="e.g. Why is the score calculated as 92%?", key=f"chat_q_{case_id}")
-        if st.button("Submit Query ➔", key=f"btn_chat_{case_id}", type="primary") and q_user.strip():
-            with st.spinner("Analyzing case evidence dockets..."):
-                chat_res = service.ask_ai_chat(case_id, q_user)
-                render_html(f'<div class="chat-bubble-user">{q_user}</div>')
-                render_html(f'<div class="chat-bubble-ai">{chat_res.get("answer")}</div>')
-                for cit in chat_res.get("citations", []):
-                    render_html(f"""
-<div class="citation-box">
-    📌 <b>Citation:</b> {cit.get('source_file')} &bull; Snippet: <i>"{cit.get('snippet')}"</i>
-</div>
-""")
 
     # TAB 3: EVIDENCE EXHIBITS
     with tab_evi:
         docs = service.list_case_documents(case_id)
-        st.markdown(f"#### Verified Exhibits for Case #{case.get('order_id')} ({len(docs)} Files)")
+        st.markdown(f"#### Verified Evidence Exhibits ({len(docs)} Files)")
         for doc in docs:
             ocr_conf = float(doc.get("ocr_confidence", 0.96))
             render_html(f"""
-<div class="fintech-card">
+<div class="stitch-card" style="padding: 1.15rem; margin-bottom: 10px;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <div style="font-weight: 700; color: #F8FAFC; font-size: 1rem;">📄 {doc.get('file_name')}</div>
-            <div style="font-size: 0.8rem; color: #94A3B8;">Type: <b>{doc.get('doc_type')}</b> &bull; Category: {doc.get('document_category', 'evidence')} &bull; Uploaded: {doc.get('uploaded_at', '')[:10]}</div>
+            <div style="font-weight: 700; color: #191C1E; font-size: 0.95rem;">📄 {doc.get('file_name')}</div>
+            <div style="font-size: 0.78rem; color: #64748B; margin-top: 2px;">Category: <b>{doc.get('doc_type')}</b> &bull; Added: {doc.get('uploaded_at', '')[:10]}</div>
         </div>
         <div style="text-align: right;">
-            <div style="font-size: 0.72rem; color: #64748B;">OCR Confidence</div>
-            <div style="font-size: 1.1rem; font-weight: 800; color: #34D399;">{int(ocr_conf*100)}%</div>
+            <span class="stitch-pill stitch-pill-success">OCR Quality: {int(ocr_conf*100)}%</span>
         </div>
-    </div>
-    <div style="height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin-top: 10px;">
-        <div style="width: {int(ocr_conf*100)}%; height: 100%; background: #10B981;"></div>
     </div>
 </div>
 """)
@@ -349,13 +532,13 @@ def render_case_detail_view(service, case_id: str):
     with tab_ver:
         ver_rep = service.get_verification_report(case_id)
         field_details = ver_rep.get("field_details", {})
-        st.markdown("#### ⚖️ 6-Category Cross-Document Triangulation")
+        st.markdown("#### ⚖️ Cross-Document Triangulation")
 
         categories = [
             ("Name", "👤 Customer Name Reconciliation"),
             ("Address", "📍 Shipping vs Billing Address"),
-            ("Amount", "💵 Amount & Currency Reconciliation"),
-            ("Dates", "📅 Chronological Journey Consistency"),
+            ("Amount", "💵 Amount & Currency Match"),
+            ("Dates", "📅 Chronological Journey Match"),
             ("Tracking", "📦 Carrier AWB & Waybill Match"),
             ("Invoice", "📑 Document Completeness & Integrity")
         ]
@@ -366,49 +549,34 @@ def render_case_detail_view(service, case_id: str):
                 mpct = fdata.get("match_percentage", 95.0)
                 with col:
                     render_html(f"""
-<div class="fintech-card">
-    <div class="card-title">
-        <span>{ctitle}</span>
-        <span class="status-pill complete">{fdata.get('status', 'MATCH')}</span>
+<div class="stitch-card" style="padding: 1rem; margin-bottom: 10px;">
+    <div class="stitch-card-header">
+        <span style="font-weight: 700; font-size: 0.88rem; color: #191C1E;">{ctitle}</span>
+        <span class="stitch-pill stitch-pill-success">{fdata.get('status', 'MATCH')}</span>
     </div>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0 6px 0;">
-        <span style="font-size: 0.8rem; color: #94A3B8;">Consistency Match</span>
-        <span style="font-size: 1.2rem; font-weight: 800; color: #10B981;">{mpct}%</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 6px 0;">
+        <span style="font-size: 0.78rem; color: #64748B;">Consistency Match</span>
+        <span class="font-mono" style="font-size: 1.1rem; font-weight: 800; color: #10B981;">{mpct}%</span>
     </div>
-    <div style="font-size: 0.82rem; color: #CBD5E1;">{fdata.get('explanation', '')}</div>
+    <div style="font-size: 0.8rem; color: #43474B;">{fdata.get('explanation', '')}</div>
 </div>
 """)
 
-        st.write("---")
-        st.markdown("#### 🔍 Mandatory Evidence Source Traceability")
-        st.caption("Click any factual assertion to inspect exact source document, page, OCR confidence, and NLP confidence.")
-
-        trace_claims = [
-            ("Customer Name: " + case.get('customer_name'), "customer_name", "tax_invoice.pdf", 1, 0.98, 0.96, f"Billed To / Ship To: {case.get('customer_name')}"),
-            (f"Total Settlement: ₹{case.get('amount', 0):,.2f}", "amount", "tax_invoice.pdf", 1, 0.99, 0.99, f"Invoice Total: ₹{case.get('amount', 0):,.2f} INR"),
-            (f"Carrier Tracking AWB: {case.get('tracking_id', 'BLUEDART')}", "tracking_id", "signed_pod_bluedart.pdf", 1, 0.95, 0.94, f"BlueDart Express AWB #{case.get('tracking_id')} - Consignee Handover")
-        ]
-        for label, etype, sdoc, spage, oconf, econf, raw in trace_claims:
-            render_traceable_claim(label, etype, sdoc, spage, oconf, econf)
-            with st.expander(f"Inspect Source Proof for '{label}'"):
-                st.markdown(f"**Source Document:** `{sdoc}` (Page {spage})")
-                st.markdown(f"**Extracted Raw Text:** `\"{raw}\"`")
-                st.markdown(f"**OCR Confidence:** `{int(oconf*100)}%` &bull; **NLP Entity Confidence:** `{int(econf*100)}%`")
-
     # TAB 5: AI INTELLIGENCE
     with tab_rag:
-        st.markdown("#### 📚 pgvector Precedent Intelligence (768-Dim)")
-        rag_agent = RAGAgent()
-        precedents = rag_agent.retrieve_similar_cases(dispute_type, top_k=3)
+        st.markdown("#### 📚 Historical Precedent Intelligence")
+        sim_data = service.get_similar_cases(case_id, top_k=3)
+        precedents = sim_data.get("top_k_cases", [])
         for p in precedents:
+            sim_score = int(p.get('similarity_percentage', 92))
             render_html(f"""
-<div class="fintech-card">
+<div class="stitch-card" style="padding: 1.15rem; margin-bottom: 10px;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: 700; color: #F8FAFC;">{p.get('case_id')} &bull; Reason: {p.get('dispute_reason', dispute_type)}</span>
-        <span class="status-pill complete">{p.get('outcome', 'Won')}</span>
+        <span style="font-weight: 700; color: #191C1E;">Case #{p.get('order_id', p.get('case_id'))} &bull; Reason: {p.get('dispute_reason', dispute_type)}</span>
+        <span class="stitch-pill stitch-pill-success">Outcome: {p.get('outcome', 'Won')}</span>
     </div>
-    <div style="font-size: 0.84rem; color: #94A3B8; margin: 6px 0;">{p.get('summary')}</div>
-    <div style="font-size: 0.75rem; color: #60A5FA;">Arbitration Precedent Similarity: <b>{int(p.get('similarity_score', 0.92)*100)}%</b></div>
+    <div style="font-size: 0.82rem; color: #43474B; margin: 6px 0;">{p.get('summary')}</div>
+    <div style="font-size: 0.74rem; color: #1A242C; font-weight: 600;">Precedent Relevance Match: <b style="color: #10B981;">{sim_score}%</b></div>
 </div>
 """)
 
@@ -417,8 +585,9 @@ def render_case_detail_view(service, case_id: str):
         rep = pipeline_state.get("final_report") or {}
         nar = rep.get("case_narrative") or {}
         render_html("""
-<div class="fintech-card">
-    <div class="card-title"><span>Structured 6-Section Legal Defense Narrative</span><span class="sub-tag">Arbitration Formatted</span></div>
+<div class="stitch-card">
+    <h3 class="stitch-card-title">Structured Legal Defense Narrative</h3>
+    <p class="stitch-card-subtitle">Card scheme arbitration formatted narrative generated by AI reasoning engine.</p>
 </div>
 """)
         st.markdown("##### 1. Incident Overview")
@@ -428,20 +597,20 @@ def render_case_detail_view(service, case_id: str):
         st.markdown("##### 3. Verified Factual Findings")
         for vf in nar.get("verified_facts", [{"fact": "Order & Invoice match 100%", "confidence": "98%"}]):
             st.markdown(f"• **{vf.get('fact')}** (Confidence: `{vf.get('confidence')}`)")
-        st.markdown("##### 4. Contradictions & Fraud Audit")
-        st.markdown(f"_{nar.get('contradictions_audit', 'No factual contradictions detected across submitted records.')}_")
-        st.markdown("##### 5. AI Reasoning & Legal Grounding")
+        st.markdown("##### 4. Contradictions & Audit")
+        st.markdown(f"_{nar.get('contradictions_audit', 'Zero factual contradictions detected across submitted records.')}_")
+        st.markdown("##### 5. Strategic Defense Reasoning")
         st.markdown(f"> {nar.get('ai_reasoning', 'Factual records confirm fulfillment integrity and physical custody handover.')}")
-        st.markdown("##### 6. Formal Arbitration Recommendation")
+        st.markdown("##### 6. Final Recommendation")
         st.success(nar.get("final_recommendation", "Submit full defense docket immediately as evidence completeness is 100%."))
 
     # TAB 7: FINAL REPORT
     with tab_rep:
         rep = pipeline_state.get("final_report") or {}
         render_html("""
-<div class="fintech-card">
-    <div class="card-title"><span>Interactive PDF Editor & Acquirer Submission</span><span class="sub-tag">Editable Draft</span></div>
-    <p class="card-subtitle">Edit executive summaries, attach custom merchant statements, sign digitally, and approve case status to SUBMITTED.</p>
+<div class="stitch-card">
+    <h3 class="stitch-card-title">Evidence Package Editor & Case Approval</h3>
+    <p class="stitch-card-subtitle">Edit executive summaries, attach custom merchant statements, sign digitally, and approve case status to SUBMITTED.</p>
 </div>
 """)
         with st.form(f"pdf_editor_form_{case_id}"):

@@ -64,7 +64,25 @@ class RAGAgent:
         return summary
 
     @classmethod
-    def retrieve_similar_cases(cls, case_data: Dict[str, Any], documents: List[Dict[str, Any]], verification_report: Dict[str, Any], top_k: int = 5) -> Dict[str, Any]:
+    def retrieve_similar_cases(
+        cls,
+        case_data: Dict[str, Any],
+        documents: Optional[List[Dict[str, Any]]] = None,
+        verification_report: Optional[Dict[str, Any]] = None,
+        top_k: int = 5,
+        **kwargs
+    ) -> Dict[str, Any]:
+        if documents is None:
+            documents = []
+        if verification_report is None:
+            verification_report = {"overall_confidence": 0.95, "contradictions_detected": []}
+        
+        # Handle if top_k passed as second arg or kwarg
+        if isinstance(documents, int):
+            top_k = documents
+            documents = []
+            verification_report = {"overall_confidence": 0.95, "contradictions_detected": []}
+
         summary_text = cls.build_case_summary(case_data, documents, verification_report)
         query_vector = generate_dense_embedding(summary_text, dim=768)
 

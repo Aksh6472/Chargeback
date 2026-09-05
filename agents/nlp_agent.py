@@ -103,10 +103,16 @@ class NLPAgent:
         return None
 
     @classmethod
-    def extract_entities(cls, ocr_json: Dict[str, Any], known_customer_name: Optional[str] = None, known_order_id: Optional[str] = None) -> Dict[str, Any]:
+    def extract_entities(cls, ocr_json: Any, known_customer_name: Optional[str] = None, known_order_id: Optional[str] = None) -> Dict[str, Any]:
         """
         Parses OCR text, runs regex and NER, normalizes, and filters low-confidence extractions.
+        Accepts either a dict with 'raw_text' or a raw string.
         """
+        if isinstance(ocr_json, str):
+            ocr_json = {"raw_text": ocr_json, "document_id": "doc_temp", "source_file": "user_input"}
+        elif not isinstance(ocr_json, dict):
+            ocr_json = {"raw_text": str(ocr_json), "document_id": "doc_temp", "source_file": "unknown"}
+
         text = ocr_json.get("raw_text", "")
         doc_id = ocr_json.get("document_id", "doc_temp")
         entities: List[Dict[str, Any]] = []

@@ -1,29 +1,108 @@
 """
 Chargeback Evidence AI - Create Chargeback Case
-Dispute metadata, ML dispute classification, customer linking, and automated navigation to Live Investigation.
+Dispute metadata, automated classification, customer linking, and direct launch into Investigation.
 """
 
+import random
 import streamlit as st
 from frontend.components import render_html
 
 def render_create_case_view(service):
     render_html("""
-    <div style="margin-bottom: 20px;">
-        <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Create Chargeback Case</h2>
-        <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">Upload disputed transaction dockets, invoice records, delivery receipts, and customer proof vault links.</p>
+    <div style="margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span class="material-symbols-outlined" style="color: #2D3948; font-size: 22px;">add_circle</span>
+            <h2 style="margin: 0; color: #1A242C; font-weight: 700; font-size: 1.4rem; letter-spacing: -0.02em;">Create Chargeback Dispute</h2>
+        </div>
+        <p style="color: #64748B; font-size: 0.88rem; margin: 0;">Upload transaction dockets, invoice records, courier delivery receipts, and dynamically link customer proof vaults.</p>
     </div>
     """)
 
     customers = service.list_all_customers()
-    cust_options = {f"{c['full_name']} ({c['phone_number']})": c['id'] for c in customers}
 
+    # Dynamic Customer Profile Selector
+    render_html("""
+    <div class="stitch-card" style="margin-bottom: 18px;">
+        <div class="stitch-card-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="color: #2D3948; font-size: 20px;">account_circle</span>
+                <span class="stitch-card-title">Customer Profile &amp; Proof Vault Link</span>
+            </div>
+            <span class="stitch-pill stitch-pill-draft">Dynamic Selection</span>
+        </div>
+        <p style="color: #64748B; font-size: 0.84rem; margin: 0 0 12px 0;">Select an existing customer to auto-fill their verified identity, contact details, and encrypted proof vault, or add a new customer.</p>
+    </div>
+    """)
+
+    cust_labels = [f"👤 {c['full_name']} — {c['phone_number']} ({c.get('email', '')})" for c in customers]
+    cust_labels.append("➕ Add New / Custom Customer")
+
+    if "create_case_cust_choice" not in st.session_state or st.session_state["create_case_cust_choice"] not in cust_labels:
+        st.session_state["create_case_cust_choice"] = cust_labels[0] if cust_labels else "➕ Add New / Custom Customer"
+
+    selected_cust_choice = st.selectbox(
+        "Select Customer Account",
+        cust_labels,
+        key="create_case_cust_choice",
+        help="Switching customer dynamically populates their verified name, phone, email, and shipping address below."
+    )
+
+    is_new = selected_cust_choice.startswith("➕")
+    if not is_new:
+        idx = cust_labels.index(selected_cust_choice)
+        sel_c = customers[idx]
+        default_cust_id = sel_c.get("id")
+        default_name = sel_c.get("full_name", "")
+        default_phone = sel_c.get("phone_number", "")
+        default_email = sel_c.get("email", "")
+        default_addr = sel_c.get("address") or "Flat 402, Green Glen Layout, Bellandur, Bengaluru, Karnataka 560103"
+        vault_docs = service.get_customer_vault_docs(default_cust_id)
+        doc_count = len(vault_docs)
+    else:
+        default_cust_id = None
+        default_name = ""
+        default_phone = "+91 "
+        default_email = ""
+        default_addr = ""
+        doc_count = 0
+
+    if not is_new:
+        render_html(f"""
+        <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 10px 14px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; font-size: 0.84rem;">
+            <div style="color: #1E40AF; display: flex; align-items: center; gap: 6px;">
+                <span class="material-symbols-outlined" style="font-size: 18px; color: #2563EB;">verified</span>
+                <span><b>{default_name}</b> active &bull; Customer ID: <code style="color: #1E3A8A; background: #DBEAFE; padding: 2px 6px; border-radius: 4px; font-size: 0.78rem;">{default_cust_id}</code></span>
+            </div>
+            <div style="color: #065F46; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                <span class="material-symbols-outlined" style="font-size: 18px; color: #059669;">inventory_2</span>
+                <span>{doc_count} Vault Documents Available</span>
+            </div>
+        </div>
+        """)
+    else:
+        render_html("""
+        <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px; padding: 10px 14px; margin-bottom: 18px; font-size: 0.84rem; color: #92400E; display: flex; align-items: center; gap: 6px;">
+            <span class="material-symbols-outlined" style="font-size: 18px; color: #D97706;">person_add</span>
+            <span><b>New Customer Mode</b>: Details entered below will be automatically saved to customer records upon case submission.</span>
+        </div>
+        """)
+
+    # Transaction and Case Details Form
     with st.form("create_case_form"):
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>1. Disputed Transaction Details</span><span class="sub-tag">Required Metadata</span></div>', unsafe_allow_html=True)
+        render_html("""
+        <div class="stitch-card-header" style="margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="color: #2D3948; font-size: 20px;">receipt_long</span>
+                <span class="stitch-card-title">1. Disputed Transaction Details</span>
+            </div>
+            <span class="stitch-pill stitch-pill-review">Required Metadata</span>
+        </div>
+        """)
 
+        rand_order = f"ORD-2026-{random.randint(1000, 9999)}"
         c1, c2, c3 = st.columns(3)
         with c1:
-            order_id = st.text_input("Order ID / Transaction Ref", value="ORD-2024-9842")
+            order_id = st.text_input("Order ID / Transaction Ref", value=rand_order)
             dispute_type = st.selectbox("Dispute Classification", [
                 "Product Not Received",
                 "Fraudulent / Unauthorized Transaction",
@@ -35,20 +114,25 @@ def render_create_case_view(service):
             dispute_reason = st.text_input("Reason Summary", value="Customer claims product was never delivered to their doorstep.")
         with c2:
             amount = st.number_input("Dispute Amount (INR)", min_value=1.0, value=14999.00, step=100.0)
-            customer_name = st.text_input("Customer Full Name", value="Aarav Sharma")
-            customer_phone = st.text_input("Customer Phone", value="+91 9811223344")
+            customer_name = st.text_input("Customer Full Name", value=default_name, placeholder="e.g. Aarav Sharma")
+            customer_phone = st.text_input("Customer Phone", value=default_phone, placeholder="+91 9876543210")
         with c3:
-            customer_email = st.text_input("Customer Email", value="aarav.sharma@example.com")
-            tracking_id = st.text_input("Carrier Tracking AWB", value="BLUEDART-88392104")
-            selected_cust_link = st.selectbox("Link to Customer Profile", list(cust_options.keys()) if cust_options else ["Aarav Sharma (+91 9811223344)"])
+            customer_email = st.text_input("Customer Email", value=default_email, placeholder="customer@example.com")
+            tracking_id = st.text_input("Carrier Tracking AWB", value=f"BLUEDART-{random.randint(80000000, 89999999)}")
+            st.caption(f"Linked Customer: **{default_name if default_name else 'New Customer'}**")
 
-        shipping_address = st.text_area("Customer Shipping Address", value="Flat 402, Green Glen Layout, Bellandur, Bengaluru, Karnataka 560103")
+        shipping_address = st.text_area("Customer Shipping Address", value=default_addr, placeholder="Door No, Street, Landmark, City, State, Pincode")
 
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown('<div class="fintech-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title"><span>2. Supporting Evidence Documents (Drag & Drop)</span><span class="sub-tag">PDFs & Scans</span></div>', unsafe_allow_html=True)
-        st.markdown('<p class="card-subtitle">Upload multiple files: Tax invoices, signed PODs, courier logs, customer support chats, or gateway receipts.</p>', unsafe_allow_html=True)
+        render_html("""
+        <div style="margin-top: 18px; margin-bottom: 12px;" class="stitch-card-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="color: #2D3948; font-size: 20px;">cloud_upload</span>
+                <span class="stitch-card-title">2. Supporting Evidence Documents (Drag &amp; Drop)</span>
+            </div>
+            <span class="stitch-pill stitch-pill-draft">PDFs &amp; Images</span>
+        </div>
+        <p style="color: #64748B; font-size: 0.84rem; margin: 0 0 12px 0;">Upload multiple files: Tax invoices, signed PODs, courier logs, customer support chats, or gateway receipts.</p>
+        """)
 
         uploaded_files = st.file_uploader(
             "Drop documents here or browse files",
@@ -56,13 +140,10 @@ def render_create_case_view(service):
             accept_multiple_files=True
         )
 
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        submit_btn = st.form_submit_button("⚡ Create Case & Auto-Launch AI Investigation", use_container_width=True, type="primary")
+        submit_btn = st.form_submit_button("Create Case & Launch Investigation", use_container_width=True, type="primary")
 
     if submit_btn:
-        with st.spinner("Registering dispute case and initializing AI agent cluster..."):
-            linked_cust_id = cust_options.get(selected_cust_link) if cust_options else None
+        with st.spinner("Registering dispute case and initializing investigation cluster..."):
             case_data = {
                 "order_id": order_id,
                 "amount": float(amount),
@@ -72,7 +153,7 @@ def render_create_case_view(service):
                 "customer_name": customer_name,
                 "customer_email": customer_email,
                 "customer_phone": customer_phone,
-                "customer_id": linked_cust_id,
+                "customer_id": default_cust_id,
                 "shipping_address": shipping_address,
                 "tracking_id": tracking_id,
                 "status": "new",
@@ -96,6 +177,7 @@ def render_create_case_view(service):
                 for dtype, fname in demo_docs:
                     service.upload_case_document(new_case["id"], dtype, fname, b"Demo Evidence Content for testing")
 
-            st.success(f"Dispute Case #{order_id} created! Auto-navigating to 10-Step AI Investigation...")
-            st.session_state["current_page"] = "AI Investigation"
+            st.success(f"Dispute Case #{order_id} created for {customer_name}! Auto-navigating to Investigation...")
+            st.session_state["current_page"] = "Live Investigation"
             st.rerun()
+

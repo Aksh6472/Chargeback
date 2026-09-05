@@ -14,6 +14,7 @@ from .timeline_view import render_timeline_view
 from .similar_cases_view import render_similar_cases_view
 from .fraud_intel_view import render_fraud_intel_view
 from .final_report_view import render_final_report_view
+from .settings_view import render_settings_view
 
 __all__ = [
     "render_auth_view",
@@ -27,5 +28,6 @@ __all__ = [
     "render_timeline_view",
     "render_similar_cases_view",
     "render_fraud_intel_view",
-    "render_final_report_view"
+    "render_final_report_view",
+    "render_settings_view"
 ]

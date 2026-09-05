@@ -10,18 +10,22 @@ from frontend.components import render_case_status_tracker, render_traceable_cla
 
 def render_verification_view(service):
     render_html("""
-<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
-    <div>
-        <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Evidence Verification & Source Traceability</h2>
-        <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">Cross-document triangulation audit with clickable proof traceability linking claims directly to source PDFs and OCR metrics.</p>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span class="material-symbols-outlined" style="color: #2D3948; font-size: 22px;">verified</span>
+                <h2 style="margin: 0; color: #1A242C; font-weight: 700; font-size: 1.4rem; letter-spacing: -0.02em;">Evidence Verification &amp; Traceability</h2>
+            </div>
+            <p style="color: #64748B; font-size: 0.88rem; margin: 0;">Cross-document triangulation audit with clickable proof traceability linking claims directly to source PDFs and OCR metrics.</p>
+        </div>
+        <div>
+            <span class="stitch-pill stitch-pill-won" style="font-size: 0.8rem; padding: 4px 10px;">
+                <span class="material-symbols-outlined" style="font-size: 16px;">verified_user</span>
+                0 Contradictions Detected
+            </span>
+        </div>
     </div>
-    <div>
-        <span class="sub-tag" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border-color: rgba(16, 185, 129, 0.3);">
-            ✓ 0 CONTRADICTIONS
-        </span>
-    </div>
-</div>
-""")
+    """)
 
     cases = service.list_cases()
     if not cases:
@@ -52,7 +56,6 @@ def render_verification_view(service):
             ("Invoice", "📑 Document Completeness & Integrity", "Assessment of full evidence suite: Tax invoice, proof of delivery, and gateway ledger.")
         ]
 
-        # Grid of 2x3 cards
         for i in range(0, len(categories), 2):
             col_a, col_b = st.columns(2)
             for col, (cat_key, cat_title, cat_desc) in zip([col_a, col_b], categories[i:i+2]):
@@ -66,61 +69,58 @@ def render_verification_view(service):
 
                 match_pct = field_data.get("match_percentage", 95.0)
                 status = field_data.get("status", "MATCH")
-                pill_color = "complete" if status == "MATCH" else ("running" if "VARIANCE" in status else "queued")
-                color_code = '#10B981' if match_pct >= 85 else '#60A5FA'
-                docs_chips = ' '.join([f"<span class='tag-chip tag-blue'>{doc}</span>" for doc in field_data.get('supporting_documents', ['Invoice', 'POD'])])
+                docs_chips = ' '.join([f"<span class='stitch-pill stitch-pill-draft' style='font-size: 0.7rem; margin-right: 4px;'>{doc}</span>" for doc in field_data.get('supporting_documents', ['Invoice', 'POD'])])
 
                 with col:
                     render_html(f"""
-<div class="fintech-card" style="min-height: 240px;">
-    <div class="card-title">
-        <span>{cat_title}</span>
-        <span class="status-pill {pill_color}">{status}</span>
-    </div>
-    <div style="display: flex; align-items: center; justify-content: space-between; margin: 12px 0 8px 0;">
-        <span style="font-size: 0.78rem; color: #94A3B8;">Consistency Match</span>
-        <span style="font-size: 1.3rem; font-weight: 800; color: {color_code};">{match_pct}%</span>
-    </div>
-    <div style="height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin-bottom: 12px;">
-        <div style="width: {match_pct}%; height: 100%; background: {color_code};"></div>
-    </div>
-    <p style="font-size: 0.82rem; color: #CBD5E1; line-height: 1.4; margin-bottom: 10px;">
-        {field_data.get('explanation', '')}
-    </p>
-    <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; margin-top: 10px;">
-        <div style="font-size: 0.72rem; color: #64748B; margin-bottom: 4px;">SUPPORTING EXHIBITS:</div>
-        <div>{docs_chips}</div>
-    </div>
-</div>
-""")
+                    <div class="stitch-card" style="margin-bottom: 12px; min-height: 210px;">
+                        <div class="stitch-card-header">
+                            <span class="stitch-card-title">{cat_title}</span>
+                            <span class="stitch-pill {'stitch-pill-won' if status == 'MATCH' else 'stitch-pill-pending'}">{status}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin: 10px 0 6px 0;">
+                            <span style="font-size: 0.78rem; color: #64748B;">Consistency Match</span>
+                            <span style="font-size: 1.15rem; font-weight: 700; color: #059669;">{match_pct:.0f}%</span>
+                        </div>
+                        <div style="height: 6px; background: #E5E7EB; border-radius: 9999px; overflow: hidden; margin-bottom: 10px;">
+                            <div style="width: {match_pct}%; height: 100%; background: #10B981;"></div>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #334155; line-height: 1.4; margin-bottom: 8px;">
+                            {field_data.get('explanation', '')}
+                        </p>
+                        <div style="border-top: 1px solid #E5E7EB; padding-top: 8px; font-size: 0.72rem; color: #64748B;">
+                            SUPPORTING PROOFS: {docs_chips}
+                        </div>
+                    </div>
+                    """)
 
         # Contradiction Detection Summary Banner
         contras = ver_result.get("contradictions_detected", [])
         if not contras:
             render_html("""
-<div class="fintech-card" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3);">
-    <div style="display: flex; align-items: center; gap: 14px;">
-        <div style="font-size: 1.8rem;">🛡️</div>
-        <div>
-            <div style="font-weight: 700; color: #34D399; font-size: 1rem;">Zero Discrepancies or Contradictions Detected</div>
-            <div style="font-size: 0.82rem; color: #94A3B8;">All 6 factual vectors converge without conflict between merchant records and courier dockets. Ready for bank arbitration filing.</div>
-        </div>
-    </div>
-</div>
-""")
+            <div class="stitch-card" style="background: #ECFDF5; border-color: #A7F3D0; margin-top: 10px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="material-symbols-outlined" style="font-size: 24px; color: #059669;">shield</span>
+                    <div>
+                        <div style="font-weight: 700; color: #065F46; font-size: 0.95rem;">Zero Discrepancies or Contradictions Detected</div>
+                        <div style="font-size: 0.82rem; color: #047857; margin-top: 2px;">All 6 factual vectors converge without conflict between merchant records and courier dockets. Ready for bank arbitration filing.</div>
+                    </div>
+                </div>
+            </div>
+            """)
         else:
             st.error(f"Contradictions flagged: {'; '.join(contras)}")
 
     with tab_trace:
         render_html("""
-<div class="fintech-card">
-    <div class="card-title">
-        <span>Evidence Source Traceability & Proof Audit</span>
-        <span class="sub-tag">Zero Hallucination</span>
-    </div>
-    <p class="card-subtitle">Every AI factual assertion is bound directly to its source document, physical page number, OCR confidence, and NLP confidence score.</p>
-</div>
-""")
+        <div class="stitch-card" style="margin-bottom: 16px;">
+            <div class="stitch-card-header">
+                <span class="stitch-card-title">Evidence Source Traceability &amp; Proof Audit</span>
+                <span class="stitch-pill stitch-pill-draft">Document Grounded</span>
+            </div>
+            <p style="color: #64748B; font-size: 0.84rem; margin: 0;">Every factual claim is directly verified and linked to its original document, physical page number, text clarity, and extraction confidence.</p>
+        </div>
+        """)
 
         trace_claims = [
             {
@@ -179,3 +179,4 @@ def render_verification_view(service):
                     st.metric("OCR Quality Score", f"{int(claim['ocr_conf']*100)}%", "High Precision")
                 with c_o2:
                     st.metric("NLP Entity Confidence", f"{int(claim['ent_conf']*100)}%", "Verified Match")
+

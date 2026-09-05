@@ -1,7 +1,7 @@
 """
-Chargeback Evidence AI - Reusable UI Components
-Stripe & Linear inspired HTML/CSS components with rich fintech aesthetic.
-All HTML is safely unindented to prevent Markdown code block escaping.
+Chargeback Evidence AI - Reusable Stitch UI Components
+Institutional, minimalist fintech components for metrics, status tracking, agent cards,
+explainable score factors, source traceability, and evidence preview dockets.
 """
 
 import streamlit as st
@@ -13,7 +13,7 @@ from typing import Dict, Any, List, Optional
 def render_html(html_code: str):
     """
     Renders HTML cleanly without Markdown code-block indentation bugs.
-    Uses st.html for native HTML injection without CommonMark code-block escaping.
+    Uses st.html for native HTML injection.
     """
     if hasattr(st, "html"):
         st.html(html_code)
@@ -21,25 +21,34 @@ def render_html(html_code: str):
         st.markdown(textwrap.dedent(html_code).strip(), unsafe_allow_html=True)
 
 
-def render_app_header(current_merchant: Dict[str, Any], active_order_id: str = "", active_portal: str = "Merchant"):
-    portal_color = "#3B82F6" if active_portal == "Merchant" else "#10B981"
-    merchant_name = current_merchant.get("name", "Apex Retailers Pvt Ltd") if current_merchant else "Apex Retailers Pvt Ltd"
-    
+def render_app_header(current_merchant: Optional[Dict[str, Any]] = None, active_order_id: str = "", active_portal: str = "Merchant"):
+    """
+    Renders the Stitch top navigation bar with search context, live production telemetry, and user profile pill.
+    """
+    m_name = (current_merchant.get("name") if current_merchant else None) or ("Apex Retailers Pvt Ltd" if active_portal == "Merchant" else "Cardholder")
+    role_label = active_portal.upper()
+
     html = f"""
-<div class="app-header-container">
+<div class="stitch-topbar">
     <div style="display: flex; align-items: center; gap: 14px;">
-        <div style="width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, {portal_color}, #6366F1); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; color: white;">
-            ⚡
-        </div>
-        <div>
-            <div class="brand-badge">CHARGEBACK EVIDENCE AI</div>
-            <div style="font-size: 0.76rem; color: #94A3B8;">Autonomous Multi-Agent Dispute Operating System</div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: #1A242C; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem;">
+                <span class="material-symbols-outlined" style="font-size: 18px;">shield</span>
+            </div>
+            <div>
+                <div style="font-weight: 800; font-size: 0.98rem; color: #191C1E; letter-spacing: -0.02em;">Evidence AI</div>
+                <div style="font-size: 0.72rem; color: #64748B; font-weight: 500;">Dispute Shield &bull; {role_label} Workspace</div>
+            </div>
         </div>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
-        <span class="sub-tag" style="background: rgba(59, 130, 246, 0.2); border-color: {portal_color}; color: #93C5FD;">{active_portal.upper()} PORTAL</span>
-        <div style="background: rgba(255,255,255,0.06); padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); font-size: 0.78rem; color: #E2E8F0;">
-            🏢 <b>{merchant_name}</b>
+        <div class="stitch-pill stitch-pill-success" style="font-size: 0.7rem; padding: 4px 10px;">
+            <span class="stitch-pill-dot"></span>
+            <span>Production &bull; Live Feed</span>
+        </div>
+        <div style="background: #F2F4F6; border: 1px solid #E5E7EB; padding: 4px 12px; border-radius: 8px; font-size: 0.8rem; color: #191C1E; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+            <span class="material-symbols-outlined" style="font-size: 16px; color: #64748B;">{'store' if active_portal == 'Merchant' else 'person'}</span>
+            <span>{m_name}</span>
         </div>
     </div>
 </div>
@@ -49,56 +58,74 @@ def render_app_header(current_merchant: Dict[str, Any], active_order_id: str = "
 
 def render_case_status_tracker(current_status: str):
     """
-    Renders horizontal 6-step lifecycle tracker:
-    New -> Investigating -> Evidence Ready -> Submitted -> Won / Lost
+    Renders horizontal 5-step lifecycle tracker matching Stitch UI:
+    New -> Collecting Evidence -> Ready to Submit -> Submitted -> Closed (Won)
     """
     lifecycle = [
-        ("new", "1. New"),
-        ("investigating", "2. Investigating"),
-        ("evidence_ready", "3. Evidence Ready"),
-        ("submitted", "4. Submitted"),
-        ("won", "5. Won")
+        ("new", "New"),
+        ("investigating", "Collecting Evidence"),
+        ("evidence_ready", "Ready to Submit"),
+        ("submitted", "Submitted"),
+        ("won", "Closed (Won)")
     ]
     
-    status_lower = current_status.lower() if current_status else "new"
+    status_lower = (current_status or "new").lower()
     status_order = ["new", "investigating", "evidence_ready", "submitted", "won"]
     current_idx = status_order.index(status_lower) if status_lower in status_order else 0
     if status_lower == "lost":
-        lifecycle[4] = ("lost", "5. Lost")
+        lifecycle[4] = ("lost", "Closed (Lost)")
         current_idx = 4
 
     html_steps = []
     for i, (key, label) in enumerate(lifecycle):
         if i < current_idx:
-            step_class = "lifecycle-step completed"
-            icon = "✓"
+            step_class = "stitch-step completed"
+            icon = '<span class="material-symbols-outlined" style="font-size: 14px;">check</span>'
         elif i == current_idx:
-            step_class = "lifecycle-step active"
-            icon = "●"
+            step_class = "stitch-step active"
+            icon = str(i + 1)
         else:
-            step_class = "lifecycle-step"
+            step_class = "stitch-step"
             icon = str(i + 1)
 
         html_steps.append(
-            f'<div class="{step_class}"><div class="lifecycle-dot">{icon}</div><span>{label}</span></div>'
+            f'<div class="{step_class}"><div class="stitch-step-num">{icon}</div><span>{label}</span></div>'
         )
         if i < len(lifecycle) - 1:
-            div_class = "lifecycle-divider active" if i < current_idx else "lifecycle-divider"
+            div_class = "stitch-divider completed" if i < current_idx else "stitch-divider"
             html_steps.append(f'<div class="{div_class}"></div>')
 
-    tracker_html = f'<div class="lifecycle-tracker">{"".join(html_steps)}</div>'
+    tracker_html = f'<div class="stitch-lifecycle">{"".join(html_steps)}</div>'
     render_html(tracker_html)
 
 
-def render_kpi_card(title: str, value: str, trend: str, is_up: bool = True):
-    trend_class = "trend-up" if is_up else "trend-neutral"
-    arrow = "↑" if is_up else "→"
+def render_kpi_card(title: str, value: str, trend: str, is_up: bool = True, footer_label: str = "Active Rails", footer_val: str = "Auto-Synced", icon_name: str = "account_balance_wallet"):
+    """
+    Renders clean Stitch KPI card with header icon, primary value, trend badge, and footer status strip.
+    """
+    pill_class = "stitch-pill-success" if is_up else "stitch-pill-warning"
+    arrow = "arrow_upward" if is_up else "schedule"
+    
     html = f"""
-<div class="metric-container">
-    <div class="metric-label">{title}</div>
-    <div class="metric-value">{value}</div>
-    <div class="metric-trend {trend_class}">
-        <span>{arrow} {trend}</span>
+<div class="stitch-kpi-card">
+    <div>
+        <div class="stitch-kpi-header">
+            <span>{title}</span>
+            <div class="stitch-kpi-icon">
+                <span class="material-symbols-outlined" style="font-size: 18px;">{icon_name}</span>
+            </div>
+        </div>
+        <div class="stitch-kpi-value">{value}</div>
+        <div style="margin-top: 4px;">
+            <span class="stitch-pill {pill_class}">
+                <span class="material-symbols-outlined" style="font-size: 13px;">{arrow}</span>
+                <span>{trend}</span>
+            </span>
+        </div>
+    </div>
+    <div class="stitch-kpi-footer">
+        <span style="text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.04em;">{footer_label}</span>
+        <span class="font-mono" style="font-weight: 600; color: #191C1E;">{footer_val}</span>
     </div>
 </div>
 """
@@ -107,36 +134,39 @@ def render_kpi_card(title: str, value: str, trend: str, is_up: bool = True):
 
 def render_agent_card(agent_name: str, status: str, progress: int, exec_time: float, confidence: float, preview: str):
     icon_map = {
-        "Document Agent": "🗂️",
-        "OCR Agent": "📄",
-        "NLP Agent": "🧠",
-        "Verification Agent": "⚖️",
-        "ML Scoring Agent": "🎯",
-        "RAG Agent": "📚",
-        "Narrative Agent": "✍️",
-        "Gemini Report Agent": "✨"
+        "Document Agent": "folder_open",
+        "OCR Agent": "document_scanner",
+        "NLP Agent": "psychology",
+        "Verification Agent": "verified",
+        "ML Scoring Agent": "insights",
+        "Dispute Intelligence Agent": "travel_explore",
+        "RAG Agent": "travel_explore",
+        "Narrative Agent": "edit_note",
+        "Report Agent": "picture_as_pdf"
     }
-    icon = icon_map.get(agent_name, "🤖")
-    pill_class = "complete" if status.lower() == "complete" else ("running" if status.lower() == "running" else "queued")
+    icon = icon_map.get(agent_name, "smart_toy")
+    pill_class = "stitch-pill-success" if status.lower() == "complete" else "stitch-pill-info"
 
     html = f"""
-<div class="agent-card {pill_class}">
-    <div class="agent-card-header">
-        <div class="agent-title">
-            <span style="font-size: 1.2rem;">{icon}</span>
-            <span>{agent_name}</span>
+<div class="stitch-card" style="margin-bottom: 12px; padding: 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: #EDEEF0; color: #2F3A42; display: flex; align-items: center; justify-content: center;">
+                <span class="material-symbols-outlined" style="font-size: 18px;">{icon}</span>
+            </div>
+            <span style="font-weight: 700; font-size: 0.95rem; color: #191C1E;">{agent_name}</span>
         </div>
-        <span class="status-pill {pill_class}">{status}</span>
+        <span class="stitch-pill {pill_class}">{status}</span>
     </div>
-    <div style="height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin: 8px 0 12px 0;">
-        <div style="width: {progress}%; height: 100%; background: linear-gradient(90deg, #3B82F6, #10B981); border-radius: 2px;"></div>
+    <div style="height: 4px; background: #EDEEF0; border-radius: 2px; overflow: hidden; margin: 8px 0 10px 0;">
+        <div style="width: {progress}%; height: 100%; background: #1A242C; border-radius: 2px;"></div>
     </div>
-    <div class="agent-meta-row">
-        <span>⏱️ Latency: <b>{exec_time:.2f}s</b></span>
-        <span>🎯 Confidence: <b>{int(confidence*100)}%</b></span>
-        <span>📊 Status: <b>{progress}% Done</b></span>
+    <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #64748B; margin-bottom: 8px;">
+        <span>Latency: <b style="color: #191C1E;">{exec_time:.2f}s</b></span>
+        <span>Quality Confidence: <b style="color: #10B981;">{int(confidence*100)}%</b></span>
+        <span>Completion: <b style="color: #191C1E;">{progress}%</b></span>
     </div>
-    <div class="agent-output-box">
+    <div style="background: #F8F9FB; border: 1px solid #E5E7EB; border-radius: 6px; padding: 10px 12px; font-size: 0.82rem; color: #43474B; line-height: 1.45;">
         {preview}
     </div>
 </div>
@@ -155,35 +185,38 @@ def render_explainable_score_card(ml_score: Dict[str, Any]):
     for item in breakdown:
         pts = item.get("points", 0)
         pts_str = f"+{pts} pts" if pts > 0 else f"{pts} pts"
-        pts_class = "score-pts-positive" if pts > 0 else "score-pts-negative"
-        icon = "✅" if pts > 0 else "⚠️"
+        pts_color = "#10B981" if pts > 0 else "#EF4444"
+        icon_name = "check_circle" if pts > 0 else "warning"
         items_html.append(f"""
-<div class="score-item">
-    <div>
-        <span>{icon} <b>{item.get('name', '')}</b></span>
-        <div style="font-size: 0.76rem; color: #94A3B8;">{item.get('explanation', '')}</div>
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #F2F4F6;">
+    <div style="display: flex; align-items: flex-start; gap: 8px;">
+        <span class="material-symbols-outlined" style="font-size: 16px; color: {pts_color}; margin-top: 1px;">{icon_name}</span>
+        <div>
+            <span style="font-weight: 600; font-size: 0.86rem; color: #191C1E;">{item.get('name', '')}</span>
+            <div style="font-size: 0.76rem; color: #64748B;">{item.get('explanation', '')}</div>
+        </div>
     </div>
-    <span class="{pts_class}">{pts_str}</span>
+    <span class="font-mono" style="font-weight: 700; font-size: 0.84rem; color: {pts_color};">{pts_str}</span>
 </div>
 """)
 
     html = f"""
-<div class="score-breakdown-container">
+<div class="stitch-card" style="padding: 1.25rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <div>
-            <span style="font-size: 0.8rem; text-transform: uppercase; color: #94A3B8; font-weight: 700;">Dispute Classification</span>
-            <div style="font-size: 1.1rem; font-weight: 700; color: #60A5FA;">🏷️ {dispute_type}</div>
+            <span style="font-size: 0.72rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.05em;">Dispute Classification</span>
+            <div style="font-size: 1.05rem; font-weight: 700; color: #191C1E;">{dispute_type}</div>
         </div>
         <div style="text-align: right;">
-            <span style="font-size: 0.8rem; text-transform: uppercase; color: #94A3B8; font-weight: 700;">Predicted Win Rate</span>
-            <div style="font-size: 1.1rem; font-weight: 800; color: #34D399;">{int(win_prob*100)}%</div>
+            <span style="font-size: 0.72rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.05em;">Win Probability</span>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #10B981;">{int(win_prob*100)}%</div>
         </div>
     </div>
-    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px;">
-        <span style="font-size: 0.85rem; color: #CBD5E1;">Overall Score: <b style="color: #10B981;">{score}/100</b></span>
-        <span class="sub-tag" style="background: rgba(16, 185, 129, 0.15); color: #6EE7B7; border-color: rgba(16, 185, 129, 0.3);">{label}</span>
+    <div style="display: flex; align-items: center; justify-content: space-between; background: #F8F9FB; border: 1px solid #E5E7EB; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px;">
+        <span style="font-size: 0.85rem; color: #191C1E; font-weight: 600;">Overall Score: <b style="color: #10B981;">{score}/100</b></span>
+        <span class="stitch-pill stitch-pill-success">{label}</span>
     </div>
-    <div style="font-size: 0.82rem; font-weight: 600; color: #CBD5E1; margin: 12px 0 8px 0;">Explainable AI Score Drivers:</div>
+    <div style="font-size: 0.78rem; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; margin: 12px 0 6px 0;">Evidence Score Factors:</div>
     {''.join(items_html)}
 </div>
 """
@@ -197,15 +230,15 @@ def render_recommended_next_evidence(rec: Dict[str, Any]):
     alt = rec.get("suggested_alternative", "Customer Delivery Confirmation Email")
 
     html = f"""
-<div class="uplift-banner">
+<div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 10px; padding: 14px 16px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
     <div>
-        <div style="font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.05em; color: #34D399; font-weight: 700;">🚀 Recommended Next Evidence</div>
-        <div style="font-size: 1.05rem; font-weight: 700; color: #F8FAFC; margin: 2px 0;">{doc}</div>
-        <div style="font-size: 0.82rem; color: #94A3B8;">{reason} &bull; <span style="color: #93C5FD;">Alternative: {alt}</span></div>
+        <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #065F46; font-weight: 700;">🚀 Recommended Next Evidence</div>
+        <div style="font-size: 0.98rem; font-weight: 700; color: #065F46; margin: 2px 0;">{doc}</div>
+        <div style="font-size: 0.78rem; color: #047857;">{reason} &bull; <span style="font-weight: 500;">Alt: {alt}</span></div>
     </div>
-    <div style="text-align: right;">
-        <div class="uplift-badge">+{uplift}%</div>
-        <div style="font-size: 0.72rem; color: #94A3B8; margin-top: 4px;">Win Rate Uplift</div>
+    <div style="text-align: right; shrink-0;">
+        <div class="stitch-pill stitch-pill-success" style="font-size: 0.86rem; padding: 4px 10px;">+{uplift}%</div>
+        <div style="font-size: 0.68rem; color: #065F46; font-weight: 600; margin-top: 2px;">Win Uplift</div>
     </div>
 </div>
 """
@@ -214,36 +247,42 @@ def render_recommended_next_evidence(rec: Dict[str, Any]):
 
 def render_traceable_claim(claim_title: str, entity_type: str, source_doc: str, page_num: int, ocr_conf: float, ent_conf: float):
     html = f"""
-<div class="traceable-claim">
+<div style="background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
     <div>
-        <span style="font-weight: 600; color: #F8FAFC;">{claim_title}</span>
-        <div style="font-size: 0.76rem; color: #94A3B8;">Entity: <code>{entity_type}</code> &bull; OCR Conf: <b>{int(ocr_conf*100)}%</b> &bull; NLP Conf: <b>{int(ent_conf*100)}%</b></div>
+        <span style="font-weight: 600; color: #191C1E; font-size: 0.88rem;">{claim_title}</span>
+        <div style="font-size: 0.76rem; color: #64748B; margin-top: 2px;">
+            Field: <code>{entity_type}</code> &bull; OCR Clarity: <b style="color: #10B981;">{int(ocr_conf*100)}%</b> &bull; NLP Confidence: <b style="color: #10B981;">{int(ent_conf*100)}%</b>
+        </div>
     </div>
-    <span class="source-badge">📄 {source_doc} (p.{page_num})</span>
+    <span class="stitch-pill stitch-pill-neutral">📄 {source_doc} (p.{page_num})</span>
 </div>
 """
     render_html(html)
 
 
 def render_score_radial(score: int, win_prob: float):
+    """
+    Renders clean Plotly gauge styled with Stitch neutral palette and emerald highlights.
+    """
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=score,
         domain={'x': [0, 1], 'y': [0, 1]},
-        title={'text': "EVIDENCE STRENGTH SCORE", 'font': {'size': 13, 'color': '#94A3B8'}},
+        title={'text': "CASE READINESS SCORE", 'font': {'size': 12, 'color': '#64748B', 'family': 'Inter'}},
+        number={'font': {'size': 38, 'color': '#191C1E', 'family': 'Inter'}, 'suffix': "%"},
         gauge={
-            'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "#475569"},
-            'bar': {'color': "#10B981" if score >= 80 else "#3B82F6"},
-            'bgcolor': "rgba(255, 255, 255, 0.05)",
+            'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "#CBD5E1"},
+            'bar': {'color': "#1A242C"},
+            'bgcolor': "#F2F4F6",
             'borderwidth': 1,
-            'bordercolor': "rgba(255, 255, 255, 0.1)",
+            'bordercolor': "#E5E7EB",
             'steps': [
-                {'range': [0, 50], 'color': 'rgba(239, 68, 68, 0.15)'},
-                {'range': [50, 80], 'color': 'rgba(245, 158, 11, 0.15)'},
-                {'range': [80, 100], 'color': 'rgba(16, 185, 129, 0.15)'}
+                {'range': [0, 50], 'color': '#FEE2E2'},
+                {'range': [50, 80], 'color': '#FEF3C7'},
+                {'range': [80, 100], 'color': '#ECFDF5'}
             ],
             'threshold': {
-                'line': {'color': "#34D399", 'width': 3},
+                'line': {'color': "#10B981", 'width': 3},
                 'thickness': 0.8,
                 'value': score
             }
@@ -252,8 +291,8 @@ def render_score_radial(score: int, win_prob: float):
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font={'color': "#F8FAFC", 'family': "Inter"},
-        height=220,
-        margin=dict(l=20, r=20, t=30, b=10)
+        font={'color': "#191C1E", 'family': "Inter"},
+        height=190,
+        margin=dict(l=15, r=15, t=25, b=10)
     )
     st.plotly_chart(fig, use_container_width=True)

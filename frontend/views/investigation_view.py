@@ -1,17 +1,16 @@
 """
 Chargeback Evidence AI - Multi-Agent Investigation & Live 10-Step Timeline
-Features:
+Stitch UI Design Integration:
 1. Horizontal Case Lifecycle Progress Tracker
-2. 10-Step Connected Live Timeline with glowing pulse and latency
+2. 10-Step Connected Live Timeline with Stitch cards & latency metrics
 3. Dispute Classification & Explainable AI Score Drivers (+/- points)
 4. Recommended Next Evidence with Win Rate Uplift (+14%)
-5. RAG-grounded AI Evidence Chat Assistant with zero hallucinations and citations
+5. Evidence Chat Assistant with zero hallucinations and clickable citations
 """
 
 import time
 import streamlit as st
 from frontend.components import (
-    render_agent_card,
     render_score_radial,
     render_case_status_tracker,
     render_explainable_score_card,
@@ -23,18 +22,22 @@ from agents.ml_scoring_agent import MLScoringAgent
 
 def render_investigation_view(service):
     render_html("""
-<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
-    <div>
-        <h2 style="margin: 0; color: #F8FAFC; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em;">Autonomous Multi-Agent Investigation</h2>
-        <p style="color: #94A3B8; font-size: 0.88rem; margin-top: 4px;">7 specialized AI agents cooperating through a 10-step pipeline to deconstruct, cross-verify, and defend this dispute.</p>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span class="material-symbols-outlined" style="color: #2D3948; font-size: 22px;">biotech</span>
+                <h2 style="margin: 0; color: #1A242C; font-weight: 700; font-size: 1.4rem; letter-spacing: -0.02em;">Autonomous Multi-Agent Investigation</h2>
+            </div>
+            <p style="color: #64748B; font-size: 0.88rem; margin: 0;">7 specialized micro-agents cooperating through a 10-step pipeline to deconstruct, cross-verify, and defend this dispute.</p>
+        </div>
+        <div>
+            <span class="stitch-pill stitch-pill-won" style="font-size: 0.8rem; padding: 4px 10px;">
+                <span class="material-symbols-outlined" style="font-size: 16px;">bolt</span>
+                Workflow Orchestrated
+            </span>
+        </div>
     </div>
-    <div>
-        <span class="sub-tag" style="background: rgba(99, 102, 241, 0.2); color: #C4B5FD; border-color: rgba(99, 102, 241, 0.4);">
-            ⚡ n8n ORCHESTRATED
-        </span>
-    </div>
-</div>
-""")
+    """)
 
     # Active case selection
     cases = service.list_cases()
@@ -61,7 +64,7 @@ def render_investigation_view(service):
 
     col_btn1, col_btn2 = st.columns([2, 3])
     with col_btn1:
-        run_pipeline = st.button("🚀 Execute 10-Step AI Pipeline", type="primary", use_container_width=True)
+        run_pipeline = st.button("Execute 10-Step Pipeline", type="primary", use_container_width=True)
     with col_btn2:
         st.caption(f"Order: **{active_case.get('order_id')}** &bull; Customer: **{active_case.get('customer_name')}** &bull; Disputed: **₹{active_case.get('amount'):,.2f}** &bull; Type: `{active_case.get('dispute_type', 'Product Not Received')}`")
 
@@ -77,21 +80,21 @@ def render_investigation_view(service):
             ("NLP Agent", "Extracting customer names, order IDs, ISO dates, and amounts..."),
             ("Verification Agent", "Validating GSTIN, PAN & KYC corporate vault credentials..."),
             ("Verification Agent", "Triangulating cross-document consistency & auditing contradictions..."),
-            ("RAG Agent", "Retrieving historical precedents from pgvector 768-dim index..."),
-            ("ML Scoring Agent", "Evaluating evidence strength with XGBoost model & calculating uplift..."),
-            ("Narrative Agent", "Synthesizing legal defense narrative with timestamped facts..."),
-            ("Gemini Report Agent", "Compiling submission-ready interactive PDF packet...")
+            ("Intelligence Agent", "Cross-referencing historical dispute rulings and arbitration benchmarks..."),
+            ("ML Scoring Agent", "Evaluating evidence strength model & calculating win uplift..."),
+            ("Narrative Agent", "Synthesizing formal defense narrative with timestamped facts..."),
+            ("Report Agent", "Compiling submission-ready dispute defense packet...")
         ]
 
         for idx, (aname, msg) in enumerate(timeline_10):
             status_bar.progress(int((idx + 1) * 10), text=f"Step {idx+1}/10: {aname} - {msg}")
-            time.sleep(0.18)
+            time.sleep(0.15)
 
         with st.spinner("Finalizing agent outputs and assembling verdict..."):
             pipeline_state = service.run_full_pipeline(active_case_id)
             st.session_state[f"pipeline_run_{active_case_id}"] = pipeline_state
-            status_bar.progress(100, text="✓ All 10 Steps & 7 AI Agents Completed Investigation Successfully!")
-            time.sleep(0.15)
+            status_bar.progress(100, text="✓ All 10 Steps Completed Investigation Successfully!")
+            time.sleep(0.12)
             status_bar.empty()
 
     if not pipeline_state:
@@ -106,7 +109,15 @@ def render_investigation_view(service):
     col_left, col_right = st.columns([3, 2])
 
     with col_left:
-        st.markdown("#### ⚡ Live 10-Step Investigation Timeline")
+        render_html("""
+        <div class="stitch-card-header" style="margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="color: #2D3948; font-size: 20px;">timeline</span>
+                <span class="stitch-card-title">Live 10-Step Investigation Timeline</span>
+            </div>
+            <span class="stitch-pill stitch-pill-won">10/10 Complete</span>
+        </div>
+        """)
         steps = pipeline_state.get("steps", [])
         for step in steps:
             step_num = step.get("step_number", 1)
@@ -117,25 +128,32 @@ def render_investigation_view(service):
             preview = step.get("output_preview", "")
 
             render_html(f"""
-<div class="step-card complete">
-    <div class="step-badge-num complete">✓ {step_num}</div>
-    <div class="step-content">
-        <div class="step-header">
-            <div class="step-name">{stitle}</div>
-            <span class="step-agent">{aname}</span>
-        </div>
-        <div class="step-desc">{preview}</div>
-        <div class="step-meta">
-            <span>⏱️ Latency: <b>{etime:.2f}s</b></span>
-            <span>🎯 Quality: <b>{int(conf*100)}%</b></span>
-            <span>STATUS: <b style="color: #34D399;">COMPLETE</b></span>
-        </div>
-    </div>
-</div>
-""")
+            <div class="step-card complete">
+                <div class="step-badge-num complete">✓ {step_num}</div>
+                <div class="step-content">
+                    <div class="step-header">
+                        <div class="step-name">{stitle}</div>
+                        <span class="step-agent">{aname}</span>
+                    </div>
+                    <div class="step-desc">{preview}</div>
+                    <div class="step-meta">
+                        <span>⏱️ Latency: <b>{etime:.2f}s</b></span>
+                        <span>🎯 Quality: <b>{int(conf*100)}%</b></span>
+                        <span class="stitch-pill stitch-pill-won" style="font-size: 0.68rem; padding: 2px 6px;">COMPLETED</span>
+                    </div>
+                </div>
+            </div>
+            """)
 
     with col_right:
-        st.markdown("#### 🎯 ML Risk & Evidence Verdict")
+        render_html("""
+        <div class="stitch-card-header" style="margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="color: #2D3948; font-size: 20px;">analytics</span>
+                <span class="stitch-card-title">Risk &amp; Evidence Verdict</span>
+            </div>
+        </div>
+        """)
         score_val = pipeline_state.get("evidence_score", 92)
         win_prob = pipeline_state.get("win_probability", 0.92)
 
@@ -159,26 +177,35 @@ def render_investigation_view(service):
 
         # Quick Navigation
         render_html("""
-<div class="fintech-card">
-    <div class="card-title"><span>Next Actions</span></div>
-</div>
-""")
+        <div class="stitch-card" style="margin-top: 14px;">
+            <div class="stitch-card-header" style="margin-bottom: 8px;">
+                <span class="stitch-card-title">Next Steps</span>
+            </div>
+        </div>
+        """)
         c_act1, c_act2 = st.columns(2)
         with c_act1:
-            if st.button("🔍 Source Traceability", use_container_width=True):
-                st.session_state["current_page"] = "Verification Center"
+            if st.button("Evidence Integrity", use_container_width=True):
+                st.session_state["current_page"] = "Evidence Integrity"
                 st.rerun()
         with c_act2:
-            if st.button("📄 Open Final Report & Narrative", use_container_width=True):
-                st.session_state["current_page"] = "Final AI Report"
+            if st.button("Final Defense Packet", use_container_width=True, type="primary"):
+                st.session_state["current_page"] = "Final Packet"
                 st.rerun()
 
     # -------------------------------------------------------------
-    # AI Evidence Chat Assistant (RAG Grounded)
+    # AI Evidence Chat Assistant
     # -------------------------------------------------------------
     st.write("---")
-    st.markdown("### 💬 AI Evidence Chat Assistant (RAG-Grounded Q&A)")
-    st.markdown("<p style='color: #94A3B8; font-size: 0.85rem;'>Ask any question about this active dispute. Answers are grounded directly on extracted evidence, OCR text, and verification records with zero hallucinations.</p>", unsafe_allow_html=True)
+    render_html("""
+    <div style="margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span class="material-symbols-outlined" style="color: #2D3948; font-size: 20px;">chat</span>
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #1A242C;">Dispute Evidence Assistant</h3>
+        </div>
+        <p style="color: #64748B; font-size: 0.84rem; margin: 0;">Ask any question about this active dispute. Answers are cross-checked directly against attached invoices, courier logs, and transaction records.</p>
+    </div>
+    """)
 
     chat_history_key = f"chat_history_{active_case_id}"
     if chat_history_key not in st.session_state:
@@ -197,10 +224,11 @@ def render_investigation_view(service):
             render_html(f'<div class="chat-bubble-ai">{msg["text"]}</div>')
             for cit in msg.get("citations", []):
                 render_html(f"""
-<div class="citation-box">
-    📌 <b>Citation:</b> {cit.get('source_file')} (Page {cit.get('page_number')}) &bull; Snippet: <i>"{cit.get('snippet')}"</i>
-</div>
-""")
+                <div class="citation-box">
+                    <span class="material-symbols-outlined" style="font-size: 16px; color: #0284C7; vertical-align: middle;">menu_book</span>
+                    <b>Citation:</b> {cit.get('source_file')} (Page {cit.get('page_number')}) &bull; Snippet: <i>"{cit.get('snippet')}"</i>
+                </div>
+                """)
 
     with st.form(key=f"chat_form_{active_case_id}", clear_on_submit=True):
         col_q, col_s = st.columns([5, 1])

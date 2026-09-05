@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-fixed":"#101c2a","secondary-fixed-dim":"#bbc7da","on-secondary-container":"#596576","surface-bright":"#f8f9fb","secondary":"#535f70","inverse-primary":"#bcc8d2","on-error-container":"#93000a","inverse-on-surface":"#f0f1f3","inverse-surface":"#2e3132","on-tertiary":"#ffffff","tertiary-container":"#00422b","on-error":"#ffffff","surface":"#f8f9fb","on-tertiary-fixed-variant":"#005236","tertiary-fixed":"#6ffbbe","on-secondary":"#ffffff","on-primary":"#ffffff","on-background":"#191c1e","primary-container":"#2f3a42","on-tertiary-container":"#10b981","surface-container-lowest":"#ffffff","error":"#ba1a1a","tertiary-fixed-dim":"#4edea3","outline-variant":"#c4c7cb","surface-container":"#edeef0","on-primary-fixed-variant":"#3d4850","on-tertiary-fixed":"#002113","on-primary-fixed":"#121d24","surface-container-low":"#f2f4f6","surface-tint":"#556069","primary-fixed":"#d8e4ee","surface-container-high":"#e7e8ea","primary":"#1a242c","surface-dim":"#d9dadc","error-container":"#ffdad6","surface-variant":"#e1e2e4","on-primary-container":"#98a4ad","on-surface-variant":"#43474b","tertiary":"#002a1a","secondary-fixed":"#d7e3f7","on-secondary-fixed-variant":"#3c4857","background":"#f8f9fb","secondary-container":"#d7e3f7","outline":"#74777b","surface-container-highest":"#e1e2e4","on-surface":"#191c1e","primary-fixed-dim":"#bcc8d2"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-2xs":"0.25rem","space-lg":"1.5rem","space-xs":"0.5rem","sidebar-width":"260px","space-3xl":"3rem","margin-desktop":"2rem","space-2xl":"2.5rem","space-md":"1rem","gutter-desktop":"1.5rem","space-xl":"2rem","space-sm":"0.75rem"},fontFamily:{"label-md":["Inter"],"headline-lg":["Inter"],"code-sm":["JetBrains Mono"],"headline-lg-mobile":["Inter"],"body-md":["Inter"],"headline-sm":["Inter"],"headline-md":["Inter"],"body-sm":["Inter"],"display-lg":["Inter"],"body-lg":["Inter"],"label-xs-caps":["Inter"]},fontSize:{"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.04em","fontWeight":"600"}],"headline-lg":["28px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"700"}],"code-sm":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"500"}],"headline-lg-mobile":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"700"}],"body-md":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"400"}],"headline-sm":["16px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-md":["20px",{"lineHeight":"28px","letterSpacing":"-0.015em","fontWeight":"600"}],"body-sm":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"400"}],"display-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.025em","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"24px","letterSpacing":"-0.005em","fontWeight":"400"}],"label-xs-caps":["11px",{"lineHeight":"14px","letterSpacing":"0.06em","fontWeight":"700"}]}}}};</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-sidebar-width bg-primary-container z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.08)]"><div class="flex flex-col"><div class="px-space-md pt-space-lg pb-space-md flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Chargeback Evidence AI Shield Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UchQ-dzHKdsfhRqtbB_c-fQQuos_adSff3Hur5i25xfP1RXsZpLKfwewAMAhnpRkevIyLIvkedFeTPhdEQvBxAbLs8aUizc0MW8g4VzvvLayUs2XrcVcwvi1P-LS_dArQ3WYBMnWhW53KrAaf0pBEBPxadqkSNvx3BdreU9PeSbnUYx8k-pvoOiv90pPRhyJxE4Do0B4P53NSBoMSQFD_HC6oUI6vaQIcxmSr_zAslCr4Y_oNAKBlPFXMo"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-primary tracking-tight leading-none">Evidence AI</span><span class="font-label-xs-caps text-label-xs-caps text-on-primary-container uppercase tracking-wider mt-1">Dispute Shield</span></div></div><span class="font-label-xs-caps text-label-xs-caps uppercase px-space-xs py-0.5 rounded bg-surface-container-highest/20 text-on-primary">Enterprise</span></div><nav class="mt-space-sm px-space-sm space-y-1" data-active-classes="bg-primary text-on-primary font-semibold"><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="overview" href="#overview"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-body-md text-body-md">Overview</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg transition-colors bg-primary text-on-primary font-semibold" data-path="disputes" href="#disputes"><span class="material-symbols-outlined text-[20px]">gavel</span><span class="font-body-md text-body-md">Disputes</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="dispute-detail" href="#dispute-detail"><span class="material-symbols-outlined text-[20px]">description</span><span class="font-body-md text-body-md">Dispute Detail</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="evidence-library" href="#evidence"><span class="material-symbols-outlined text-[20px]">folder_open</span><span class="font-body-md text-body-md">Evidence Library</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="evidence-package-builder" href="#evidence-package"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-body-md text-body-md">Package Builder</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="customers" href="#customers"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-body-md text-body-md">Customers</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="reports" href="#reports"><span class="material-symbols-outlined text-[20px]">query_stats</span><span class="font-body-md text-body-md">Reports</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors" data-path="settings" href="#settings"><span class="material-symbols-outlined text-[20px]">settings</span><span class="font-body-md text-body-md">Settings</span></a></nav></div><div class="p-space-sm mx-space-sm mb-space-md rounded-xl bg-primary/40"><div class="flex items-center gap-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfDWSZdL3vdczJ2QpGTCJVMSXdY54KqiG49Lc8a7AMsuvmAp-8z4BwQS90L7_yxTDuKO5vqlZwIdvAHoTb2EEXfbtVI0r70uy8nRMf6imd2BH1nlTqlj2QSts9ZkVeTJ0nKiceFALuYk90hMmKmFcDpMVCSL89mzlrmArRnY-4CBBTOnZWZdI0GEUS8J65fG30AzS0nNCcjZYdMk2J6AIQqPsjO4qtMkM7TCLwgKrSqz58nRLm9off_Q"/><div class="flex flex-col min-w-0 flex-1"><span class="font-headline-sm text-headline-sm text-on-primary truncate">Sarah Jenkins</span><span class="font-body-sm text-body-sm text-on-primary-container truncate">Director of Risk &amp; Fraud</span><span class="font-code-sm text-code-sm text-on-primary-container/80 truncate">s.jenkins@enterprise.com</span></div><a class="text-on-primary-container hover:text-on-primary transition-colors p-1 rounded" data-path="settings" href="#settings"><span class="material-symbols-outlined text-[20px]">more_vert</span></a></div></div></aside><div class="pl-sidebar-width"><header class="fixed top-0 left-sidebar-width right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-xl"><div class="flex items-center gap-space-md w-full max-w-md"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[20px]">search</span><input class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary outline-none focus:ring-2 focus:ring-primary/20 shadow-sm" placeholder="Search dispute ID, ARN, cardholder, or BIN..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-tertiary-container text-on-tertiary-container"><span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span><span class="font-label-xs-caps text-label-xs-caps uppercase">Production • Live</span></div><button class="relative p-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span></button><button class="flex items-center gap-space-xs px-space-md py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm"><span class="material-symbols-outlined text-[18px]">add</span><span>New Dispute</span></button><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-1 ring-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfDWSZdL3vdczJ2QpGTCJVMSXdY54KqiG49Lc8a7AMsuvmAp-8z4BwQS90L7_yxTDuKO5vqlZwIdvAHoTb2EEXfbtVI0r70uy8nRMf6imd2BH1nlTqlj2QSts9ZkVeTJ0nKiceFALuYk90hMmKmFcDpMVCSL89mzlrmArRnY-4CBBTOnZWZdI0GEUS8J65fG30AzS0nNCcjZYdMk2J6AIQqPsjO4qtMkM7TCLwgKrSqz58nRLm9off_Q"/></div></header><main class="relative pt-16 bg-background min-h-screen px-space-xl py-space-lg"><div class="flex flex-col w-full">
+<div class="flex flex-col gap-space-lg w-full max-w-[1600px] mx-auto pb-space-3xl">
+<!-- Screen Header & Operational Actions -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md pt-space-xs">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary tracking-wider">Chargeback Mitigation Engine</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-code-sm text-code-sm text-secondary">ISO 8583 / VROL Feed Active</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight font-bold">Disputes</h1>
+<p class="font-body-md text-body-md text-secondary mt-1 max-w-2xl">
+          Manage, filter, and track all incoming chargeback claims across payment networks.
+        </p>
+</div>
+<div class="flex items-center flex-wrap gap-space-sm">
+<button class="flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-colors shadow-sm font-label-md text-label-md" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">file_download</span>
+<span>Export CSV</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-colors shadow-sm font-label-md text-label-md" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">auto_fix_high</span>
+<span>Batch Generate Packages</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-lg py-2.5 rounded-xl bg-primary-container text-on-primary hover:bg-primary transition-colors shadow-sm font-label-md text-label-md" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>New Dispute</span>
+</button>
+</div>
+</div>
+<!-- Live Performance Banner & Visual Telemetry Metric Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary">Total Value Under Defense</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">shield</span>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg font-bold text-on-surface">$13,325.00</span>
+<span class="font-label-md text-label-md text-on-tertiary-container bg-tertiary-container/15 px-2 py-0.5 rounded-full font-semibold">+14.2%</span>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm text-secondary">
+<span>6 Active In-Flight Claims</span>
+<span class="text-on-surface font-semibold">98.4% Win Rate Target</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary">Evidence Auto-Fill Rate</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">psychology</span>
+</div>
+<div class="my-space-sm flex items-center justify-between">
+<span class="font-display-lg text-display-lg font-bold text-on-surface">91.6%</span>
+<!-- Inline Sparkline Metric Graphic -->
+<svg class="w-24 h-9 text-on-tertiary-container" fill="none" viewbox="0 0 100 36" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 30L22 24L42 27L62 14L82 17L98 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+<path d="M2 30L22 24L42 27L62 14L82 17L98 6V36H2V30Z" fill="currentColor" fill-opacity="0.08"></path>
+</svg>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm text-secondary">
+<span>Avg. synthesis 3.2s</span>
+<span class="text-on-surface">AI Dossier v4.8</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary">Network SLA Pressure</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">timelapse</span>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg font-bold text-on-surface">4 Claims</span>
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-on-error-container bg-error-container px-2 py-0.5 rounded-full font-semibold">&lt; 48 Hours</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden flex">
+<div class="bg-error h-full" style="width: 25%"></div>
+<div class="bg-secondary h-full" style="width: 45%"></div>
+<div class="bg-on-tertiary-container h-full" style="width: 30%"></div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary">Monthly Recovered Capital</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">verified</span>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-xs">
+<span class="font-display-lg text-display-lg font-bold text-on-surface">$148,290</span>
+<span class="font-body-sm text-body-sm text-secondary">this month</span>
+</div>
+<div class="flex items-center justify-between font-code-sm text-code-sm text-secondary">
+<span>142 disputes won</span>
+<span class="text-on-tertiary-container font-semibold">+22.4% vs prev</span>
+</div>
+</div>
+</div>
+<!-- Filter & Segment Navigation -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md flex flex-col gap-space-md">
+<!-- Quick Filter Tabs -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 scrollbar-none">
+<button class="flex items-center gap-space-xs px-3 py-1.5 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md transition-colors whitespace-nowrap" type="button">
+<span>All</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container-highest/30 font-code-sm text-code-sm leading-none">42</span>
+</button>
+<button class="flex items-center gap-space-xs px-3 py-1.5 rounded-lg text-secondary hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" type="button">
+<span>Needs Review</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container text-secondary font-code-sm text-code-sm leading-none">9</span>
+</button>
+<button class="flex items-center gap-space-xs px-3 py-1.5 rounded-lg text-secondary hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" type="button">
+<span>Collecting Evidence</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container text-secondary font-code-sm text-code-sm leading-none">14</span>
+</button>
+<button class="flex items-center gap-space-xs px-3 py-1.5 rounded-lg text-secondary hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" type="button">
+<span>Ready to Submit</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container text-secondary font-code-sm text-code-sm leading-none">19</span>
+</button>
+<button class="flex items-center gap-space-xs px-3 py-1.5 rounded-lg text-secondary hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" type="button">
+<span>Submitted</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container text-secondary font-code-sm text-code-sm leading-none">68</span>
+</button>
+<button class="flex items-center gap-space-xs px-3 py-1.5 rounded-lg text-secondary hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap" type="button">
+<span>Closed / Won</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container text-secondary font-code-sm text-code-sm leading-none">142</span>
+</button>
+</div>
+<!-- Multifaceted Filter Bar -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-sm items-center">
+<!-- Search Input -->
+<div class="md:col-span-4 relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-secondary text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 transition-all" placeholder="Search by Case ID, Customer, Cardholder Name, or Reference..." type="text"/>
+</div>
+<!-- Filter Controls -->
+<div class="md:col-span-8 flex items-center flex-wrap gap-space-xs justify-start md:justify-end">
+<!-- Status Dropdown -->
+<div class="relative inline-block">
+<button class="flex items-center gap-space-xs px-3 py-2 bg-surface-container-low hover:bg-surface-container rounded-lg font-body-sm text-body-sm text-on-surface transition-colors" type="button">
+<span class="text-secondary font-label-md text-label-md">Status:</span>
+<span class="font-medium">All</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">expand_more</span>
+</button>
+</div>
+<!-- Date Range Dropdown -->
+<div class="relative inline-block">
+<button class="flex items-center gap-space-xs px-3 py-2 bg-surface-container-low hover:bg-surface-container rounded-lg font-body-sm text-body-sm text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">calendar_today</span>
+<span class="font-medium">Last 30 Days</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">expand_more</span>
+</button>
+</div>
+<!-- Network Dropdown -->
+<div class="relative inline-block">
+<button class="flex items-center gap-space-xs px-3 py-2 bg-surface-container-low hover:bg-surface-container rounded-lg font-body-sm text-body-sm text-on-surface transition-colors" type="button">
+<span class="text-secondary font-label-md text-label-md">Network:</span>
+<span class="font-medium">All Schemes</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">expand_more</span>
+</button>
+</div>
+<!-- Exposure Range Dropdown -->
+<div class="relative inline-block">
+<button class="flex items-center gap-space-xs px-3 py-2 bg-surface-container-low hover:bg-surface-container rounded-lg font-body-sm text-body-sm text-on-surface transition-colors" type="button">
+<span class="text-secondary font-label-md text-label-md">Exposure:</span>
+<span class="font-medium">Any Value</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">expand_more</span>
+</button>
+</div>
+<!-- Clear Filters -->
+<button class="p-2 text-secondary hover:text-error hover:bg-surface-container-low rounded-lg transition-colors" title="Reset Filters" type="button">
+<span class="material-symbols-outlined text-[20px]">filter_alt_off</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Enterprise Data Table Module -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/60 text-secondary font-label-xs-caps text-label-xs-caps uppercase tracking-wider">
+<th class="py-3 px-space-md" scope="col">
+<div class="flex items-center gap-1 cursor-pointer select-none">
+<span>Dispute ID &amp; Date</span>
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span>
+</div>
+</th>
+<th class="py-3 px-space-md" scope="col">Customer Account</th>
+<th class="py-3 px-space-md" scope="col">Card &amp; Network</th>
+<th class="py-3 px-space-md" scope="col">
+<div class="flex items-center gap-1 cursor-pointer select-none">
+<span>Disputed Amount</span>
+<span class="material-symbols-outlined text-[14px] opacity-40">swap_vert</span>
+</div>
+</th>
+<th class="py-3 px-space-md" scope="col">Reason Code</th>
+<th class="py-3 px-space-md" scope="col">Evidence Completeness</th>
+<th class="py-3 px-space-md" scope="col">Status</th>
+<th class="py-3 px-space-md text-right" scope="col">Action</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm divide-y-0">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<a class="font-code-sm text-code-sm font-semibold text-on-surface group-hover:text-secondary transition-colors" href="#dispute-detail">#CB-2026-1042</a>
+<span class="text-secondary text-[12px] mt-0.5">Oct 24, 2026 • 14:22 UTC</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">Meridian Logistics Inc</span>
+<span class="font-code-sm text-code-sm text-secondary truncate">acct_meridian_corp_881</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-code-sm text-code-sm font-semibold">VISA</span>
+<span class="font-code-sm text-code-sm text-secondary tracking-widest">•••• 4821</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<span class="font-code-sm text-code-sm font-bold text-on-surface text-[14px]">$3,450.00</span>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">10.4 Other Fraud</span>
+<span class="font-code-sm text-code-sm text-secondary">Card-Absent Enviro</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle min-w-[190px]">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between font-code-sm text-code-sm">
+<span class="font-medium text-on-surface">80%</span>
+<span class="text-secondary">8/10 Docs Verified</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 80%"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-fixed/40 text-on-secondary-fixed-variant font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  Collecting Evidence
+                </span>
+</td>
+<td class="py-space-md px-space-md align-middle text-right whitespace-nowrap">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" type="button">
+                  Open Case
+                </button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group bg-surface-bright">
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<a class="font-code-sm text-code-sm font-semibold text-on-surface group-hover:text-secondary transition-colors" href="#dispute-detail">#CB-2026-1039</a>
+<span class="text-secondary text-[12px] mt-0.5">Oct 23, 2026 • 09:15 UTC</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">Apex Global Tech</span>
+<span class="font-code-sm text-code-sm text-secondary truncate">acct_apex_sys_902</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-code-sm text-code-sm font-semibold">MC</span>
+<span class="font-code-sm text-code-sm text-secondary tracking-widest">•••• 9102</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<span class="font-code-sm text-code-sm font-bold text-on-surface text-[14px]">$1,280.00</span>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">4853 Defective/Not as Described</span>
+<span class="font-code-sm text-code-sm text-secondary">Proof of Delivery Match</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle min-w-[190px]">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between font-code-sm text-code-sm">
+<span class="font-medium text-on-tertiary-container">100%</span>
+<span class="text-secondary">7/7 Docs Packaged</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-on-tertiary-container h-full rounded-full" style="width: 100%"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-container/15 text-on-tertiary-container font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+                  Ready
+                </span>
+</td>
+<td class="py-space-md px-space-md align-middle text-right whitespace-nowrap">
+<button class="px-3 py-1.5 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md transition-colors shadow-sm" type="button">
+                  Submit Package
+                </button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<a class="font-code-sm text-code-sm font-semibold text-on-surface group-hover:text-secondary transition-colors" href="#dispute-detail">#CB-2026-1038</a>
+<span class="text-secondary text-[12px] mt-0.5">Oct 22, 2026 • 18:40 UTC</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">Solaria Cloud GmbH</span>
+<span class="font-code-sm text-code-sm text-secondary truncate">acct_solaria_de_112</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-code-sm text-code-sm font-semibold">AMEX</span>
+<span class="font-code-sm text-code-sm text-secondary tracking-widest">•••• 3014</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<span class="font-code-sm text-code-sm font-bold text-on-surface text-[14px]">$890.00</span>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">4534 Cancelled Recurring</span>
+<span class="font-code-sm text-code-sm text-secondary">T&amp;C Opt-in Timestamp</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle min-w-[190px]">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between font-code-sm text-code-sm">
+<span class="font-medium text-on-surface">90%</span>
+<span class="text-secondary">6/7 Docs Verified</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-on-tertiary-container h-full rounded-full" style="width: 90%"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-container/15 text-on-tertiary-container font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+                  Ready
+                </span>
+</td>
+<td class="py-space-md px-space-md align-middle text-right whitespace-nowrap">
+<button class="px-3 py-1.5 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md transition-colors shadow-sm" type="button">
+                  Submit Package
+                </button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group bg-surface-bright">
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<a class="font-code-sm text-code-sm font-semibold text-on-surface group-hover:text-secondary transition-colors" href="#dispute-detail">#CB-2026-1035</a>
+<span class="text-secondary text-[12px] mt-0.5">Oct 21, 2026 • 11:04 UTC</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">Katherine Vance (Consumer)</span>
+<span class="font-code-sm text-code-sm text-secondary truncate">cus_usr_kv_87210</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-code-sm text-code-sm font-semibold">VISA</span>
+<span class="font-code-sm text-code-sm text-secondary tracking-widest">•••• 1198</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<span class="font-code-sm text-code-sm font-bold text-on-surface text-[14px]">$215.00</span>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">10.4 Friendly Fraud</span>
+<span class="font-code-sm text-code-sm text-error">Missing Device Fingerprint</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle min-w-[190px]">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between font-code-sm text-code-sm">
+<span class="font-medium text-error">30%</span>
+<span class="text-secondary">2/6 Docs Found</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 30%"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                  Needs Review
+                </span>
+</td>
+<td class="py-space-md px-space-md align-middle text-right whitespace-nowrap">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" type="button">
+                  Investigate
+                </button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<a class="font-code-sm text-code-sm font-semibold text-on-surface group-hover:text-secondary transition-colors" href="#dispute-detail">#CB-2026-1031</a>
+<span class="text-secondary text-[12px] mt-0.5">Oct 20, 2026 • 08:33 UTC</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">BioNova Labs</span>
+<span class="font-code-sm text-code-sm text-secondary truncate">acct_bionova_res_44</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-code-sm text-code-sm font-semibold">MC</span>
+<span class="font-code-sm text-code-sm text-secondary tracking-widest">•••• 7731</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<span class="font-code-sm text-code-sm font-bold text-on-surface text-[14px]">$5,840.00</span>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">4837 Fraudulent Transaction</span>
+<span class="font-code-sm text-code-sm text-secondary">3DS Secure Passed</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle min-w-[190px]">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between font-code-sm text-code-sm">
+<span class="font-medium text-on-surface">100%</span>
+<span class="text-secondary">11/11 Docs In-Portal</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 100%"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-fixed-variant font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                  Submitted
+                </span>
+</td>
+<td class="py-space-md px-space-md align-middle text-right whitespace-nowrap">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" type="button">
+                  Track
+                </button>
+</td>
+</tr>
+<!-- Row 6 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group bg-surface-bright">
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<a class="font-code-sm text-code-sm font-semibold text-on-surface group-hover:text-secondary transition-colors" href="#dispute-detail">#CB-2026-1027</a>
+<span class="text-secondary text-[12px] mt-0.5">Oct 18, 2026 • 16:50 UTC</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface truncate">Crestview Hospitality</span>
+<span class="font-code-sm text-code-sm text-secondary truncate">acct_crestview_grp_71</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex items-center gap-space-xs">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-code-sm text-code-sm font-semibold">AMEX</span>
+<span class="font-code-sm text-code-sm text-secondary tracking-widest">•••• 5520</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<span class="font-code-sm text-code-sm font-bold text-on-surface text-[14px]">$1,650.00</span>
+</td>
+<td class="py-space-md px-space-md align-middle">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">4540 Recognition Issue</span>
+<span class="font-code-sm text-code-sm text-on-tertiary-container">Representment Upheld</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle min-w-[190px]">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between font-code-sm text-code-sm">
+<span class="font-medium text-on-tertiary-container">100%</span>
+<span class="text-secondary">8/8 Docs Archived</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-on-tertiary-container h-full rounded-full" style="width: 100%"></div>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-middle whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-container/15 text-on-tertiary-container font-label-md text-label-md font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+                  Closed (Won)
+                </span>
+</td>
+<td class="py-space-md px-space-md align-middle text-right whitespace-nowrap">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" type="button">
+                  View Archive
+                </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="flex flex-col sm:flex-row items-center justify-between px-space-md py-space-sm bg-surface-container-low/40 gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="font-body-sm text-body-sm text-secondary">
+            Showing <strong class="text-on-surface font-semibold">1</strong> to <strong class="text-on-surface font-semibold">6</strong> of <strong class="text-on-surface font-semibold">42</strong> disputes
+          </span>
+<div class="hidden sm:flex items-center gap-1 pl-space-sm">
+<span class="font-label-xs-caps text-label-xs-caps uppercase text-secondary">Rows per page:</span>
+<select class="bg-surface-container-lowest rounded px-2 py-0.5 font-code-sm text-code-sm text-on-surface focus:outline-none">
+<option>10</option>
+<option selected="">20</option>
+<option>50</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded-lg bg-surface-container-lowest text-secondary hover:text-on-surface hover:bg-surface-container disabled:opacity-40 transition-colors" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">keyboard_double_arrow_left</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-lowest text-secondary hover:text-on-surface hover:bg-surface-container disabled:opacity-40 transition-colors" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<div class="flex items-center gap-1 px-1">
+<button class="w-8 h-8 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center" type="button">1</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container-lowest text-secondary hover:text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center transition-colors" type="button">2</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container-lowest text-secondary hover:text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center transition-colors" type="button">3</button>
+<span class="w-8 h-8 flex items-center justify-center text-secondary font-code-sm text-code-sm">...</span>
+<button class="w-8 h-8 rounded-lg bg-surface-container-lowest text-secondary hover:text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center transition-colors" type="button">7</button>
+</div>
+<button class="p-1.5 rounded-lg bg-surface-container-lowest text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-lowest text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">keyboard_double_arrow_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

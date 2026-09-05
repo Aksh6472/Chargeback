@@ -57,9 +57,14 @@ class LocalDatabaseManager:
                 phone_number TEXT NOT NULL UNIQUE,
                 full_name TEXT NOT NULL,
                 email TEXT,
+                address TEXT,
                 created_at TEXT
             )
         ''')
+        try:
+            cursor.execute("ALTER TABLE customers ADD COLUMN address TEXT")
+        except Exception:
+            pass
 
         # 3. merchant_vault_documents
         cursor.execute('''
@@ -111,9 +116,14 @@ class LocalDatabaseManager:
                 evidence_score REAL,
                 opened_at TEXT,
                 deadline_at TEXT,
+                updated_at TEXT,
                 FOREIGN KEY (merchant_id) REFERENCES merchants (id)
             )
         ''')
+        try:
+            cursor.execute("ALTER TABLE chargeback_cases ADD COLUMN updated_at TEXT")
+        except Exception:
+            pass
 
         # 6. documents
         cursor.execute('''

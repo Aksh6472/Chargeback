@@ -204,6 +204,32 @@ class OCRAgent:
         }
 
     @classmethod
+    def extract_text_and_tables(cls, file_path: Path) -> Dict[str, Any]:
+        """
+        Extracts native text, preprocessed visual text, and structural line items.
+        """
+        file_path = Path(file_path)
+        doc_res = cls.process_document("doc_extract", file_path)
+        raw = doc_res.get("raw_text", "")
+        
+        # Heuristic line items detection (e.g. lines with price/item)
+        lines = [l.strip() for l in raw.split("\n") if l.strip()]
+        line_items = []
+        for line in lines:
+            if any(sym in line for sym in ["INR", "₹", "Rs", "USD", "$"]) or any(kw in line.lower() for kw in ["qty", "total", "subtotal", "tax"]):
+                line_items.append({"extracted_item_row": line})
+
+        return {
+            "text": raw,
+            "raw_text": raw,
+            "confidence": doc_res.get("confidence", 0.96),
+            "extraction_method": doc_res.get("extraction_method", "pymupdf_text_layer"),
+            "preprocessing": doc_res.get("preprocessing", {}),
+            "line_items": line_items[:10],
+            "page_count": doc_res.get("page_count", 1)
+        }
+
+    @classmethod
     def process_document(cls, document_id: str, file_path: Path) -> Dict[str, Any]:
         """
         Entry point for OCR Agent matching JSON output in Page 15:
